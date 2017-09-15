@@ -1,0 +1,30 @@
+# Functional Requirements
+
+- As a student, I can see my own classes
+- As a student, I can click my panic button when I don't understand a section of the lecture.
+- As a student, I can “unclick” my panic button when a point is clarified
+- As a student, I can ask questions anonymously to other students
+- As a student, I can vote for questions asked by other students
+- As a student, I can mark my own question as answered
+- As a teaching assistant, I can view questions asked by students
+- As a teaching assistant, I can see which students asked a question
+- As a teaching assistant, I can answer questions asked by students
+- As a teacher, I can see my own classes
+- As a teacher, I can see the number of recent panic button clicks by students
+- As a teacher, I can mark questions as answered
+- As a teacher, I can see which students asked a question
+- As a teacher, I can lock the system so that it cannot be used by students in my class temporarily or indefinitely
+- As a teacher, I can unlock the system so that it may be used by students temporarily or indefinitely
+- As an administrator, I can see all classes
+- As an administrator, I can see all questions and answers and votes
+- As a teacher, I can create classes
+- As an administrator, I can create teacher accounts
+- As an administrator, I can create teaching assistant accounts
+- As a teacher, I can create teaching assistant accounts
+- As a teaching assistant, I can join a class using a unique code
+- As a student, I can join a class using a unique code
+- As a teacher or teaching assistant, I can mark questions as inappropriate
+- The system should prevent inappropriate questions from being asked
+- The system should have clients for web, Android, iOS, MacOS, Windows, and Linux
+- A student may be promoted to teaching assistant by a teacher
+- Students should be able to register an account for themselves
