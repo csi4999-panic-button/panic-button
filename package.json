@@ -1,0 +1,23 @@
+{
+  "name": "panic-button",
+  "version": "1.0.0",
+  "description": "Revolutionary student-teacher interface",
+  "main": "src/server/app.js",
+  "scripts": {
+    "start": "node src/server/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csi4999-panic-button/panic-button.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/csi4999-panic-button/panic-button/issues"
+  },
+  "homepage": "https://github.com/csi4999-panic-button/panic-button#readme",
+  "dependencies": {
+    "express": "^4.15.4"
+  }
+}

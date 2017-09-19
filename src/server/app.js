@@ -1,0 +1,8 @@
+"use strict";
+
+const app = require("express")();
+
+app.get("/", (req, res) => res.status(200).send("hello world"));
+
+app.listen(3000);
+
