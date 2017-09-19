@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/csi4999-panic-button/panic-button#readme",
   "dependencies": {
+    "angular-material": "^1.1.5",
     "express": "^4.15.4"
   }
 }
