@@ -2,7 +2,12 @@
 
 const app = require("express")();
 
-app.get("/", (req, res) => res.status(200).send("hello world"));
+const routes = require("./routes");
 
-app.listen(3000);
+const port = process.env.PORT || 3000;
+
+routes(app);
+
+app.listen(port);
+console.log(`Listening on port ${port}`);
 
