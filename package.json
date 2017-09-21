@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/csi4999-panic-button/panic-button#readme",
   "dependencies": {
-    "express": "^4.15.4"
+    "express": "^4.15.4",
+    "mongoose": "^4.11.12",
+    "morgan": "^1.8.2"
   }
 }

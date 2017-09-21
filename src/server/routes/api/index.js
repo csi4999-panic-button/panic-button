@@ -3,10 +3,8 @@
 const router = require("express").Router();
 
 router.get("/", (req, res) => {
-  res.status(200).send("Hello World!");
+  res.status(200).send("API call");
 });
-
-router.use("/api/v1", require("./api"));
 
 module.exports = router;
 
