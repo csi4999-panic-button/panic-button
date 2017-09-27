@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Don\'t Panic Educational</string>
+    <string name="button_login">LOGIN</string>
+    <string name="button_signUp">SIGN UP</string>
+    <string name="button_aboutUs">ABOUT US</string>
+    <string name="textView_welcomeMessage">An easier, modern approach to classroom dynamics to enable both students and teachers.</string>
+</resources>
