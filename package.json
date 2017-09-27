@@ -5,6 +5,7 @@
   "main": "src/server/app.js",
   "scripts": {
     "start": "node src/server/app.js",
+    "build": "cd src/client && npm install && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

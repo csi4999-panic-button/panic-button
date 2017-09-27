@@ -1,7 +1,12 @@
 "use strict";
 
+const path = require("path");
+
+const express = require("express");
+
 // Inintialize express app
-const app = require("express")();
+const app = express();
+app.use(express.static(path.join(__dirname, "../client/dist")));
 
 // connect to database
 const mongoose = require("mongoose");
