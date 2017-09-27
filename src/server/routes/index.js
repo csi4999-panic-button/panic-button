@@ -1,25 +1,22 @@
 "use strict";
 
-module.exports = (app) => {
-  app.get("/", (req, res) => {
-    res.status(200).send("Hello World!");
-  });
+const router = require("express").Router();
+const passport = require("passport");
 
-  {
-    const fs = require("fs");
-    const path = require("path");
-    const files = fs.readdirSync("src/server/routes");
-    files.forEach((file) => {
-      if (file === "index.js") return;
-      if (path.extname(file) !== ".js") return;
+router.get("/", (req, res) => {
+  res.status(200).send("Hello World!");
+});
 
-      console.log(`loading routes in ${file}`);
-      const routes = require("./" + path.basename(file));
+router.post("/login", passport.authenticate("local"), (req, res) => {
+  res.json({ success: true, name: req.user.name });
+});
 
-      if (typeof routes === "function") {
-        routes(app);
-      }
-    });
-  }
-};
+router.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.json({ success: true });
+});
+
+router.use("/api/v1", require("./api"));
+
+module.exports = router;
 
