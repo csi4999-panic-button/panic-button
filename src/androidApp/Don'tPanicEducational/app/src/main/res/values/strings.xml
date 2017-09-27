@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Don\'t Panic Educational</string>
+    <string name="app_name">Don\'t Panic</string>
     <string name="button_login">LOGIN</string>
     <string name="button_signUp">SIGN UP</string>
     <string name="button_aboutUs">ABOUT US</string>
