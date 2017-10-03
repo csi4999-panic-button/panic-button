@@ -13,4 +13,9 @@
     <string name="editText_password">Password</string>
     <string name="button_loginEnter">Enter</string>
     <string name="button_loginCancel">Cancel</string>
+    <string name="editText_signInFirstName">First Name</string>
+    <string name="editText_signInLastName">Last Name</string>
+    <string name="editText_signInEmail">E-mail Address</string>
+    <string name="editText_signInUsername">Username</string>
+    <string name="editText_signInPassword">Password</string>
 </resources>
