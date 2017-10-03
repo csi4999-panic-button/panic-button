@@ -41,8 +41,13 @@ app.use(session({
 
 // set up passport middlewares
 const passport = require("passport");
-const localStrategy = require("./auth");
+const strategies = require("./auth");
+
+const localStrategy = strategies.local;
+const bearerStrategy = strategies.token;
+
 passport.use(localStrategy);
+passport.use(bearerStrategy);
 app.use(passport.initialize());
 app.use(passport.session());
 
