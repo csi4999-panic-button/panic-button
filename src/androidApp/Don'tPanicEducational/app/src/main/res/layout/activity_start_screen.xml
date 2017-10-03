@@ -69,6 +69,8 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="0dp"
         android:text="@string/textView_welcomeMessage"
+        android:gravity="center"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/button_signUp"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
