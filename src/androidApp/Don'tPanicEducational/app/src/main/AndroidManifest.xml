@@ -19,6 +19,7 @@
         <activity android:name=".SignUpActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".AboutUsActivity" />
+        <activity android:name=".PanicActivity"></activity>
     </application>
 
 </manifest>

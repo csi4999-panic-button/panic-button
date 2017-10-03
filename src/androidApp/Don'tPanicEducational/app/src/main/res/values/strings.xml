@@ -6,13 +6,13 @@
     <string name="textView_welcomeMessage">An easier, modern approach
         to classroom dynamics to enable both students and teachers</string>
     <string name="textView_aboutUsMessage">Don\'t Panic was created by Matt Li, Dan Dyla, Tom
-    Carrio, and Chase Ehlert. This application was developed to combat the problem of students
+    Carrio, Chase Ehlert, and Brandon Smith. This application was developed to combat the problem of students
     not participating in the classroom enough. With Don\'t Panic the team hopes to engage students
     more in the lecture while making the process of asking the professor a question more efficient.</string>
     <string name="editText_login">Login</string>
     <string name="editText_password">Password</string>
-    <string name="button_loginEnter">Enter</string>
-    <string name="button_loginCancel">Cancel</string>
+    <string name="button_enter">Enter</string>
+    <string name="button_cancel">Cancel</string>
     <string name="editText_signInFirstName">First Name</string>
     <string name="editText_signInLastName">Last Name</string>
     <string name="editText_signInEmail">E-mail Address</string>
