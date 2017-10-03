@@ -17,14 +17,15 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:hint="@string/editText_login"
-        android:background="@color/accent"
-        android:textColor="@color/colorIcons"
+        android:background="@color/colorPrimaryLight"
+        android:textColor="@color/colorPrimaryText"
+        android:textColorHint="@color/colorPrimaryText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.418" />
+        app:layout_constraintVertical_bias="0.337" />
 
     <EditText
         android:id="@+id/editText_passwordLogin"
@@ -37,8 +38,9 @@
         android:ems="10"
         android:hint="@string/editText_password"
         android:inputType="textPersonName|textPassword"
-        android:background="@color/accent"
-        android:textColor="@color/colorIcons"
+        android:background="@color/colorPrimaryLight"
+        android:textColor="@color/colorPrimaryText"
+        android:textColorHint="@color/colorPrimaryText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -62,7 +64,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText_passwordLogin"
-        app:layout_constraintVertical_bias="0.145"
+        app:layout_constraintVertical_bias="0.139"
         app:layout_constraintHorizontal_bias="0.275" />
 
     <Button
@@ -73,7 +75,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
-        android:onClick="cancelButtonClick"
+        android:onClick="clearFieldsLogin"
         android:text="@string/button_cancel"
         android:background="@color/colorAccent"
         android:textColor="@color/colorIcons"
@@ -82,5 +84,5 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText_passwordLogin"
-        app:layout_constraintVertical_bias="0.145" />
+        app:layout_constraintVertical_bias="0.139" />
 </android.support.constraint.ConstraintLayout>
