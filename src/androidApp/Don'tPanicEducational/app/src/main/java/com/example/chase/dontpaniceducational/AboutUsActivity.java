@@ -29,4 +29,28 @@ public class AboutUsActivity extends AppCompatActivity {
         intent.setData(Uri.parse("https://tom.carrio.me"));
         startActivity(intent);
     }
+
+    public void websiteMatt(View view) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse("https://github.com/Pain-OnLi"));
+        startActivity(intent);
+    }
+
+    public void websiteChase(View view) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse("https://github.com/Chase699"));
+        startActivity(intent);
+    }
+
+    public void websiteBrandon(View view) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse("https://github.com/Pain-OnLi"));
+        startActivity(intent);
+    }
 }

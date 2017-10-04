@@ -20,6 +20,7 @@
     <string name="editText_signInPassword">Password</string>
     <string name="imageButton_Dan">Link to Dan\'s website.</string>
     <string name="imageButton_Tom">Link to Tom\'s website.</string>
-    <string name="danWebsite">https://dyladan.me/</string>
-    <string name="tomWebsite">https://tom.carrio.me/</string>
+    <string name="imageButton_Matt">Link to Matt\'s github.</string>
+    <string name="imageButton_Chase">Link to Chase\'s github.</string>
+    <string name="imageButton_Brandon">Link to Brandon\'s github.</string>
 </resources>
