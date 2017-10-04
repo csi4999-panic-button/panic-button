@@ -2,6 +2,7 @@
 
 const router = require("express").Router();
 const Users = require("../../models/users");
+const Classrooms = require("../../models/classrooms");
 const passport = require("passport");
 
 router.get("/", (req, res) => {
@@ -28,6 +29,15 @@ router.get("/users", async (req, res) => {
     res.status(401).send();
   }
 });
+
+router.get("/classrooms", async (req, res => {
+  if (req.isAuthenticated()) {
+    const classrooms = await Classrooms.find();
+    res.json(classrooms);
+  } else {
+    res.status(401).send();
+  }
+}));
 
 module.exports = router;
 
