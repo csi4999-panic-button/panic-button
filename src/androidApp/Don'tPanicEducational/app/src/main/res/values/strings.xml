@@ -18,4 +18,8 @@
     <string name="editText_signInEmail">E-mail Address</string>
     <string name="editText_signInUsername">Username</string>
     <string name="editText_signInPassword">Password</string>
+    <string name="imageButton_Dan">Link to Dan\'s website.</string>
+    <string name="imageButton_Tom">Link to Tom\'s website.</string>
+    <string name="danWebsite">https://dyladan.me/</string>
+    <string name="tomWebsite">https://tom.carrio.me/</string>
 </resources>
