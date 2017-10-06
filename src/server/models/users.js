@@ -10,7 +10,8 @@ const SALT_WORK_FACTOR = 12;
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, lowercase: true, index: { unique: true } },
   password: { type: String, required: true, select: false },
-  name: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   apiToken: { type: String, default: getToken, unique: true, select: false },
 }, {
   timestamps: true,

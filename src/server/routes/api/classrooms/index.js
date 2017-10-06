@@ -6,32 +6,32 @@ const InviteCodes = require("../../../models/invite-codes");
 const mongoose = require("mongoose");
 var classCodes = [];
 
+
 router.get("/", async (req, res) => {
     if (req.isAuthenticated()) {
-        const classrooms = await Classrooms.find(
-            { $or: [ 
-                {teachers: req.user._id },
-                {teacherAssistants: req.user._id },
-                {students: req.user._id }
-            ]}
-        );
-        res.json(classrooms);
+        Classrooms.find({ $or: [ 
+                { teachers: req.user._id },
+                { teacherAssistants: req.user._id },
+                { students: req.user._id }
+        ]}).then(classrooms => {
+            res.json(classrooms);
+        }).catch( err => {
+            res.json({ status: false, message: err });
+        })
     } else {
         res.status(401).send();
     }
-  });
+});
 
 router.put("/id/:classroomId", async (req, res) => {
     if (req.isAuthenticated()) {
-        console.log("req.params.classroomId: " + req.params.id);
-        console.log("req.user._id: " + req.user._id);
         Classrooms.findOneAndUpdate(
             { $and: [ { id: req.params.classroomId } , { teachers: mongoose.Types.ObjectId(req.user._id) } ] },
             { $set: req.body }
         ).then( classroom => {
             console.log(classroom);
             if( classroom !== null ){
-                res.json({status: true, message: "Class was successfully updated" });
+                res.json({status: true, message: "Class was successfully updated", classroom: classroom });
             } else {
                 res.json({status: false, message: "Cannot find/modify class" });
             }
@@ -41,7 +41,7 @@ router.put("/id/:classroomId", async (req, res) => {
     } else {
         res.status(401).send();
     }
-})
+});
   
 router.post("/join", async (req, res) => {
     if (req.isAuthenticated()) {
@@ -76,7 +76,7 @@ router.post("/join", async (req, res) => {
     } else {
         res.status(401).send();
     }
-  });
+});
 
 router.post("/", async (req, res) => {
     if (req.isAuthenticated()) {
