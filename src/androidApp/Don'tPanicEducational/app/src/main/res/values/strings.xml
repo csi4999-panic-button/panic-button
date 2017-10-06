@@ -8,14 +8,20 @@
     <string name="textView_aboutUsMessage">Don\'t Panic was created by Matt Li, Dan Dyla, Tom
     Carrio, Chase Ehlert, and Brandon Smith. This application was developed to combat the problem of students
     not participating in the classroom enough. With Don\'t Panic the team hopes to engage students
-    more in the lecture while making the process of asking the professor a question more efficient.</string>
+    more in the lecture while making the process of asking the professor a question more efficient.\n\nClick
+        on one of the images below to view that teammates website or github account.</string>
     <string name="editText_login">Login</string>
     <string name="editText_password">Password</string>
     <string name="button_enter">Enter</string>
-    <string name="button_cancel">Cancel</string>
+    <string name="button_reset">Reset</string>
     <string name="editText_signInFirstName">First Name</string>
     <string name="editText_signInLastName">Last Name</string>
     <string name="editText_signInEmail">E-mail Address</string>
     <string name="editText_signInUsername">Username</string>
     <string name="editText_signInPassword">Password</string>
+    <string name="imageButton_Dan">Link to Dan\'s website.</string>
+    <string name="imageButton_Tom">Link to Tom\'s website.</string>
+    <string name="imageButton_Matt">Link to Matt\'s github.</string>
+    <string name="imageButton_Chase">Link to Chase\'s github.</string>
+    <string name="imageButton_Brandon">Link to Brandon\'s github.</string>
 </resources>

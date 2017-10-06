@@ -76,7 +76,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:onClick="clearFieldsLogin"
-        android:text="@string/button_cancel"
+        android:text="@string/button_reset"
         android:background="@color/colorAccent"
         android:textColor="@color/colorIcons"
         app:layout_constraintBottom_toBottomOf="parent"
