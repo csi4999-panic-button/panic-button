@@ -6,7 +6,7 @@ const InviteCodes = require("../../../models/invite-codes");
 const mongoose = require("mongoose");
 var classCodes = [];
 
-
+// returns a list of classrooms this user belongs to
 router.get("/", async (req, res) => {
     if (req.isAuthenticated()) {
         Classrooms.find({ $or: [ 
@@ -23,6 +23,7 @@ router.get("/", async (req, res) => {
     }
 });
 
+// updates a classroom document by classroomId
 router.put("/id/:classroomId", async (req, res) => {
     if (req.isAuthenticated()) {
         Classrooms.findOneAndUpdate(
@@ -43,6 +44,7 @@ router.put("/id/:classroomId", async (req, res) => {
     }
 });
   
+// adds user to the listing for a classroom based on a given invite code
 router.post("/join", async (req, res) => {
     if (req.isAuthenticated()) {
         const qCode = req.body.inviteCode
@@ -78,6 +80,7 @@ router.post("/join", async (req, res) => {
     }
 });
 
+// creates a classroom and returns invite codes for teachers, TAs, and students
 router.post("/", async (req, res) => {
     if (req.isAuthenticated()) {
         try {
