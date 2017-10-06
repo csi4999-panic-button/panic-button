@@ -3,6 +3,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const util = require("../util");
 
 const SALT_WORK_FACTOR = 12;
 
@@ -43,9 +44,7 @@ class User {
 userSchema.loadClass(User);
 
 function getToken() {
-  const buffer = crypto.randomBytes(48);
-  const token = buffer.toString('hex');
-  return token;
+  return util.getKey(48);
 }
 
 module.exports = mongoose.model("User", userSchema);

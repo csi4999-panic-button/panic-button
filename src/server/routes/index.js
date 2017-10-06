@@ -27,6 +27,7 @@ router.post("/register", async (req, res) => {
 });
 
 router.use("/api/v1", require("./api"));
+router.use("/api/v1/classrooms", require("./api/classrooms"));
 
 module.exports = router;
 

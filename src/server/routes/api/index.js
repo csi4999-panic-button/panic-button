@@ -30,14 +30,7 @@ router.get("/users", async (req, res) => {
   }
 });
 
-router.get("/classrooms", async (req, res => {
-  if (req.isAuthenticated()) {
-    const classrooms = await Classrooms.find();
-    res.json(classrooms);
-  } else {
-    res.status(401).send();
-  }
-}));
+
 
 module.exports = router;
 
