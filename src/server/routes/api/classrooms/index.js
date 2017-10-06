@@ -17,7 +17,37 @@ router.get("/", async (req, res) => {
   
 router.post("/join", async (req, res) => {
     if (req.isAuthenticated()) {
-      res.json({username: req.user});
+        const qCode = req.body.inviteCode
+        InviteCodes.findOne(
+          { code: qCode }
+        ).then( validCode => {
+            console.log(validCode);
+            var listUpdate = {};
+            switch(validCode.type) {
+                case 1:
+                    listUpdate = { teachers: req.user._id }
+                    break;
+                case 2:
+                    listUpdate = { teacherAssistants: req.user._id }
+                    break;
+                case 3:
+                    listUpdate = { students: req.user._id }
+                    break;
+                default:
+                    throw Error("No matching code type for " + validCode);
+            }
+            console.log("listUpdate = " + listUpdate);
+            Classrooms.update (
+                { id: validCode.classroom },
+                {$push: listUpdate},
+                { upsert: true },
+                function(err, data){}
+            );
+            res.json({success: true, message: "Successfully added your to classroom" });
+        }).catch( err => {
+            console.log(err);
+            res.json({success: false, message: err });
+        });
     } else {
       res.status(401).send();
     }
@@ -25,12 +55,9 @@ router.post("/join", async (req, res) => {
 
 router.post("/", async (req, res) => {
     if (req.isAuthenticated()) {
-        console.log(req.user);
-        classCodes = [];
         try {
-            const userTypes = [1,2,3]
-
-            const classroom = Classrooms.create({
+            const userTypes = [1,2,3];
+            Classrooms.create({
                 schoolName: req.body.schoolName,
                 courseType: req.body.courseType,
                 courseNumber: req.body.courseNumber,
@@ -40,51 +67,36 @@ router.post("/", async (req, res) => {
                 teacherAssistants: [],
                 students: []
             }).catch((err) => {
-                console.log(err);
-            });
-            console.log(classroom);
-            classroom.then( function(doc) {
-                userTypes.forEach( function(n) {
-                    const inviteCode = InviteCodes.create({
-                        classroom: doc.id,
+                console.log("Error occurred in request");
+                res.json({success: false, message: err});
+            }).then( classroom => {
+                Promise.all(userTypes.map( n => {
+                    return InviteCodes.create({
+                        classroom: classroom.id,
                         type: n
+                    }) 
+                })).then( values => {
+                    var inviteCodes = values.map( invite => {
+                        return invite.code;
                     });
-                    inviteCode.then( function(inv) {
-                        console.log(inv.code);
-                        classCodes.push(inv.code);
-                        console.log(classCodes);
-                    }).catch((err) => {
-                        classCodes.push("error");
+                    res.json({
+                        teachers: inviteCodes[0],
+                        teacherAssistants: inviteCodes[1],
+                        students: inviteCodes[2]
                     });
+                }).catch( err => {
+                    console.log("Waiting on follow-up codes..");
                 });
             });
-            console.log(classCodes);
-            
-            codePromise.then((v)=>{
-                res.json({
-                    teachers: classCodes[0],
-                    teacherAssistants: classCodes[1],
-                    students: classCodes[2]
-                });
-            });
-            
 
         } catch(err) {
             console.log(err);
-            errStatus(res,err);
+            res.json({success: false, message: err});
         }
     } else {
         res.status(401).send();
     }
-})
-
-const addCode = function (code){
-    classCodes.push(code);
-}
-
-const errStatus = function(res, err){
-    res.json({success: False, message: err});
-}
+});
 
 module.exports = router;
 
