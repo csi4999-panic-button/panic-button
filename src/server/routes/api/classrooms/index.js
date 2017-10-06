@@ -21,7 +21,6 @@ router.post("/join", async (req, res) => {
         InviteCodes.findOne(
           { code: qCode }
         ).then( validCode => {
-            console.log(validCode);
             var listUpdate = {};
             switch(validCode.type) {
                 case 1:
@@ -36,7 +35,6 @@ router.post("/join", async (req, res) => {
                 default:
                     throw Error("No matching code type for " + validCode);
             }
-            console.log("listUpdate = " + listUpdate);
             Classrooms.update (
                 { id: validCode.classroom },
                 {$push: listUpdate},
@@ -45,7 +43,6 @@ router.post("/join", async (req, res) => {
             );
             res.json({success: true, message: "Successfully added your to classroom" });
         }).catch( err => {
-            console.log(err);
             res.json({success: false, message: err });
         });
     } else {
@@ -67,7 +64,6 @@ router.post("/", async (req, res) => {
                 teacherAssistants: [],
                 students: []
             }).catch((err) => {
-                console.log("Error occurred in request");
                 res.json({success: false, message: err});
             }).then( classroom => {
                 Promise.all(userTypes.map( n => {
@@ -85,12 +81,11 @@ router.post("/", async (req, res) => {
                         students: inviteCodes[2]
                     });
                 }).catch( err => {
-                    console.log("Waiting on follow-up codes..");
+                    res.json({ success: false, message: err });
                 });
             });
 
         } catch(err) {
-            console.log(err);
             res.json({success: false, message: err});
         }
     } else {
