@@ -8,12 +8,40 @@ var classCodes = [];
 
 router.get("/", async (req, res) => {
     if (req.isAuthenticated()) {
-      const classrooms = await Classrooms.find();
-      res.json(classrooms);
+        const classrooms = await Classrooms.find(
+            { $or: [ 
+                {teachers: req.user._id },
+                {teacherAssistants: req.user._id },
+                {students: req.user._id }
+            ]}
+        );
+        res.json(classrooms);
     } else {
-      res.status(401).send();
+        res.status(401).send();
     }
   });
+
+router.put("/id/:classroomId", async (req, res) => {
+    if (req.isAuthenticated()) {
+        console.log("req.params.classroomId: " + req.params.id);
+        console.log("req.user._id: " + req.user._id);
+        Classrooms.findOneAndUpdate(
+            { $and: [ { id: req.params.classroomId } , { teachers: mongoose.Types.ObjectId(req.user._id) } ] },
+            { $set: req.body }
+        ).then( classroom => {
+            console.log(classroom);
+            if( classroom !== null ){
+                res.json({status: true, message: "Class was successfully updated" });
+            } else {
+                res.json({status: false, message: "Cannot find/modify class" });
+            }
+        }).catch( err => {
+            res.json({ status: false, message: err });
+        });
+    } else {
+        res.status(401).send();
+    }
+})
   
 router.post("/join", async (req, res) => {
     if (req.isAuthenticated()) {
@@ -41,12 +69,12 @@ router.post("/join", async (req, res) => {
                 { upsert: true },
                 function(err, data){}
             );
-            res.json({success: true, message: "Successfully added your to classroom" });
+            res.json({success: true, message: "Successfully added you to the classroom" });
         }).catch( err => {
             res.json({success: false, message: err });
         });
     } else {
-      res.status(401).send();
+        res.status(401).send();
     }
   });
 
