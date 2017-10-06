@@ -9,8 +9,6 @@ COPY package.json package-lock.json ./
 # install packages and copy source 
 RUN npm install
 
-RUN cd src/client && npm install && cd ../..
-
 COPY . .
 # pass port to interface and start server
 EXPOSE 3000
