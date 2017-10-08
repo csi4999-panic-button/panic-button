@@ -5,9 +5,9 @@ const util = require("../util");
 
 // types: { teacher:1, ta:2, student:3 }
 const inviteCodeSchema = new mongoose.Schema({
-    classroom: { type: String, required: true, lowercase: true, index: true },
-    code: { type: String, required: true, lowercase: true, default: getCode, index: { unique: true } },
-    type: { type: Number, required: true }
+    classroom: { type: "ObjectId", index: true, ref: "Classroom" },
+    code: { type: String,  lowercase: true, default: getCode, index: true },
+    type: { type: Number }
 }, {
     timestamps: true
 })

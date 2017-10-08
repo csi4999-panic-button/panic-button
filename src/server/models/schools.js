@@ -3,12 +3,12 @@
 const mongoose = require("mongoose");
 
 const schoolSchema = new mongoose.Schema({
-    name: { type: String, required: true, index: true },
+    name: { type: String, required: true },
     address: { type: String, index: false },
-    city: { type: String, required: true, index: true },
-    state: { type: String, required: true, index: true },
-    country: { type: String, required: true, index: false },
-    zip: { type: Number, index: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    country: { type: String, required: true },
+    zip: { type: Number },
     domain: { type: String }
 }, {
     timestamps: true
