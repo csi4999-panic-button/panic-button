@@ -1,7 +1,6 @@
 "use strict";
 
 const mongoose = require("mongoose")
-const crypto = require("crypto");
 const util = require("../util");
 
 // types: { teacher:1, ta:2, student:3 }
@@ -14,11 +13,11 @@ const inviteCodeSchema = new mongoose.Schema({
 })
 
 class InviteCode {
-    async validCode(code){
+    validCode(code){
         return code === this.code;
     }
 
-    async rotateCode() {
+    rotateCode() {
         this.code = getCode();
         return this.save();
     }

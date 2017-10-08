@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   apiToken: { type: String, default: getToken, unique: true, select: false },
+  verified: { type: Boolean, default: false, required: true }
 }, {
   timestamps: true,
 });
