@@ -2,7 +2,6 @@
 
 const router = require("express").Router();
 const Users = require("../../models/users");
-const Classrooms = require("../../models/classrooms");
 const passport = require("passport");
 
 router.get("/", (req, res) => {
