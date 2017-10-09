@@ -14,7 +14,7 @@ Table of Contents
 
 If there is not a provided description of the returned object, the returned body of calls to the API will have the following structure:
 
-```json
+```js
 {
     success: Boolean,
     message: String
@@ -94,7 +94,7 @@ This creates a classroom with the currently authenticated user being the teacher
 
 This will also return your invitation codes in the following format:
 
-```json
+```js
 {
     teachers: String,
     teacherAssistants: String,
@@ -141,7 +141,7 @@ This returns a listing of all schools in the database.
 
 The returned JSON object is an array of schools with the following structure:
 
-```json
+```js
 [
     {
         _id: String,
