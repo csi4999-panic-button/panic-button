@@ -124,7 +124,7 @@ This will add the currently active user to the classroom referenced by the given
 |`/api/v1/classrooms/join`|POST|inviteCode|String|*|
 
 
-# <a name="api-v1-schools"> / </a>
+# <a name="api-v1-schools"> /api/v1/schools </a>
 
 ### `GET /api/v1/schools`
 
