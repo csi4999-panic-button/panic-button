@@ -12,12 +12,12 @@ app.use(express.static(path.join(__dirname, "../client/dist")));
 const mongoose = require("mongoose");
 
 var mongoURI;
-if(process.env.MONGODB_PORT_27017_TCP_ADDR && process.env.MONGODB_PORT_27017_TCP_PORT){
-  mongoURI = "mongodb:// " + process.env.MONGODB_PORT_27017_TCP_ADDR + ':' + process.env.MONGODB_PORT_27017_TCP_PORT + '/panic-button'
+if(process.env.MONGODB_PORT_27017_TCP_ADDR){
+  mongoURI = "mongodb://" + process.env.MONGODB_PORT_27017_TCP_ADDR + ":" + process.env.MONGODB_PORT_27017_TCP_PORT + "/panic-button"
 } else { 
   mongoURI = "mongodb://localhost/panic-button";
 }
-
+console.log(mongoURI);
 mongoose.connect(mongoURI, {
   useMongoClient: true,
   promiseLibrary: global.Promise,
