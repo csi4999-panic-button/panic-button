@@ -3,14 +3,17 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const util = require("../util");
 
 const SALT_WORK_FACTOR = 12;
 
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, lowercase: true, index: { unique: true } },
   password: { type: String, required: true, select: false },
-  name: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   apiToken: { type: String, default: getToken, unique: true, select: false },
+  verified: { type: Boolean, default: false }
 }, {
   timestamps: true,
 });
@@ -43,9 +46,7 @@ class User {
 userSchema.loadClass(User);
 
 function getToken() {
-  const buffer = crypto.randomBytes(48);
-  const token = buffer.toString('hex');
-  return token;
+  return util.getKey(48);
 }
 
 module.exports = mongoose.model("User", userSchema);
