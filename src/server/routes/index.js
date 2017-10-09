@@ -18,15 +18,17 @@ router.post("/register", async (req, res) => {
     const user = await Users.create({
       email: req.body.email,
       password: req.body.password,
-      name: req.body.name,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName
     });
     res.json(user);
   } catch (err) {
-    res.status(400).json({ message: "User already exists" });
+    res.status(400).json({ message: err});
   }
 });
 
 router.use("/api/v1", require("./api"));
+
 
 module.exports = router;
 
