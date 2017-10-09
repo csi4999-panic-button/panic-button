@@ -44,7 +44,7 @@ router.post("/", async (req, res) => {
     const [teachers, teacherAssistants, students] = values.map(invite => invite.code);
     res.json({ teachers, teacherAssistants, students });
   })
-  .catch(err => res.json({ status: false, message: err });
+  .catch(err => res.json({ status: false, message: err }));
 });
 
 // updates a classroom document by classroomId
