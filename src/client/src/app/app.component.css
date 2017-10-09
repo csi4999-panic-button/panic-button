@@ -7,8 +7,46 @@
 .secondary-text-color  { color: #757575; }
 .divider-color         { border-color: #BDBDBD; }
 
-.toolbarColors
+.toolbar-style
 {
     background-color: #303F9F;
     color: #FFFFFF;
+    font-size: 50px;
+
 }
+
+.example-button-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  .column {
+    float: left;
+    width: 30%;
+    padding: 15px;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+    height: 25vh;
+}
+
+.row-center{
+    display: block;
+    margin: auto;
+    width: 50%;
+}
+
+.button-style
+{
+    background: #3F51B5;
+    color: #FFFFFF;
+    font-size: 3vw;
+    text-align: center;
+    padding: 15px;
+    width: 100%;
+}
+
