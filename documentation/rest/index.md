@@ -57,11 +57,12 @@ This will destroy the session stored server side so the cookie is no longer vali
 
 ### <a name="api-v1-authenticate">`POST /api/v1/authenticate`</a>
 
-This will return the `apiToken` for the currently authenticated user. An existing session must be active. 
+This will return the `apiToken` for the currently authenticated user. An existing session must be active. If the user is not authenticated, an email and password can be sent to generate a token.
 
 | Route | Request Type | Variables | Type | Required (*) |
 |-------|--------------|-----------|------|--------------|
-|`/authenticate`| POST | | | |
+|`/authenticate`|POST|email|string||
+||| password|string||
 
 ### <a name="api-v1-users">`GET /api/v1/users`</a>
 
@@ -123,7 +124,7 @@ This will add the currently active user to the classroom referenced by the given
 |`/api/v1/classrooms/join`|POST|inviteCode|String|*|
 
 
-# <a name="api-v1-schools"> / </a>
+# <a name="api-v1-schools"> /api/v1/schools </a>
 
 ### `GET /api/v1/schools`
 

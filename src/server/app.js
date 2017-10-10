@@ -10,10 +10,20 @@ app.use(express.static(path.join(__dirname, "../client/dist")));
 
 // connect to database
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost/panic-button", {
+
+var mongoURI;
+if(process.env.MONGODB_PORT_27017_TCP_ADDR){
+  mongoURI = "mongodb://" + process.env.MONGODB_PORT_27017_TCP_ADDR + ":" + process.env.MONGODB_PORT_27017_TCP_PORT + "/panic-button"
+} else { 
+  mongoURI = "mongodb://localhost/panic-button";
+}
+console.log(mongoURI);
+mongoose.connect(mongoURI, {
   useMongoClient: true,
   promiseLibrary: global.Promise,
 });
+
+
 
 mongoose.Promise = global.Promise;
 
@@ -59,6 +69,7 @@ app.use(require("morgan")("dev"));
 // set up routes
 const routes = require("./routes");
 
+const addr = process.env.ADDR || '0.0.0.0';
 const port = process.env.PORT || 3000;
 
 app.use("/", routes);
