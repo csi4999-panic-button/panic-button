@@ -31,6 +31,7 @@ router.get("/users", async (req, res) => {
 
 router.use("/classrooms", require("./classrooms"));
 router.use("/schools", require("./schools"));
+router.use("/invite-codes", require("./invite-codes"));
 
 module.exports = router;
 

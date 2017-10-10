@@ -15,13 +15,18 @@ router.get("/logout", (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
-    const user = await Users.create({
+    console.log(req);
+    Users.create({
       email: req.body.email,
       password: req.body.password,
       firstName: req.body.firstName,
       lastName: req.body.lastName
+    }).then( user => {
+      console.log(user);
+      res.json(user);
+    }).catch( err => {
+      res.json({ success: false, message: err.message })
     });
-    res.json(user);
   } catch (err) {
     res.status(400).json({ message: err});
   }
