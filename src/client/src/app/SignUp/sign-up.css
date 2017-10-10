@@ -14,13 +14,13 @@
     content: "";
     display: table;
     clear: both;
-    height: 20vh;
+    height: 7vh;
 }
 
 .row-center{
     display: block;
     margin: auto;
-    width: 50%;
+    width: 80%;
 }
 
 .card-style
@@ -29,6 +29,12 @@
     align-items: center;
     background-color: #FFFFFF;
     min-width: 300px;
+    width: 50%;
+    margin: auto;
+    padding: 20px;
+    position: fixed;
+    top: 15%; 
+    left: 25%;
 
 }
 

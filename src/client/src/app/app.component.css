@@ -7,12 +7,6 @@
 .secondary-text-color  { color: #757575; }
 .divider-color         { border-color: #BDBDBD; }
 
-.example-button-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-  }
-
   .column {
     float: left;
     width: 30%;
