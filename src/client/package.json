@@ -5,7 +5,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0",
-    "build": "ng build",
+    "build": "ng build --aot --sourcemaps -ec",
+    "watch": "ng build --aot --sourcemaps -ec -w",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

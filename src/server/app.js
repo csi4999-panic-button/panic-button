@@ -21,7 +21,7 @@ if(process.env.MONGODB_PORT_27017_TCP_ADDR && process.env.MONGODB_PORT_27017_TCP
     userPass = userPass + "?authSource=" + process.env.MONGODB_AUTH_SRC;
   }
   mongoURI = "mongodb://" + userPass + process.env.MONGODB_PORT_27017_TCP_ADDR + ":" + process.env.MONGODB_PORT_27017_TCP_PORT + "/panic-button"
-} else { 
+} else {
   mongoURI = "mongodb://localhost/panic-button";
 }
 console.log(mongoURI);
