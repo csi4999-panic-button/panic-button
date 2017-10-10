@@ -1,12 +1,12 @@
 "use strict";
 
 const path = require("path");
+const fs = require("fs");
 
 const express = require("express");
 
 // Inintialize express app
 const app = express();
-app.use(express.static(path.join(__dirname, "../client/dist")));
 
 // connect to database
 const mongoose = require("mongoose");
@@ -14,7 +14,7 @@ const mongoose = require("mongoose");
 var mongoURI;
 if(process.env.MONGODB_PORT_27017_TCP_ADDR){
   mongoURI = "mongodb://" + process.env.MONGODB_PORT_27017_TCP_ADDR + ":" + process.env.MONGODB_PORT_27017_TCP_PORT + "/panic-button"
-} else { 
+} else {
   mongoURI = "mongodb://localhost/panic-button";
 }
 console.log(mongoURI);
@@ -73,6 +73,17 @@ const addr = process.env.ADDR || '0.0.0.0';
 const port = process.env.PORT || 3000;
 
 app.use("/", routes);
+
+app.use(express.static(path.join(__dirname, "../client/dist")));
+app.use((req, res, next) => {
+  fs.exists(path.join(__dirname, "../client/dist/index.html"), (exists) => {
+    if (exists) {
+      res.sendFile(path.resolve(path.join(__dirname, "../client/dist/index.html")));
+    } else {
+      next();
+    }
+  });
+});
 
 app.listen(port);
 console.log(`Listening on port ${port}`);
