@@ -22,7 +22,7 @@ If you're clearing this image to make a new one, you can chain the following com
 docker stop pb; docker rm pb; docker rmi tcarrio/panic-button
 ```
 
-# Installing the Android App on an Android Device
+# Installing the Android App
 
 Download our repository to your desired location on your machine.
 
