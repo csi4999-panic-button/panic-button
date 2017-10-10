@@ -7,14 +7,6 @@
 .secondary-text-color  { color: #757575; }
 .divider-color         { border-color: #BDBDBD; }
 
-.toolbar-style
-{
-    background-color: #303F9F;
-    color: #FFFFFF;
-    font-size: 50px;
-
-}
-
 .example-button-row {
     display: flex;
     align-items: center;
@@ -48,5 +40,11 @@
     text-align: center;
     padding: 15px;
     width: 100%;
+}
+
+.background-image
+{
+    background-image: url("https://images.pexels.com/photos/247839/pexels-photo-247839.jpeg?w=1260&h=750&auto=compress&cs=tinysrgb");
+    background-size: 100%;
 }
 
