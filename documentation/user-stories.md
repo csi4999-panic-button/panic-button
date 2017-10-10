@@ -17,7 +17,7 @@
 - As a student, I can vote for questions asked by other students
 - As a student, I can ask questions privately to the teacher and TA
 - As a teacher, I can create classes
-- As a teacher, I can create teaching assistant accounts
+- As a teacher, I can create invitation codes for teaching assistant accounts
 - As a teacher, I can lock the system so that it cannot be used by students in my class temporarily or indefinitely
 - As a teacher, I can mark questions as answered
 - As a teacher, I can mark questions for follow-up
