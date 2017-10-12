@@ -19,4 +19,8 @@ COPY . .
 
 # pass port to interface and start server
 EXPOSE 3000
+
+# healthcheck for automatic restart
+HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:3000/api/v1 || exit 1
+
 CMD ["node", "src/server/app.js"]
