@@ -1,26 +1,32 @@
-# Use Node v8.x 
-FROM node:8
+# Use Node v8.x
+FROM node:8.4-alpine AS clientbuild
 
-ENV APP_PATH /panicd
-ENV PATH $APP_PATH/src/client/node_modules/@angular/cli/bin/:$PATH
+# set up working directory
+WORKDIR /opt/panic-button
 
-WORKDIR $APP_PATH
-
-# npm@v5+ should include the lock file as well
-COPY package.json ./package.json
-COPY src/client src/client
-
-# install packages and copy source 
-RUN mkdir src/client/node_modules && cd src/client && npm install && ng build && rm -rf ./node_modules && cd ../..
-COPY ./src/client ./src/client
-
+# build the client
+COPY src/client .
 RUN npm install
-COPY . .
+RUN npm run build
 
-# pass port to interface and start server
+# create a new image
+FROM node:8.4-alpine
+
+# set up working directory
+WORKDIR /opt/panic-button
+
+# install dependencies
+COPY package.json package-lock.json ./
+RUN npm install
+
+# copy required files
+COPY src/server src/server
+COPY --from=clientbuild /opt/panic-button/dist src/client/dist
+
+# runs on port 3000
 EXPOSE 3000
 
-# healthcheck for automatic restart
+# # healthcheck for automatic restart
 HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:3000/api/v1 || exit 1
 
 CMD ["node", "src/server/app.js"]
