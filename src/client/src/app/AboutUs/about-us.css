@@ -8,5 +8,6 @@
     margin: auto;
     width: 45%;
     background-image: url("./AboutUs.png");
+    min-width: 700px;
     
 }
