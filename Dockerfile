@@ -18,9 +18,11 @@ RUN apk update && apk add curl
 # set up working directory
 WORKDIR /opt/panic-button
 
-# install dependencies
+# install dependencies for npm and build deps for bcrypt
 COPY package.json package-lock.json ./
-RUN npm install
+RUN apk add --no-cache make gcc g++ python git && \
+    npm install --build-from-source=bcrypt && \
+    apk del make gcc g++ python git
 
 # copy required files
 COPY src/server src/server
@@ -29,7 +31,7 @@ COPY --from=clientbuild /opt/panic-button/dist src/client/dist
 # runs on port 3000
 EXPOSE 3000
 
-# # healthcheck for automatic restart
+# healthcheck for automatic restart
 HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:3000/api/v1 || exit 1
 
 CMD ["node", "src/server/app.js"]
