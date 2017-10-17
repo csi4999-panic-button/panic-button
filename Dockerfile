@@ -12,6 +12,9 @@ RUN npm run build
 # create a new image
 FROM node:8.4-alpine
 
+# install curl for healthcheck
+RUN apk update && apk add curl
+
 # set up working directory
 WORKDIR /opt/panic-button
 
