@@ -59,8 +59,6 @@ router.delete("/code/:code", (req, res) => {
     if(req.isAuthenticated()){
         InviteCodes.findOne({code: req.params.code })
         .then( inviteCode => {
-            console.log("inviteCode: " + inviteCode);
-            console.log("user._id: " + req.user._id);
             if(inviteCode === null){
                 return res.json({
                     success: false, 
@@ -71,14 +69,14 @@ router.delete("/code/:code", (req, res) => {
                 { _id: inviteCode.classroom },
                 { teachers: req.user._id }
             ]}).then( classroom => {
-                console.log("Classroom: " + classroom);
+
                 if( classroom == null ){
                     return res.json({success: false, message: "This invite code does not match a classroom you teach" });
                 } else {
-                    console.log("Removing: " + req.params.code);
+    
                     InviteCodes.findByIdAndRemove({_id: inviteCode._id })
                     .then(removed => { 
-                        console.log("Removed: " + removed)
+        
                         return res.json({success: true, message: "This invite code was removed" });
                     });
                 }
