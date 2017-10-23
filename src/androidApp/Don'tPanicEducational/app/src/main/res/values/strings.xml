@@ -25,4 +25,5 @@
     <string name="imageButton_Chase">Link to Chase\'s github.</string>
     <string name="imageButton_Brandon">Link to Brandon\'s github.</string>
     <string name="loginSuccessMessage">You have been successfully logged in.</string>
+    <string name="imageView_backgroundStart">ImageView for the background image.</string>
 </resources>
