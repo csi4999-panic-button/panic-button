@@ -16,7 +16,7 @@ const schoolSchema = new mongoose.Schema({
 
 class School {
     validEmail(email){
-        return email.split("@")[1] === this.domain;
+        return email.split("@", 2)[1] === this.domain;
     }
 }
 
