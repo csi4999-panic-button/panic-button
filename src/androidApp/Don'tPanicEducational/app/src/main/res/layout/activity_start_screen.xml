@@ -11,13 +11,10 @@
     <ImageView
         android:id="@+id/background_image_view"
         android:contentDescription="@string/imageView_backgroundStart"
-        android:background="@drawable/start_screen_background"
-        android:layout_width="104dp"
-        android:layout_height="495dp"
-        android:adjustViewBounds="true"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:scaleType="centerCrop"
-        tools:layout_editor_absoluteY="8dp"
-        tools:layout_editor_absoluteX="8dp" />
+        android:src="@drawable/start_screen_background_resized" />
 
     <Button
         android:id="@+id/button_login"
