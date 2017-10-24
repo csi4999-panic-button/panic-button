@@ -14,16 +14,10 @@ router.get("/", async (req, res) => {
     { teachers: req.user._id },
     { teacherAssistants: req.user._id },
     { students: req.user._id }
-  ]})
-  .then(classrooms => {
-    return InviteCodes.populate(
-      classrooms, 
-      { path: 'codes' },
-      (err, modRooms) => {
-        console.log(err);
-        console.log(modRooms);
-      }
-    )
+  ]}).populate({ 
+      path: "teacherCode", select: "code",
+      path: "taCode", select: "code",
+      path: "studentCode", select: "code" 
   })
   .then( filledRooms => res.json(filledRooms))
   .catch( err => res.json({ status: false, message: err.message }));
@@ -46,12 +40,17 @@ router.post("/", async (req, res) => {
     students: []
   })
   .then(classroom =>
-      Promise.all([1,2,3].map(n =>
-          InviteCodes.create({ classroom: classroom.id, type: n }))))
-  .then(values => {
-    const [teachers, teacherAssistants, students] = values.map(invite => invite.code);
-    return res.json({ teachers, teacherAssistants, students });
-  })
+    Promise.all([1,2,3].map(n =>
+          InviteCodes.create({ classroom: classroom.id, type: n })))
+    .then(values => {
+      const [teachers, teacherAssistants, students] = values.map(invite => invite.code);
+      return classroom.update({
+        teacherCode: teachers,
+        taCode: teacherAssistants,
+        studentCode: students
+      })
+      .then( c => res.json({ teachers, teacherAssistants, students }))
+    }))
   .catch(err => res.json({ status: false, message: err }));
 });
 
