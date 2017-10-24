@@ -1,8 +1,8 @@
 "use strict";
 
 const router = require("express").Router();
-const Classrooms = require("../../../models/classrooms");
 const InviteCodes = require("../../../models/invite-codes");
+const Classrooms = require("../../../models/classrooms");
 
 // returns a list of classrooms this user belongs to
 router.get("/", async (req, res) => {
@@ -14,11 +14,8 @@ router.get("/", async (req, res) => {
     { teachers: req.user._id },
     { teacherAssistants: req.user._id },
     { students: req.user._id }
-  ]}).populate({ 
-      path: "teacherCode", select: "code",
-      path: "taCode", select: "code",
-      path: "studentCode", select: "code" 
-  })
+  ]})
+  .then( classrooms => InviteCodes.populate(classrooms, ""))
   .then( filledRooms => res.json(filledRooms))
   .catch( err => res.json({ status: false, message: err.message }));
 });
