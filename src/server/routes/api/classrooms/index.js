@@ -9,14 +9,24 @@ router.get("/", async (req, res) => {
   if (!req.isAuthenticated()) {
     res.status(401).send();
   }
-
+  
   return Classrooms.find({ $or: [
     { teachers: req.user._id },
     { teacherAssistants: req.user._id },
     { students: req.user._id }
   ]})
-  .then(classrooms => res.json(classrooms))
-  .catch( err => res.json({ status: false, message: err }));
+  .then(classrooms => {
+    return InviteCodes.populate(
+      classrooms, 
+      { path: 'codes' },
+      (err, modRooms) => {
+        console.log(err);
+        console.log(modRooms);
+      }
+    )
+  })
+  .then( filledRooms => res.json(filledRooms))
+  .catch( err => res.json({ status: false, message: err.message }));
 });
 
 // creates a classroom and returns invite codes for teachers, TAs, and students
