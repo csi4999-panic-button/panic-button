@@ -10,7 +10,10 @@ const classroomSchema = new mongoose.Schema({
     courseTitle: { type: String, required: true },
     teachers: [{ type: "ObjectId", required: true, index: true, ref: "User" }],
     teacherAssistants: [{ type: "ObjectId",  default: [], index: true, ref: "User" }],
-    students: [{ type: "ObjectId",  default: [], index: true, ref: "User" }]
+    students: [{ type: "ObjectId",  default: [], index: true, ref: "User" }],
+    teacherCode: { type: "ObjectId", ref: "InviteCode" },
+    taCode: { type: "ObjectId", ref: "InviteCode" },
+    studentCode: { type: "ObjectId", ref: "InviteCode" }
 }, {
     timestamps: true,
 })

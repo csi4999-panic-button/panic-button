@@ -50,7 +50,7 @@ router.post("/", async (req, res) => {
           InviteCodes.create({ classroom: classroom.id, type: n }))))
   .then(values => {
     const [teachers, teacherAssistants, students] = values.map(invite => invite.code);
-    res.json({ teachers, teacherAssistants, students });
+    return res.json({ teachers, teacherAssistants, students });
   })
   .catch(err => res.json({ status: false, message: err }));
 });
@@ -63,7 +63,7 @@ router.put("/id/:classroomId", async (req, res) => {
 
   return Classrooms.findOneAndUpdate(
     { id: req.params.classroomId, teachers: req.user._id },
-    { $set: req.body } // THIS NEEDS TO BE SANITIZED
+    { $set: req.body } // THIS NEEDS TO BE SANITIZED (perhaps with a function in util?)
   ).then( (classroom) => {
     if( classroom !== null ){
       return res.json({status: true, message: "Class was successfully updated", classroom: classroom });
@@ -117,26 +117,31 @@ router.post("/join", async (req, res) => {
   }).catch( err => res.json({success: false, message: err.message }));
 });
 
+// rotate the invite code of $type for $classroomId
 router.put("/:classroomId/code/:type", (req,res) => {
   if (!req.isAuthenticated()) {
     res.status(401).send();
   }
 
-  Classrooms.find({$and: [
-      { _id: req.params.classroomId },
-      { teachers: req.user._id }
-  ]}).then( (classroom) => {
+  return Classrooms.find({
+      _id: req.params.classroomId,
+      teachers: req.user._id
+  }).then( (classroom) => {
     if(classroom.length !== 1){
       throw new Error("This code did not match a classroom you teach");
     }
 
-    return InviteCodes.find({ 
+    return InviteCodes.findOne({ 
       classroom: req.params.classroomId,
       type: req.params.type
     });
   }).then( (inviteCode) => {
+    if(inviteCode === null){
+      return new Error("There was no invite code of that type for that classroom");  
+    }
+
     inviteCode.rotateCode();
-    res.json({
+    return res.json({
         success: true, 
         inviteCode: inviteCode.code,
         type: util.getInviteType(inviteCode.type)
@@ -149,13 +154,14 @@ router.delete("/:classroomId/code/:code", (req, res) => {
     return res.status(401).send();
   }
 
-  Classrooms.findOne({ 
-    _id: inviteCode.classroom ,
+  return Classrooms.findOne({ 
+    _id: req.params.classroomId ,
     teachers: req.user._id 
   }).then( classroom => {
     if( classroom == null ){
       throw new Error("This invite code does not match a classroom you teach");
     }
+    
     return InviteCodes.findOneAndRemove({code: req.params.code })
   }).then( inviteCode => {
     console.log(inviteCode);
