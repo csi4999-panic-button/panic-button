@@ -14,6 +14,4 @@ const inviteTypes = {
     3: "student"
 }
 
-module.exports.getInviteType = (n) => {
-    return inviteTypes.n
-}
+module.exports.getInviteType = (n) => inviteTypes.n
