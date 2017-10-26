@@ -3,6 +3,7 @@
 const router = require("express").Router();
 const InviteCodes = require("../../../models/invite-codes");
 const Classrooms = require("../../../models/classrooms");
+const util = require("../../../util");
 
 // returns a list of classrooms this user belongs to
 router.get("/", async (req, res) => {
@@ -83,11 +84,11 @@ router.put("/id/:classroomId", async (req, res) => {
     { id: req.params.classroomId, teachers: req.user._id },
     { $set: req.body } // THIS NEEDS TO BE SANITIZED (perhaps with a function in util?)
   ).then( (classroom) => {
-    if( classroom !== null ){
-      return res.json({status: true, message: "Class was successfully updated", classroom: classroom });
+    if (!classroom) {
+      return res.json({status: false, message: "Cannot find/modify class" });
     }
 
-    return res.json({status: false, message: "Cannot find/modify class" });
+    return res.json({status: true, message: "Class was successfully updated", classroom: classroom });
   }).catch( err => res.json({ status: false, message: err.message }))
 });
 
@@ -141,20 +142,26 @@ router.put("/:classroomId/code/:type", (req,res) => {
     res.status(401).send();
   }
 
-  return Classrooms.find({
+  return Classrooms.findOne({
       _id: req.params.classroomId,
       teachers: req.user._id
   }).then( (classroom) => {
-    if(classroom.length !== 1){
+    if (!classroom) {
       throw new Error("This code did not match a classroom you teach");
     }
 
-    return InviteCodes.findOne({
-      classroom: req.params.classroomId,
-      type: req.params.type
-    });
+    if (req.params.type === "1") {
+      return InviteCodes.findById(classroom.teacherCode.id);
+    } else if (req.params.type ==="2") {
+      return InviteCodes.findById(classroom.taCode.id);
+    } else if (req.params.type ==="3") {
+      return InviteCodes.findById(classroom.studentCode.id);
+    } else {
+      throw new Error("The provided type was invalid");
+    }
+    
   }).then( (inviteCode) => {
-    if(inviteCode === null){
+    if(inviteCode === null) {
       return new Error("There was no invite code of that type for that classroom");
     }
 
@@ -167,26 +174,39 @@ router.put("/:classroomId/code/:type", (req,res) => {
   }).catch( err => res.json({success: false, message: err.message }));
 });
 
-router.delete("/:classroomId/code/:code", (req, res) => {
-  if(!req.isAuthenticated()){
-    return res.status(401).send();
+router.delete("/:classroomId/code/:type", (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).send();
   }
 
   return Classrooms.findOne({
-    _id: req.params.classroomId ,
-    teachers: req.user._id
-  }).then( classroom => {
-    if( classroom == null ){
-      throw new Error("This invite code does not match a classroom you teach");
+      _id: req.params.classroomId,
+      teachers: req.user._id
+  }).then( (classroom) => {
+    if (!classroom) {
+      throw new Error("This code did not match a classroom you teach");
+    } 
+    
+    if (req.params.type === "1"){
+      return InviteCodes.findByIdAndRemove(classroom.teacherCode._id);
+    } else if (req.params.type ==="2"){
+      return InviteCodes.findByIdAndRemove(classroom.taCode._id);
+    } else if (req.params.type ==="3"){
+      return InviteCodes.findByIdAndRemove(classroom.studentCode._id);
+    } else {
+      throw new Error("The provided type was invalid");
+    }
+    
+  }).then( (inviteCode) => {
+    console.log(inviteCode)
+    if(!inviteCode){
+      return new Error("There was no invite code of that type for that classroom");
     }
 
-    return InviteCodes.findOneAndRemove({code: req.params.code })
-  }).then( inviteCode => {
-    if( inviteCode == null){
-      return res.json({ success: false, message: "This invite code does not exist" });
-    }
-
-    return res.json({ success: true, message: "This invite code was removed" });
+    return res.json({
+      success: true,
+      message: "The code was successfully removed"
+    });
   }).catch( err => res.json({success: false, message: err.message }));
 });
 
