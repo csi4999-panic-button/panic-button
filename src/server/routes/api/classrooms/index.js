@@ -55,17 +55,11 @@ router.post("/", async (req, res) => {
       teachers: [req.user._id],
       teacherAssistants: [],
       students: [],
-      teacherCode: codes[0].id,
-      taCode: codes[1].id,
-      studentCode: codes[2].id,
+      teacherCode: codes[0].code,
+      taCode: codes[1].code,
+      studentCode: codes[2].code,
     })
-      // populate manually after creation
-      .then( c => c
-          .populate("teacherCode")
-          .populate("taCode")
-          .populate("studentCode")
-          .execPopulate())
-      .then( c => res.json(c.sanitize(req.user)))
+    .then( c => res.json(c.sanitize(req.user)))
       .catch(err => {
         res.json({ status: false, message: err });
       });
@@ -81,9 +75,9 @@ router.put("/id/:classroomId", async (req, res) => {
   }
 
   return Classrooms.findOneAndUpdate(
-    { id: req.params.classroomId, teachers: req.user._id },
-    { $set: req.body } // THIS NEEDS TO BE SANITIZED (perhaps with a function in util?)
-  ).then( (classroom) => {
+      { id: req.params.classroomId, teachers: req.user._id },
+      { $set: req.body } // THIS NEEDS TO BE SANITIZED (perhaps with a function in util?)
+      ).then( (classroom) => {
     if (!classroom) {
       return res.json({status: false, message: "Cannot find/modify class" });
     }
@@ -99,30 +93,28 @@ router.post("/join", async (req, res) => {
       return res.status(401).send();
     }
 
-    // find code in database
-    const code = await InviteCodes.findOne({ code: req.body.inviteCode });
+    const code = req.body.inviteCode;
 
-    if (!code) {
+    const classroom = await Classrooms.findOne({
+      $or: [
+      { teacherCode: code },
+      { taCode: code },
+      { studentCode: code },
+      ],
+    });
+
+    if (!code || !classroom) {
       throw new Error("Classroom not found");
     }
 
-    const classroom = await Classrooms.findOne({ $or: [
-      { teacherCode: code.id },
-      { taCode: code.id },
-      { studentCode: code.id }
-    ]});
 
-    if (!classroom) {
-      throw new Error("Classroom not found");
-    }
-
-    if (classroom.teacherCode.id === code.id) {
+    if (classroom.teacherCode === code.id) {
       await Classrooms.findByIdAndUpdate(classroom.id,
           { $addToSet: { teachers: req.user.id } });
-    } else if (classroom.taCode.id === code.id) {
+    } else if (classroom.taCode === code.id) {
       await Classrooms.findByIdAndUpdate(classroom.id,
           { $addToSet: { teacherAssistants: req.user.id } });
-    } else if (classroom.studentCode.id === code.id) {
+    } else if (classroom.studentCode === code.id) {
       await Classrooms.findByIdAndUpdate(classroom.id,
           { $addToSet: { students: req.user.id } });
     }
@@ -138,40 +130,44 @@ router.post("/join", async (req, res) => {
 
 // rotate the invite code of $type for $classroomId
 router.put("/:classroomId/code/:type", (req,res) => {
-  if (!req.isAuthenticated()) {
-    res.status(401).send();
-  }
+  try {
+    if (!req.isAuthenticated()) {
+      res.status(401).send();
+    }
 
-  return Classrooms.findOne({
+    const type = util.getInviteType(req.params.type);
+    if (!type) { throw new Error("The provided type was invalid"); }
+
+    const classroom = await Classrooms.findOne({
       _id: req.params.classroomId,
       teachers: req.user._id
-  }).then( (classroom) => {
+    });
+
     if (!classroom) {
       throw new Error("This code did not match a classroom you teach");
     }
 
+    const codeModel = await InviteCodes.create({});
+    const code = codeModel.code();
+
     if (req.params.type === "1") {
-      return InviteCodes.findById(classroom.teacherCode.id);
+      classroom.set("teacherCode", code);
     } else if (req.params.type ==="2") {
-      return InviteCodes.findById(classroom.taCode.id);
+      classroom.set("taCode", code);
     } else if (req.params.type ==="3") {
-      return InviteCodes.findById(classroom.studentCode.id);
-    } else {
-      throw new Error("The provided type was invalid");
+      classroom.set("studentCode", code);
     }
 
-  }).then( (inviteCode) => {
-    if(inviteCode === null) {
-      return new Error("There was no invite code of that type for that classroom");
-    }
+    await classroom.save();
 
-    return inviteCode.rotateCode();
-  }).then((inviteCode) => res.json({
-        success: true,
-        inviteCode: inviteCode.code,
-        type: util.getInviteType(inviteCode.type),
-  }))
-  }).catch( err => res.json({success: false, message: err.message }));
+    return res.json({
+      success: true,
+      inviteCode,
+      type,
+    });
+  } catch (err) {
+    return res.json({ success: false, message: err.message });
+  }
 });
 
 router.delete("/:classroomId/code/:type", (req, res) => {
@@ -180,8 +176,8 @@ router.delete("/:classroomId/code/:type", (req, res) => {
   }
 
   return Classrooms.findOne({
-      _id: req.params.classroomId,
-      teachers: req.user._id
+    _id: req.params.classroomId,
+    teachers: req.user._id
   }).then( (classroom) => {
     if (!classroom) {
       throw new Error("This code did not match a classroom you teach");
@@ -199,9 +195,9 @@ router.delete("/:classroomId/code/:type", (req, res) => {
 
   }).then( (inviteCode) => {
     console.log(inviteCode)
-    if(!inviteCode){
-      return new Error("There was no invite code of that type for that classroom");
-    }
+      if(!inviteCode){
+        return new Error("There was no invite code of that type for that classroom");
+      }
 
     return res.json({
       success: true,

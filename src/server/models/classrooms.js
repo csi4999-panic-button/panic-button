@@ -26,9 +26,12 @@ const classroomSchema = new mongoose.Schema({
       default: [],
     },
 
-    teacherCode: { type: "ObjectId", ref: "InviteCode" },
-    taCode: { type: "ObjectId", ref: "InviteCode" },
-    studentCode: { type: "ObjectId", ref: "InviteCode" }
+    // teacherCode: { type: "ObjectId", ref: "InviteCode" },
+    // taCode: { type: "ObjectId", ref: "InviteCode" },
+    // studentCode: { type: "ObjectId", ref: "InviteCode" }
+    teacherCode: String,
+    taCode: String,
+    studentCode: String,
 }, {
     timestamps: true,
 });
@@ -46,24 +49,24 @@ classroomSchema.methods.sanitize = function (user) {
     delete out.teacherCode;
     delete out.taCode;
     delete out.studentCode;
-  } else {
+  } // else {
     // make codes strings instead of objects
-    out.teacherCode = this.teacherCode.code;
-    out.taCode = this.taCode.code;
-    out.studentCode = this.studentCode.code;
-  }
+    // out.teacherCode = this.teacherCode.code;
+    // out.taCode = this.taCode.code;
+    // out.studentCode = this.studentCode.code;
+  // }
   return out;
 }
 
-function populateCodes (next) {
-  this.populate("teacherCode");
-  this.populate("taCode");
-  this.populate("studentCode");
-  next();
-}
-
-classroomSchema.pre("find", populateCodes);
-classroomSchema.pre("findOne", populateCodes);
+// function populateCodes (next) {
+//   this.populate("teacherCode");
+//   this.populate("taCode");
+//   this.populate("studentCode");
+//   next();
+// }
+//
+// classroomSchema.pre("find", populateCodes);
+// classroomSchema.pre("findOne", populateCodes);
 
 module.exports = mongoose.model("Classroom", classroomSchema);
 
