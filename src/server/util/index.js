@@ -3,18 +3,20 @@
 const crypto = require("crypto");
 
 const inviteTypes = {
-    1: "teacher",
-    2: "teacherAssistant",
-    3: "student"
-}
+  1: "teacher",
+  2: "teacherAssistant",
+  3: "student"
+};
 
-module.exports.getInviteType = (n) => inviteTypes.n
+module.exports.getInviteType = (n) => inviteTypes.n;
+
+module.exports.validInviteType = (n) => n > 0 && n < 4;
 
 module.exports.getKey = (size) => {
     const buffer = crypto.randomBytes(size);
     const key = buffer.toString('hex');
     return key;
-}
+};
 
 module.exports.getKeyAsync = (size, cb) => {
   const p = new Promise((resolve, reject) => {
@@ -41,5 +43,5 @@ module.exports.getKeyAsync = (size, cb) => {
 
   if (!cb) return p;
   return null;
-}
+};
 
