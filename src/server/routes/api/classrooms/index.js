@@ -129,7 +129,7 @@ router.post("/join", async (req, res) => {
 });
 
 // rotate the invite code of $type for $classroomId
-router.put("/:classroomId/code/:type", (req,res) => {
+router.put("/:classroomId/code/:type", async (req,res) => {
   try {
     if (!req.isAuthenticated()) {
       res.status(401).send();
