@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/csi4999-panic-button/panic-button.svg?branch=master)](https://travis-ci.org/csi4999-panic-button/panic-button)
+
 # Panic-Button
 
 An easier, modern approach to classroom dynamics to enable both students and teachers.

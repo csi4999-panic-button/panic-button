@@ -80,15 +80,15 @@ With all the packages installed for the server side, you can launch your run con
 
 Docker is the world’s leading software container platform. Containers are a way to package software in a format that can run isolated and do not bundle a full operating system, unlike virtual machines. They make for efficient, lightweight, self-contained systems that guarantee software will always run the same, regardless of where it is deployed. By utilizing Docker in our testing and deployment phases, we can ensure that no development environment causes issues in our bug tracker, and that all developers are working with a standardized platform for development. Docker can be downloaded from their website at [https://store.docker.com/editions/community/docker-ce-desktop-windows](https://store.docker.com/editions/community/docker-ce-desktop-windows).
 
-![Docker Community Edition Website](images/windows-docker-00.png)
+![Docker Community Edition Website](images/windows-docker-00.PNG)
 
 When the installer completes, it will ask you to log out of Windows to complete the installation. 
 
-![Docker for Windows Screenshot](images/windows-docker-01.png)
+![Docker for Windows Screenshot](images/windows-docker-01.PNG)
 
 At this point your computer may need to reboot to enable virtualization hardware on your computer. Once you have Docker started, you should be able to test it with your terminal. A `docker --version` will do:
 
-![Docker in Terminal Screenshot](images/windows-docker-02.png)
+![Docker in Terminal Screenshot](images/windows-docker-02.PNG)
 
 The Dockerfile included makes deploying and testing the server-side standard on all platforms. This builds from the official Node Docker image, so all developers can deploy on a standardized version while also making cloud deployment much easier. You can continuously build new Docker images by running the following command:
 

@@ -159,18 +159,18 @@ router.put("/:classroomId/code/:type", (req,res) => {
     } else {
       throw new Error("The provided type was invalid");
     }
-    
+
   }).then( (inviteCode) => {
     if(inviteCode === null) {
       return new Error("There was no invite code of that type for that classroom");
     }
 
-    inviteCode.rotateCode();
-    return res.json({
+    return inviteCode.rotateCode();
+  }).then((inviteCode) => res.json({
         success: true,
         inviteCode: inviteCode.code,
-        type: util.getInviteType(inviteCode.type)
-    });
+        type: util.getInviteType(inviteCode.type),
+  }))
   }).catch( err => res.json({success: false, message: err.message }));
 });
 
@@ -185,8 +185,8 @@ router.delete("/:classroomId/code/:type", (req, res) => {
   }).then( (classroom) => {
     if (!classroom) {
       throw new Error("This code did not match a classroom you teach");
-    } 
-    
+    }
+
     if (req.params.type === "1"){
       return InviteCodes.findByIdAndRemove(classroom.teacherCode._id);
     } else if (req.params.type ==="2"){
@@ -196,7 +196,7 @@ router.delete("/:classroomId/code/:type", (req, res) => {
     } else {
       throw new Error("The provided type was invalid");
     }
-    
+
   }).then( (inviteCode) => {
     console.log(inviteCode)
     if(!inviteCode){
