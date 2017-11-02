@@ -83,11 +83,11 @@ This retrieves a list of classrooms that the currently authenticated user belong
 
 ### `POST /api/v1/classrooms`
 
-This creates a classroom with the currently authenticated user being the teacher. An existing session must be active and an already valid schoolId must be used. Pass the following variables:
+This creates a classroom with the currently authenticated user being the teacher. An existing session must be active and an already valid schoolId must be used to add a classroom to it. Pass the following variables:
 
 | Route | Request Type | Variables | Type | Required (*) |
 |-------|--------------|-----------|------|--------------|
-|`/api/v1/classrooms`|POST|schoolId|String|*|
+|`/api/v1/classrooms`|POST|schoolId|String||
 |||courseType|String||
 |||courseNumber|String||
 |||sectionNumber|String||
