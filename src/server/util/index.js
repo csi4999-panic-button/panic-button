@@ -14,7 +14,7 @@ module.exports.validInviteType = (n) => n > 0 && n < 4;
 
 module.exports.getKey = (size) => {
     const buffer = crypto.randomBytes(size);
-    const key = buffer.toString('hex');
+    const key = buffer.toString('base64');
     return key;
 };
 
@@ -28,7 +28,7 @@ module.exports.getKeyAsync = (size, cb) => {
     });
   })
   .then((buffer) => {
-    const key = buffer.toString("hex");
+    const key = buffer.toString("base64");
     if (cb) {
       return cb(null, key);
     }
