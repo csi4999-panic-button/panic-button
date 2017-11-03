@@ -187,54 +187,49 @@ router.put("/:classroomId/code/:type", async (req,res) => {
   }
 });
 
-router.delete("/:classroomId/:type/:userId", async (req, res) => {
+router.delete("/:classroomId/:type(student|teacherAssistant|teacher)/:userId", async (req, res) => {
   if (!req.isAuthenticated()) {
     res.status(401).send();
   }
-
-  if(["student","teacherAssistant","teacher"].indexOf(req.params.type)>-1){
-    try {
-      var queryDocument = {
-        _id: req.params.classroomId,
-        teachers: req.user._id,
-      }
-      var updateDocument = {}
-
-      if(req.params.type === "student"){
-        queryDocument.students = req.params.userId
-        updateDocument.$pull = { students: req.params.userId }
-      } else if(req.params.type === "teacherAssistant"){
-        queryDocument.teacherAssistants = req.params.userId
-        updateDocument.$pull = { teacherAssistants: req.params.userId }
-      } else if(req.params.type === "teacher"){
-        // cannot remove yourself from a classroom
-        if(req.params.userId === String(req.user._id)){
-          throw new Error("Sorry you cannot remove yourself from your own classroom")
-        }
-        queryDocument.teachers = req.params.userId
-        // cannot remove the last teacher in a classroom
-        queryDocument.$nor = [
-          {teachers: {$exists: false}},
-          {teachers: {$size: 0}},
-          {teachers: {$size: 1}}
-        ];
-        updateDocument.$pull = { teachers: req.params.userId }
-      } else {
-        throw new Error("The given type is not valid");
-      }
-
-      return Classrooms.findOneAndUpdate(queryDocument, updateDocument)
-      .then( classroom => {
-        if(!classroom){
-          throw new Error("Could not perform that request")
-        }
-        return res.json({ success: true, message: "Student now does not belong to the room" });
-      }).catch( (err) => res.json({ success: false, message: err.message }));
-    } catch (err) {
-      return res.json({ success: false, message: err.message });
+  try {
+    var queryDocument = {
+      _id: req.params.classroomId,
+      teachers: req.user._id,
     }
-  } else {
-    return res.json({ success: false, message: "This is not a valid route" });
+    var updateDocument = {}
+
+    if(req.params.type === "student"){
+      queryDocument.students = req.params.userId
+      updateDocument.$pull = { students: req.params.userId }
+    } else if(req.params.type === "teacherAssistant"){
+      queryDocument.teacherAssistants = req.params.userId
+      updateDocument.$pull = { teacherAssistants: req.params.userId }
+    } else if(req.params.type === "teacher"){
+      // cannot remove yourself from a classroom
+      if(req.params.userId === String(req.user._id)){
+        throw new Error("Sorry you cannot remove yourself from your own classroom")
+      }
+      queryDocument.teachers = req.params.userId
+      // cannot remove the last teacher in a classroom
+      queryDocument.$nor = [
+        {teachers: {$exists: false}},
+        {teachers: {$size: 0}},
+        {teachers: {$size: 1}}
+      ];
+      updateDocument.$pull = { teachers: req.params.userId }
+    } else {
+      throw new Error("The given type is not valid");
+    }
+
+    return Classrooms.findOneAndUpdate(queryDocument, updateDocument)
+    .then( classroom => {
+      if(!classroom){
+        throw new Error("Could not perform that request")
+      }
+      return res.json({ success: true, message: "User is not a " + req.params.type + " of the classroom" });
+    }).catch( (err) => res.json({ success: false, message: err.message }));
+  } catch (err) {
+    return res.json({ success: false, message: err.message });
   }
 })
 
