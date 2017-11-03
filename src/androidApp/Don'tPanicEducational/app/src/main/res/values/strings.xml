@@ -26,4 +26,14 @@
     <string name="imageButton_Brandon">Link to Brandon\'s github.</string>
     <string name="loginSuccessMessage">You have been successfully logged in.</string>
     <string name="imageView_backgroundStart">ImageView for the background image.</string>
+    <string name="button_createClass">Create New Class</string>
+    <string name="button_joinClass">Join A Class</string>
+    <string name="textView_classActivityTitle">Class Actions</string>
+    <string name="schoolID">School ID</string>
+    <string name="courseType">Course Type</string>
+    <string name="courseNumber">Course Number</string>
+    <string name="sectionNumber">Section Number</string>
+    <string name="courseTitle">Course Title</string>
+    <string name="listClasses">List Classes</string>
+    <string name="joinClass">Invite Code</string>
 </resources>

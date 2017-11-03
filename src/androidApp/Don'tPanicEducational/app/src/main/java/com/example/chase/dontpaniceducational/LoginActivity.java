@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = settings.edit();
                         editor.commit();
                         Toast.makeText(LoginActivity.this, result.get("token").toString(), Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, PanicActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, ClassActionsActivity.class);
                         startActivity(intent);
                     }
                 });

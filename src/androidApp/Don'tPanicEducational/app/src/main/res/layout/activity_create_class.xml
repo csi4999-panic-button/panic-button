@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.chase.dontpaniceducational.CreateClassActivity">
+
+    <EditText
+        android:id="@+id/editText_schoolID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="84dp"
+        android:layout_marginTop="148dp"
+        android:background="@color/colorPrimaryLight"
+        android:ems="10"
+        android:hint="@string/schoolID"
+        android:inputType="textPersonName"
+        android:textColor="@color/colorPrimaryText"
+        android:textColorHint="@color/colorPrimaryText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editText_courseType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="84dp"
+        android:layout_marginTop="12dp"
+        android:background="@color/colorPrimaryLight"
+        android:ems="10"
+        android:hint="@string/courseType"
+        android:inputType="textPersonName"
+        android:textColor="@color/colorPrimaryText"
+        android:textColorHint="@color/colorPrimaryText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_schoolID" />
+
+    <EditText
+        android:id="@+id/editText_courseNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="84dp"
+        android:layout_marginTop="12dp"
+        android:background="@color/colorPrimaryLight"
+        android:ems="10"
+        android:hint="@string/courseNumber"
+        android:inputType="number"
+        android:textColor="@color/colorPrimaryText"
+        android:textColorHint="@color/colorPrimaryText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_courseType" />
+
+    <EditText
+        android:id="@+id/editText_sectionNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="84dp"
+        android:layout_marginTop="12dp"
+        android:background="@color/colorPrimaryLight"
+        android:ems="10"
+        android:hint="@string/sectionNumber"
+        android:inputType="number"
+        android:textColor="@color/colorPrimaryText"
+        android:textColorHint="@color/colorPrimaryText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_courseNumber" />
+
+    <EditText
+        android:id="@+id/editText_courseTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="84dp"
+        android:layout_marginTop="12dp"
+        android:background="@color/colorPrimaryLight"
+        android:ems="10"
+        android:hint="@string/courseTitle"
+        android:inputType="textPersonName"
+        android:textColor="@color/colorPrimaryText"
+        android:textColorHint="@color/colorPrimaryText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_sectionNumber" />
+
+    <Button
+        android:id="@+id/button_enter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="148dp"
+        android:layout_marginTop="44dp"
+        android:background="@color/colorAccent"
+        android:onClick="createClassClick"
+        android:text="@string/button_enter"
+        android:textColor="@color/colorIcons"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_courseTitle" />
+</android.support.constraint.ConstraintLayout>
