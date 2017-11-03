@@ -1,6 +1,5 @@
 package com.example.chase.dontpaniceducational;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,7 +21,7 @@ public class CreateClassActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_class);
-        classSchoolID = (EditText) findViewById(R.id.editText_schoolID);
+        //classSchoolID = (EditText) findViewById(R.id.editText_schoolID);
         classCourseType = (EditText) findViewById(R.id.editText_courseType);
         classCourseNumber = (EditText) findViewById(R.id.editText_courseNumber);
         classSectionNumber = (EditText) findViewById(R.id.editText_sectionNumber);
@@ -31,7 +30,7 @@ public class CreateClassActivity extends AppCompatActivity {
     }
 
     public void createClassClick(View view) {
-        final String schoolID = classSchoolID.getText().toString();
+        //final String schoolID = classSchoolID.getText().toString();
         final String courseType = classCourseType.getText().toString();
         final String courseNumber = classCourseNumber.getText().toString();
         final String sectionNumber = classSectionNumber.getText().toString();
@@ -42,7 +41,7 @@ public class CreateClassActivity extends AppCompatActivity {
             return;
         }
         JsonObject json = new JsonObject();
-        json.addProperty("schoolId", schoolID);
+        //json.addProperty("schoolId", schoolID);
         json.addProperty("courseType", courseType);
         json.addProperty("courseNumber", courseNumber);
         json.addProperty("sectionNumber", sectionNumber);
@@ -54,7 +53,7 @@ public class CreateClassActivity extends AppCompatActivity {
                 .setCallback(new FutureCallback<JsonObject>() {
                     @Override
                     public void onCompleted(Exception e, JsonObject result) {
-                        if (e != null || !result.has("teachers")) {
+                        if (e != null) {
                             Toast.makeText(CreateClassActivity.this, "Try again",
                                     Toast.LENGTH_SHORT).show();
                             return;
@@ -64,7 +63,7 @@ public class CreateClassActivity extends AppCompatActivity {
                         editor.putString("teacherAssistants", result.get("teacherAssistants").toString());
                         editor.putString("students", result.get("students").toString());
                         editor.commit();
-                        Toast.makeText(CreateClassActivity.this, result.get("apiToken").toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CreateClassActivity.this, "success", Toast.LENGTH_SHORT).show();
                         //Intent intent = new Intent(CreateClassActivity.this, ClassActionsActivity.class);
                         //startActivity(intent);
                     }
