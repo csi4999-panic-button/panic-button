@@ -11,17 +11,22 @@ import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
+import java.util.Map;
+
 
 public class LoginActivity extends AppCompatActivity {
     private EditText loginUsername, loginPassword;
+    private SharedPreferences mySharedPreferences;
+    public static String MY_PREFS = "MY_PREFS";
+    int prefMode = CreateClassActivity.MODE_PRIVATE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         loginUsername = (EditText) findViewById(R.id.editText_login);
         loginPassword = (EditText) findViewById(R.id.editText_passwordLogin);
+        mySharedPreferences = getSharedPreferences(MY_PREFS, prefMode);
     }
 
     public void clearFieldsLogin(View view) {
@@ -52,8 +57,8 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        SharedPreferences settings = getSharedPreferences(result.get("token").toString(), 0);
-                        SharedPreferences.Editor editor = settings.edit();
+                        SharedPreferences.Editor editor = mySharedPreferences.edit();
+                        editor.putString("token", result.get("token").toString());
                         editor.commit();
                         Toast.makeText(LoginActivity.this, result.get("token").toString(), Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(LoginActivity.this, ClassActionsActivity.class);
