@@ -3,6 +3,7 @@ package com.example.chase.dontpaniceducational;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -45,8 +46,8 @@ public class JoinClassActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        jsonElement = result.get(0);
-                        textView.setText(jsonElement.getAsString());
+                        // Example of retrieving value from JsonObject
+                        textView.setText(result.get(0).getAsJsonObject().get("courseTitle").toString());
                         Toast.makeText(JoinClassActivity.this, "Success", Toast.LENGTH_SHORT).show();
                     }
                 });
