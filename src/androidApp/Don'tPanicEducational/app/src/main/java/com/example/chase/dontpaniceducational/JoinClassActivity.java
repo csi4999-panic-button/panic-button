@@ -32,7 +32,8 @@ public class JoinClassActivity extends AppCompatActivity {
 
     public void listClasses(View view) {
         String token = mySharedPreferences.getString("token", null);
-        token = token.substring(1, token.length() - 1);
+        //token = token.substring(1, token.length() - 1);
+        token = "Bearer ".concat(token);
         Ion.with(this)
                 .load("http://www.panic-button.stream/api/v1/classrooms")
                 .setHeader("Authorization", token)
