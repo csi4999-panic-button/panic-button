@@ -13,16 +13,19 @@ import com.koushikdutta.ion.Ion;
 
 public class SignUpActivity extends AppCompatActivity {
     private EditText signUpFirstName, signUpLastName, signUpEmail, signUpPassword;
+    public static String MY_PREFS = "MY_PREFS";
+    private SharedPreferences mySharedPreferences;
+    int prefMode = SignUpActivity.MODE_PRIVATE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-
         signUpFirstName = (EditText) findViewById(R.id.editText_firstNameSignUp);
         signUpLastName = (EditText) findViewById(R.id.editText_lastNameSignUp);
         signUpEmail = (EditText) findViewById(R.id.editText_emailAddressSignUp);
         signUpPassword = (EditText) findViewById(R.id.editText_passwordSignUp);
+        mySharedPreferences = getSharedPreferences(MY_PREFS, prefMode);
     }
 
     public void userInfo(View view) {
@@ -53,11 +56,11 @@ public class SignUpActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        SharedPreferences settings = getSharedPreferences(result.get("apiToken").toString(), 0);
-                        SharedPreferences.Editor editor = settings.edit();
+                        SharedPreferences.Editor editor = mySharedPreferences.edit();
+                        editor.putString("apiToken", result.get("apiToken").toString());
                         editor.commit();
                         Toast.makeText(SignUpActivity.this, result.get("apiToken").toString(), Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(SignUpActivity.this, PanicActivity.class);
+                        Intent intent = new Intent(SignUpActivity.this, ClassActionsActivity.class);
                         startActivity(intent);
                     }
                 });
