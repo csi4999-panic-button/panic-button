@@ -21,14 +21,14 @@ router.post("/register", async (req, res) => {
       firstName: req.body.firstName,
       lastName: req.body.lastName
     });
-    res.json(user);
+
+    return res.json(user);
   } catch (err) {
-    res.status(400).json({ message: err});
+    return res.status(400).json({ message: err });
   }
 });
 
 router.use("/api/v1", require("./api"));
-
 
 module.exports = router;
 

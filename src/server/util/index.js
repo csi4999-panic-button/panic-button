@@ -4,9 +4,9 @@ const crypto = require("crypto");
 
 module.exports.getKey = (size) => {
     const buffer = crypto.randomBytes(size);
-    const key = buffer.toString('hex');
+    const key = buffer.toString('base64');
     return key;
-}
+};
 
 module.exports.getKeyAsync = (size, cb) => {
   const p = new Promise((resolve, reject) => {
@@ -18,7 +18,7 @@ module.exports.getKeyAsync = (size, cb) => {
     });
   })
   .then((buffer) => {
-    const key = buffer.toString("hex");
+    const key = buffer.toString("base64");
     if (cb) {
       return cb(null, key);
     }
@@ -33,4 +33,5 @@ module.exports.getKeyAsync = (size, cb) => {
 
   if (!cb) return p;
   return null;
-}
+};
+
