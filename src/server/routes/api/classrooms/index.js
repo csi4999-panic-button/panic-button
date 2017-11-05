@@ -8,7 +8,7 @@ const util = require("../../../util");
 // returns a list of classrooms this user belongs to
 router.get("/", async (req, res) => {
   if (!req.isAuthenticated()) {
-    res.status(401).send();
+    return res.status(401).send();
   }
 
   try {
@@ -148,15 +148,11 @@ router.post("/join", async (req, res) => {
 });
 
 // rotate the invite code of $type for $classroomId
-router.put("/:classroomId/code/:type", async (req,res) => {
+router.put("/:classroomId/code/:type(student|teacherAssistant|teacher)", async (req,res) => {
   try {
     if (!req.isAuthenticated()) {
       return res.status(401).send();
     }
-
-    const valid = util.validInviteType(parseInt(req.params.type));
-
-    if (!valid) { throw new Error("The provided type was invalid"); }
 
     const classroom = await Classrooms.findOne({
       _id: req.params.classroomId,
@@ -170,11 +166,11 @@ router.put("/:classroomId/code/:type", async (req,res) => {
     const codeModel = await InviteCodes.create({});
     const code = codeModel.code;
 
-    if (req.params.type === "1") {
+    if (req.params.type === "teacher") {
       classroom.set("teacherCode", code);
-    } else if (req.params.type ==="2") {
+    } else if (req.params.type ==="teacherAssistant") {
       classroom.set("taCode", code);
-    } else if (req.params.type ==="3") {
+    } else if (req.params.type ==="student") {
       classroom.set("studentCode", code);
     }
 
@@ -190,51 +186,71 @@ router.put("/:classroomId/code/:type", async (req,res) => {
   }
 });
 
-router.delete("/:classroomId/:type(student|teacherAssistant|teacher)/:userId", async (req, res) => {
+router.delete("/:classroomId/:type(student|teacherAssistant|teacher)(student|teacherAssistant|teacher)/:userId", async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).send();
   }
-  try {
-    var queryDocument = {
-      _id: req.params.classroomId,
-      teachers: req.user._id,
-    }
-    var updateDocument = {}
-
-    if(req.params.type === "student"){
-      queryDocument.students = req.params.userId
-      updateDocument.$pull = { students: req.params.userId }
-    } else if(req.params.type === "teacherAssistant"){
-      queryDocument.teacherAssistants = req.params.userId
-      updateDocument.$pull = { teacherAssistants: req.params.userId }
-    } else if(req.params.type === "teacher"){
-      // cannot remove yourself from a classroom
-      if(req.params.userId === String(req.user._id)){
-        throw new Error("Sorry you cannot remove yourself from your own classroom")
-      }
-      queryDocument.teachers = req.params.userId
-      // cannot remove the last teacher in a classroom
-      queryDocument.$nor = [
-        {teachers: {$exists: false}},
-        {teachers: {$size: 0}},
-        {teachers: {$size: 1}}
-      ];
-      updateDocument.$pull = { teachers: req.params.userId }
-    } else {
-      throw new Error("The given type is not valid");
-    }
-
-    return Classrooms.findOneAndUpdate(queryDocument, updateDocument)
-    .then( classroom => {
-      if(!classroom){
-        throw new Error("Could not perform that request")
-      }
-      return res.json({ success: true, message: "User is not a " + req.params.type + " of the classroom" });
-    }).catch( (err) => res.json({ success: false, message: err.message }));
-  } catch (err) {
-    return res.json({ success: false, message: err.message });
+  var queryObject = {
+    _id: req.params.classroomId,
+    teachers: req.user._id,
   }
-})
+  var updateObject = {}
+
+  if(req.params.type === "student"){
+    queryObject.students = req.params.userId
+    updateObject.$pull = { students: req.params.userId }
+  } else if(req.params.type === "teacherAssistant"){
+    queryObject.teacherAssistants = req.params.userId
+    updateObject.$pull = { teacherAssistants: req.params.userId }
+  } else if(req.params.type === "teacher"){
+    // cannot remove yourself from a classroom
+    if(req.params.userId === String(req.user._id)){
+      throw new Error("Sorry you cannot remove yourself from your own classroom")
+    }
+    queryObject.teachers = req.params.userId
+    // cannot remove the last teacher in a classroom
+    queryObject.$nor = [
+      {teachers: {$exists: false}},
+      {teachers: {$size: 0}},
+      {teachers: {$size: 1}}
+    ];
+    updateObject.$pull = { teachers: req.params.userId }
+  }
+
+  return Classrooms.findOneAndUpdate(queryObject, updateObject)
+  .then( classroom => {
+    if(!classroom){
+      throw new Error("Could not perform that request")
+    }
+    return res.json({ success: true, message: "User is not a " + req.params.type + " of the classroom" });
+  }).catch( (err) => res.json({ success: false, message: err.message }));
+});
+
+router.post("/:classroomId/leave", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
+  const queryObject = { 
+    _id: req.params.classroomId,
+  };
+  const updateObject = {
+    $pull: {
+      teachers: req.user._id,
+      teacherAssistants: req.user._id,
+      students: req.user._id,
+    }
+  };
+
+  return Classrooms.findOneAndUpdate(queryObject,updateObject)
+  .then( (classroom) => {
+    if(!classroom){
+      return res.json({ success: false, message: "That is not a valid classroom ID" });
+    }
+
+    return res.json({ success: true, message: "You are no longer a member of that classroom" });
+  })
+});
 
 module.exports = router;
 
