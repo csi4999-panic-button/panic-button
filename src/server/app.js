@@ -11,6 +11,29 @@ const app = express();
 // connect to database
 const mongoose = require("mongoose");
 
+// parsers
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+
+// sessions
+const session = require("express-session");
+const MongoStore = require("connect-mongo")(session);
+
+// passport
+const passport = require("passport");
+const strategies = require("./auth");
+
+const localStrategy = strategies.local;
+const bearerStrategy = strategies.token;
+
+// request logging
+const morgan = require("morgan")("dev")
+
+// routes
+const routes = require("./routes");
+
+mongoose.Promise = global.Promise;
+
 var mongoURI;
 if(process.env.MONGODB_PORT_27017_TCP_ADDR && process.env.MONGODB_PORT_27017_TCP_PORT){
   var userPass = ''
@@ -24,74 +47,67 @@ if(process.env.MONGODB_PORT_27017_TCP_ADDR && process.env.MONGODB_PORT_27017_TCP
 } else {
   mongoURI = "mongodb://localhost/panic-button";
 }
+
 console.log(mongoURI);
+
 mongoose.connect(mongoURI, {
   useMongoClient: true,
   promiseLibrary: global.Promise,
-});
+}, (err) => {
+  if (err) {
+    // mongo connection failure
+    console.error(err);
+    process.exit(1);
+  }
+
+  // decode requests
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(cookieParser());
+
+  // Session middleware
+  app.use(session({
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.LOGIN_SECRET || "this is a secret",
+    cookie: {
+      httpOnly: true,
+    },
+    store: new MongoStore({
+      mongooseConnection: mongoose.connection,
+      touchAfter: 24 * 3600,
+    }),
+  }));
+
+  // set up passport middlewares
+  passport.use(localStrategy);
+  passport.use(bearerStrategy);
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // log all requests
+  app.use(morgan);
 
 
 
-mongoose.Promise = global.Promise;
+  const addr = process.env.ADDR || '0.0.0.0';
+  const port = process.env.PORT || 3000;
 
-// decode requests
-const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+  // set up routes
+  app.use("/", routes);
 
-// Session middleware
-const session = require("express-session");
-const MongoStore = require("connect-mongo")(session);
-app.use(session({
-  resave: false,
-  saveUninitialized: false,
-  secret: process.env.LOGIN_SECRET || "this is a secret",
-  cookie: {
-    httpOnly: true,
-  },
-  store: new MongoStore({
-    mongooseConnection: mongoose.connection,
-    touchAfter: 24 * 3600,
-  }),
-}));
-
-// set up passport middlewares
-const passport = require("passport");
-const strategies = require("./auth");
-
-const localStrategy = strategies.local;
-const bearerStrategy = strategies.token;
-
-passport.use(localStrategy);
-passport.use(bearerStrategy);
-app.use(passport.initialize());
-app.use(passport.session());
-
-// log all requests
-app.use(require("morgan")("dev"));
-
-
-// set up routes
-const routes = require("./routes");
-
-const addr = process.env.ADDR || '0.0.0.0';
-const port = process.env.PORT || 3000;
-
-app.use("/", routes);
-
-app.use(express.static(path.join(__dirname, "../client/dist")));
-app.use((req, res, next) => {
-  fs.exists(path.join(__dirname, "../client/dist/index.html"), (exists) => {
-    if (exists) {
-      res.sendFile(path.resolve(path.join(__dirname, "../client/dist/index.html")));
-    } else {
-      next();
-    }
+  app.use(express.static(path.join(__dirname, "../client/dist")));
+  app.use((req, res, next) => {
+    fs.exists(path.join(__dirname, "../client/dist/index.html"), (exists) => {
+      if (exists) {
+        res.sendFile(path.resolve(path.join(__dirname, "../client/dist/index.html")));
+      } else {
+        next();
+      }
+    });
   });
-});
 
-app.listen(port);
-console.log(`Listening on port ${port}`);
+  app.listen(port);
+  console.log(`Listening on port ${port}`);
+});
 
