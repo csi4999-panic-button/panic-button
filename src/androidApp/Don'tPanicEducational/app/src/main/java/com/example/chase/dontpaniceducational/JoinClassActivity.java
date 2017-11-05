@@ -20,6 +20,7 @@ public class JoinClassActivity extends AppCompatActivity {
     private SharedPreferences mySharedPreferences;
     int prefMode = JoinClassActivity.MODE_PRIVATE;
     private JsonElement jsonElement;
+    private JsonObject jsonObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +33,7 @@ public class JoinClassActivity extends AppCompatActivity {
 
     public void listClasses(View view) {
         String token = mySharedPreferences.getString("token", null);
-        //token = token.substring(1, token.length() - 1);
+        token = token.substring(1, token.length() - 1);
         token = "Bearer ".concat(token);
         Ion.with(this)
                 .load("http://www.panic-button.stream/api/v1/classrooms")
@@ -46,8 +47,9 @@ public class JoinClassActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        jsonElement = result.get(0);
-                        textView.setText(jsonElement.getAsString());
+                        jsonElement = result.get(0).getAsJsonObject();
+                        jsonObject = jsonElement.getAsJsonObject();
+                        textView.setText(jsonObject.get("students").toString());
                         Toast.makeText(JoinClassActivity.this, "Success", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -65,7 +67,8 @@ public class JoinClassActivity extends AppCompatActivity {
                 .setCallback(new FutureCallback<JsonObject>() {
                     @Override
                     public void onCompleted(Exception e, JsonObject result) {
-                        if (e != null || !result.get("success").toString().equals("true")) {
+                        boolean success = result.get("success").getAsBoolean();
+                        if (e != null || !success) {
                             Toast.makeText(JoinClassActivity.this, "Try again",
                                     Toast.LENGTH_SHORT).show();
                             return;
