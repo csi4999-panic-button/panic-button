@@ -1,115 +1,255 @@
 "use strict";
 
 const router = require("express").Router();
-const Classrooms = require("../../../models/classrooms");
 const InviteCodes = require("../../../models/invite-codes");
+const Classrooms = require("../../../models/classrooms");
+const util = require("../../../util");
 
 // returns a list of classrooms this user belongs to
 router.get("/", async (req, res) => {
-  if (req.isAuthenticated()) {
-    Classrooms.find({ $or: [
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
+  try {
+    // get all classrooms with current user
+    // (prepoulated)
+    const classrooms = await Classrooms.find({ $or: [
       { teachers: req.user._id },
       { teacherAssistants: req.user._id },
       { students: req.user._id }
-    ]}).then(classrooms => {
-      res.json(classrooms);
-    }).catch( err => {
-      res.json({ status: false, message: err });
-    });
-  } else {
-    res.status(401).send();
+    ]});
+
+    // remove codes from non-teacher rooms
+    // and cast to object
+    const sanitizedClassrooms = classrooms.map(room => room.sanitize(req.user));
+
+    // send to user
+    return res.json(sanitizedClassrooms);
+  } catch (err) {
+    return res.json({ status: false, message: err.message });
   }
 });
 
 // creates a classroom and returns invite codes for teachers, TAs, and students
 router.post("/", async (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.status(401).send();
-  }
+  try {
+    if (!req.isAuthenticated()) {
+      return res.status(401).send();
+    }
 
-  return Classrooms.create({
-    schoolId: req.body.schoolId,
-    courseType: req.body.courseType,
-    courseNumber: req.body.courseNumber,
-    sectionNumber: req.body.sectionNumber,
-    courseTitle: req.body.courseTitle,
-    teachers: [req.user._id],
-    teacherAssistants: [],
-    students: []
-  })
-  .then(classroom =>
-      Promise.all([1,2,3].map(n =>
-          InviteCodes.create({ classroom: classroom.id, type: n }))))
-  .then(values => {
-    const [teachers, teacherAssistants, students] = values.map(invite => invite.code);
-    res.json({ teachers, teacherAssistants, students });
-  })
-  .catch(err => res.json({ status: false, message: err }));
+    // create codes first
+    const codes = await Promise.all([
+        InviteCodes.create({}),
+        InviteCodes.create({}),
+        InviteCodes.create({}),
+    ]);
+
+    // create classroom with codes
+    const classroom = await Classrooms.create({
+      schoolId: req.body.schoolId,
+      courseType: req.body.courseType,
+      courseNumber: req.body.courseNumber,
+      sectionNumber: req.body.sectionNumber,
+      courseTitle: req.body.courseTitle,
+      teachers: [req.user._id],
+      teacherAssistants: [],
+      students: [],
+      teacherCode: codes[0].code,
+      taCode: codes[1].code,
+      studentCode: codes[2].code,
+    });
+
+    return res.json(classroom.sanitize(req.user));
+  } catch (err) {
+    return res.json({ status: false, message: err });
+  }
 });
 
 // updates a classroom document by classroomId
 router.put("/id/:classroomId", async (req, res) => {
-  if (req.isAuthenticated()) {
-    Classrooms.findOneAndUpdate(
-        { $and: [ { id: req.params.classroomId } , { teachers: req.user._id } ] },
-        { $set: req.body }
-        ).then( classroom => {
-      console.log(classroom);
-      if( classroom !== null ){
-        res.json({status: true, message: "Class was successfully updated", classroom: classroom });
-      } else {
-        res.json({status: false, message: "Cannot find/modify class" });
-      }
-    }).catch( err => {
-          res.json({ status: false, message: err });
-        });
-  } else {
-    res.status(401).send();
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
+  try {
+    // sanitize all the things we don't want changed by users
+    var sanitizedClassroom = req.body;
+    delete sanitizedClassroom._id;
+    delete sanitizedClassroom.teacherCode;
+    delete sanitizedClassroom.taCode;
+    delete sanitizedClassroom.studentCode;
+    delete sanitizedClassroom.teachers;
+    delete sanitizedClassroom.teacherAssistants;
+    delete sanitizedClassroom.students;
+
+    const update = await Classrooms.findOneAndUpdate(
+      { _id: req.params.classroomId, teachers: req.user._id },
+      { $set: sanitizedClassroom }
+    );
+
+    if (!update) {
+      throw new Error("Cannot find/modify class" );
+    }
+
+      // get updated document now that we've confirmed change
+    const classroom = await Classrooms.findOne({ _id: req.params.classroomId, teachers: req.user._id });
+
+    return res.json({
+      status: true,
+      message: "Class was successfully updated",
+      classroom: classroom.sanitize(req.user),
+    });
+  } catch (err) {
+    return res.json({ status: false, message: err.message });
   }
 });
 
 // adds user to the listing for a classroom based on a given invite code
 router.post("/join", async (req, res) => {
-  if (req.isAuthenticated()) {
-    const qCode = req.body.inviteCode
-      InviteCodes.findOne(
-          { code: qCode }
-          ).then( validCode => {
-        var listUpdate = {};
-        switch(validCode.type) {
-          case 1:
-            listUpdate = { teachers: req.user._id }
-            break;
-          case 2:
-            listUpdate = { teacherAssistants: req.user._id }
-            break;
-          case 3:
-            listUpdate = { students: req.user._id }
-            break;
-          default:
-            throw Error("No matching code type for " + validCode);
-        }
-        Classrooms.update(
-            { _id: validCode.classroom },
-            { $addToSet: listUpdate },
-            { upsert: false }
-            ).then( classUpdate => {
-          console.log(classUpdate);
-          if(classUpdate.ok === 1){
-            res.json({ success: true, message: "You successfully belong to the classroom" });
-          } else {
-            res.json({ success: false, message: "You could not be added to that classroom" });
-          }
-        }).catch( err => {
-              res.json({ success: false, message: err });
-            });
+  try {
+    if (!req.isAuthenticated()) {
+      return res.status(401).send();
+    }
 
-      }).catch( err => {
-        res.json({success: false, message: err });
-      });
-  } else {
-    res.status(401).send();
+    const code = req.body.inviteCode;
+
+    const classroom = await Classrooms.findOne({
+      $or: [
+      { teacherCode: code },
+      { taCode: code },
+      { studentCode: code },
+      ],
+    });
+
+    if (!code || !classroom) {
+      throw new Error("Classroom not found");
+    }
+
+
+    if (classroom.teacherCode === code) {
+      await Classrooms.findByIdAndUpdate(classroom.id,
+          { $addToSet: { teachers: req.user.id } });
+    } else if (classroom.taCode === code) {
+      await Classrooms.findByIdAndUpdate(classroom.id,
+          { $addToSet: { teacherAssistants: req.user.id } });
+    } else if (classroom.studentCode === code) {
+      await Classrooms.findByIdAndUpdate(classroom.id,
+          { $addToSet: { students: req.user.id } });
+    }
+
+    return res.json({ success: true, message: "You successfully belong to the classroom" });
+  } catch (err) {
+    return res.json({
+      success: false,
+      message: err.message,
+    });
   }
+});
+
+// rotate the invite code of $type for $classroomId
+router.put("/:classroomId/code/:type(student|teacherAssistant|teacher)", async (req,res) => {
+  try {
+    if (!req.isAuthenticated()) {
+      return res.status(401).send();
+    }
+
+    const classroom = await Classrooms.findOne({
+      _id: req.params.classroomId,
+      teachers: req.user._id
+    });
+
+    if (!classroom) {
+      throw new Error("This code did not match a classroom you teach");
+    }
+
+    const codeModel = await InviteCodes.create({});
+    const code = codeModel.code;
+
+    if (req.params.type === "teacher") {
+      classroom.set("teacherCode", code);
+    } else if (req.params.type ==="teacherAssistant") {
+      classroom.set("taCode", code);
+    } else if (req.params.type ==="student") {
+      classroom.set("studentCode", code);
+    }
+
+    await classroom.save();
+
+    return res.json({
+      success: true,
+      code,
+      type: req.params.type,
+    });
+  } catch (err) {
+    return res.json({ success: false, message: err.message });
+  }
+});
+
+router.delete("/:classroomId/:type(student|teacherAssistant|teacher)(student|teacherAssistant|teacher)/:userId", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+  var queryObject = {
+    _id: req.params.classroomId,
+    teachers: req.user._id,
+  }
+  var updateObject = {}
+
+  if(req.params.type === "student"){
+    queryObject.students = req.params.userId
+    updateObject.$pull = { students: req.params.userId }
+  } else if(req.params.type === "teacherAssistant"){
+    queryObject.teacherAssistants = req.params.userId
+    updateObject.$pull = { teacherAssistants: req.params.userId }
+  } else if(req.params.type === "teacher"){
+    // cannot remove yourself from a classroom
+    if(req.params.userId === String(req.user._id)){
+      return res.json({success: false, message: "Sorry you cannot remove yourself from your own classroom"});
+    }
+    queryObject.teachers = req.params.userId
+    // cannot remove the last teacher in a classroom
+    queryObject.$nor = [
+      {teachers: {$exists: false}},
+      {teachers: {$size: 0}},
+      {teachers: {$size: 1}}
+    ];
+    updateObject.$pull = { teachers: req.params.userId }
+  }
+
+  return Classrooms.findOneAndUpdate(queryObject, updateObject)
+  .then( classroom => {
+    if(!classroom){
+      throw new Error("Could not perform that request")
+    }
+    return res.json({ success: true, message: "User is not a " + req.params.type + " of the classroom" });
+  }).catch( (err) => res.json({ success: false, message: err.message }));
+});
+
+router.post("/:classroomId/leave", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
+  const queryObject = { 
+    _id: req.params.classroomId,
+  };
+  const updateObject = {
+    $pull: {
+      teachers: req.user._id,
+      teacherAssistants: req.user._id,
+      students: req.user._id,
+    }
+  };
+
+  return Classrooms.findOneAndUpdate(queryObject,updateObject)
+  .then( (classroom) => {
+    if(!classroom){
+      return res.json({ success: false, message: "That is not a valid classroom ID" });
+    }
+
+    return res.json({ success: true, message: "You are no longer a member of that classroom" });
+  })
 });
 
 module.exports = router;
