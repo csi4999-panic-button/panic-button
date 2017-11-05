@@ -72,32 +72,37 @@ router.put("/id/:classroomId", async (req, res) => {
     res.status(401).send();
   }
 
-  // sanitize all the things we don't want changed by users
-  var sanitizedClassroom = req.body;
-  delete sanitizedClassroom._id;
-  delete sanitizedClassroom.teacherCode;
-  delete sanitizedClassroom.taCode;
-  delete sanitizedClassroom.studentCode;
-  delete sanitizedClassroom.teachers;
-  delete sanitizedClassroom.teacherAssistants;
-  delete sanitizedClassroom.students;
+  try {
+    // sanitize all the things we don't want changed by users
+    var sanitizedClassroom = req.body;
+    delete sanitizedClassroom._id;
+    delete sanitizedClassroom.teacherCode;
+    delete sanitizedClassroom.taCode;
+    delete sanitizedClassroom.studentCode;
+    delete sanitizedClassroom.teachers;
+    delete sanitizedClassroom.teacherAssistants;
+    delete sanitizedClassroom.students;
 
-  return Classrooms.findOneAndUpdate(
-    { _id: req.params.classroomId, teachers: req.user._id },
-    { $set: sanitizedClassroom }
-  ).then( (classroom) => {
-    if (!classroom) {
+    const update = await Classrooms.findOneAndUpdate(
+      { _id: req.params.classroomId, teachers: req.user._id },
+      { $set: sanitizedClassroom }
+    );
+
+    if (!update) {
       throw new Error("Cannot find/modify class" );
     }
 
-    // get updated document now that we've confirmed change
-    return Classrooms.findOne({ _id: req.params.classroomId, teachers: req.user._id })
-  }).then( classUpdate => res.json(
-    { status: true,
+      // get updated document now that we've confirmed change
+    const classroom = await Classrooms.findOne({ _id: req.params.classroomId, teachers: req.user._id });
+
+    return res.json({
+      status: true,
       message: "Class was successfully updated",
-      classroom: classUpdate
-    }
-  )).catch( err => res.json({ status: false, message: err.message }));
+      classroom: classroom.sanitize(req.user),
+    });
+  } catch (err) {
+    return res.json({ status: false, message: err.message });
+  }
 });
 
 // adds user to the listing for a classroom based on a given invite code
