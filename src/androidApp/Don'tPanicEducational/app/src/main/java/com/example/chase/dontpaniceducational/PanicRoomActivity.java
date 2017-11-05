@@ -16,6 +16,6 @@ public class PanicRoomActivity extends AppCompatActivity {
     }
 
     public void panicButtonClick(View view) {
-        
+
     }
 }
