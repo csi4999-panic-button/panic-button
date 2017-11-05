@@ -205,7 +205,7 @@ router.delete("/:classroomId/:type(student|teacherAssistant|teacher)(student|tea
   } else if(req.params.type === "teacher"){
     // cannot remove yourself from a classroom
     if(req.params.userId === String(req.user._id)){
-      throw new Error("Sorry you cannot remove yourself from your own classroom")
+      return res.json({success: false, message: "Sorry you cannot remove yourself from your own classroom"});
     }
     queryObject.teachers = req.params.userId
     // cannot remove the last teacher in a classroom
