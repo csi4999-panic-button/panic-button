@@ -24,7 +24,8 @@
         <activity android:name=".AboutUsActivity" />
         <activity android:name=".ClassActionsActivity" />
         <activity android:name=".CreateClassActivity" />
-        <activity android:name=".JoinClassActivity"></activity>
+        <activity android:name=".JoinClassActivity" />
+        <activity android:name=".PanicRoomActivity"></activity>
     </application>
 
 </manifest>
