@@ -15,25 +15,20 @@ router.get("/logout", (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
-    console.log(req);
-    Users.create({
+    const user = await Users.create({
       email: req.body.email,
       password: req.body.password,
       firstName: req.body.firstName,
       lastName: req.body.lastName
-    }).then( user => {
-      console.log(user);
-      res.json(user);
-    }).catch( err => {
-      res.json({ success: false, message: err.message })
     });
+
+    return res.json(user);
   } catch (err) {
-    res.status(400).json({ message: err});
+    return res.status(400).json({ message: err });
   }
 });
 
 router.use("/api/v1", require("./api"));
-
 
 module.exports = router;
 
