@@ -21,6 +21,6 @@ before_install:
   - docker run -p 3000:3000 -d --name panicd --link mongodb tcarrio/panicd:$TRAVIS_BRANCH
 
 after_success:
-#   - echo "$TRAVIS_BRANCH"
-#   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-#   - docker push tcarrio/panicd:$TRAVIS_BRANCH
+  - printf "The current branch and tag is: %s" "$TRAVIS_BRANCH"
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  - docker push tcarrio/panicd:$TRAVIS_BRANCH
