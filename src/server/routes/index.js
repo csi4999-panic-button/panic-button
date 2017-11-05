@@ -5,7 +5,7 @@ const passport = require("passport");
 const Users = require("../models/users");
 
 router.post("/login", passport.authenticate("local"), (req, res) => {
-  res.json({ success: true, name: req.user.name });
+  res.json({ success: true, firstName: req.user.firstName, lastName: req.user.lastName });
 });
 
 router.get("/logout", (req, res) => {

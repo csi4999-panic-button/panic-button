@@ -19,7 +19,7 @@ module.exports = {};
 module.exports.local = new LocalStrategy({ usernameField: "email" },
     async function (email, password, done) {
       try {
-        const user = await Users.findOne({ email }, "password");
+        const user = await Users.findOne({ email }, ["password", "firstName", "lastName"]);
 
         if (!user) {
           return done(null, false, { message: "Incorrect email or password" });
