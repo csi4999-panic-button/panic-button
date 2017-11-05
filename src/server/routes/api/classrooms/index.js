@@ -71,7 +71,7 @@ router.post("/", async (req, res) => {
 // updates a classroom document by classroomId
 router.put("/id/:classroomId", async (req, res) => {
   if (!req.isAuthenticated()) {
-    res.status(401).send();
+    return res.status(401).send();
   }
 
   // sanitize all the things we don't want changed by users
@@ -148,7 +148,7 @@ router.post("/join", async (req, res) => {
 router.put("/:classroomId/code/:type", async (req,res) => {
   try {
     if (!req.isAuthenticated()) {
-      res.status(401).send();
+      return res.status(401).send();
     }
 
     const valid = util.validInviteType(parseInt(req.params.type));
@@ -189,7 +189,7 @@ router.put("/:classroomId/code/:type", async (req,res) => {
 
 router.delete("/:classroomId/:type(student|teacherAssistant|teacher)/:userId", async (req, res) => {
   if (!req.isAuthenticated()) {
-    res.status(401).send();
+    return res.status(401).send();
   }
   try {
     var queryDocument = {
