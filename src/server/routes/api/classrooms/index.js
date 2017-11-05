@@ -46,7 +46,7 @@ router.post("/", async (req, res) => {
     ]);
 
     // create classroom with codes
-    return Classrooms.create({
+    const classroom = await Classrooms.create({
       schoolId: req.body.schoolId,
       courseType: req.body.courseType,
       courseNumber: req.body.courseNumber,
@@ -58,11 +58,9 @@ router.post("/", async (req, res) => {
       teacherCode: codes[0].code,
       taCode: codes[1].code,
       studentCode: codes[2].code,
-    })
-    .then( c => res.json(c.sanitize(req.user)))
-      .catch(err => {
-        res.json({ status: false, message: err });
-      });
+    });
+
+    return res.json(classroom.sanitize(req.user));
   } catch (err) {
     return res.json({ status: false, message: err });
   }
@@ -86,18 +84,18 @@ router.put("/id/:classroomId", async (req, res) => {
 
   return Classrooms.findOneAndUpdate(
     { _id: req.params.classroomId, teachers: req.user._id },
-    { $set: sanitizedClassroom } 
+    { $set: sanitizedClassroom }
   ).then( (classroom) => {
     if (!classroom) {
       throw new Error("Cannot find/modify class" );
     }
-    
+
     // get updated document now that we've confirmed change
     return Classrooms.findOne({ _id: req.params.classroomId, teachers: req.user._id })
   }).then( classUpdate => res.json(
-    { status: true, 
-      message: "Class was successfully updated", 
-      classroom: classUpdate 
+    { status: true,
+      message: "Class was successfully updated",
+      classroom: classUpdate
     }
   )).catch( err => res.json({ status: false, message: err.message }));
 });
@@ -152,7 +150,7 @@ router.put("/:classroomId/code/:type", async (req,res) => {
     }
 
     const valid = util.validInviteType(parseInt(req.params.type));
-    
+
     if (!valid) { throw new Error("The provided type was invalid"); }
 
     const classroom = await Classrooms.findOne({
