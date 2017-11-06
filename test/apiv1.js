@@ -1,6 +1,6 @@
 "use strict";
 
-const request = require("request-promise").defaults({jar: true});
+const request = require("request-promise");
 const tough = require("tough-cookie");
 const baseUrl = "http://localhost:3000"
 const users = require("./data/users");
@@ -24,12 +24,14 @@ describe("API v1", () => {
     });
 
     it("should return the users API token", async () => {
+        const j = request.jar();
         const thisUser = users[0];
         const userOpts = {
             method: 'POST',
             uri: baseUrl + "/register",
             json: true,
             body: thisUser,
+            jar: j,
         };
         const loginOpts = {
             method: 'POST',
@@ -38,12 +40,14 @@ describe("API v1", () => {
             body: {
                 email: thisUser.email,
                 password: thisUser.password
-            }
+            },
+            jar: j,
         };
         const tokenOpts = {
             method: 'POST',
             uri: baseUrl + "/api/v1/authenticate",
             json: true,
+            jar: j,
         };
 
         // register the new user account
@@ -60,12 +64,28 @@ describe("API v1", () => {
     });
 
     it("should list all users in the database", async () => {
+        const j = request.jar();
         const thisUser = users[0];
+        const loginOpts = {
+            method: 'POST',
+            uri: baseUrl + "/login",
+            json: true,
+            body: {
+                email: thisUser.email,
+                password: thisUser.password
+            },
+            jar: j,
+        };
         const reqOpts = {
             method: 'GET',
             uri: baseUrl + "/api/v1/users",
             json: true,
+            jar: j,
         }
+
+        // login to the new user account
+        const login = await request(loginOpts);
+        expect(login.success).to.equal(true);
         
         const panicUsers = await request(reqOpts);
         expect(panicUsers[0].firstName).to.equal(thisUser.firstName);

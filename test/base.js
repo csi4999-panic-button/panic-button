@@ -7,12 +7,14 @@ const users = require("./data/users");
 // This series of tests uses user[1] for registration. login, and manipulation
 describe("User Access", () => {
     it("should successfully register a new user", async () => {
+        const j = request.jar();
         const thisUser = users[1];
         const userOpts = {
             method: 'POST',
             uri: baseUrl + "/register",
             json: true,
-            body: thisUser
+            body: thisUser,
+            jar: j,
         };
         
         const register = await request(userOpts);
@@ -20,6 +22,7 @@ describe("User Access", () => {
     });
 
     it("should successfully login as the new user", async () => {
+        const j = request.jar();
         const thisUser = users[1];
         const loginOpts = {
             method: 'POST',
@@ -28,7 +31,8 @@ describe("User Access", () => {
             body: {
                 email: thisUser.email,
                 password: thisUser.password
-            }
+            },
+            jar: j,
         };
 
         const login = await request(loginOpts);
@@ -36,6 +40,7 @@ describe("User Access", () => {
     });
 
     it("should log out the user from their session", async () => {
+        const j = request.jar();
         const thisUser = users[1];
         const loginOpts = {
             method: 'POST',
@@ -44,12 +49,14 @@ describe("User Access", () => {
             body: {
                 email: thisUser.email,
                 password: thisUser.password
-            }
+            },
+            jar: j,
         };
         const logoutOpts = {
             method: 'GET',
             uri: baseUrl + "/logout",
-            json: true
+            json: true,
+            jar: j,
         }
 
         const login = await request(loginOpts);

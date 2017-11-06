@@ -5,7 +5,7 @@
         "city": "Rochester",
         "state": "MI",
         "country": "USA",
-        "zip": "48309",
+        "zip": 48309,
         "domain": "oakland.edu"
     },
     {
@@ -14,7 +14,7 @@
         "city": "East Lansing",
         "state": "MI",
         "country": "USA",
-        "zip": "48824",
+        "zip": 48824,
         "domain": "msu.edu"
     },
     {
@@ -23,7 +23,7 @@
         "city": "Mt Pleasant",
         "state": "MI",
         "country": "USA",
-        "zip": "48859",
+        "zip": 48859,
         "domain": "cmich.edu"
     }
 ]

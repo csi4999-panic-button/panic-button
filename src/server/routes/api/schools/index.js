@@ -32,19 +32,21 @@ router.post("/", async (req, res) => {
 
 // update a school by schoolId
 router.put("/id/:schoolId", (req, res) => {
-    if(req.isAuthenticated()){
-        Schools.update(
-            { _id: req.params.schoolId },
-            { $set: req.body }
-        ).then( school => {
-            console.log(school);
-            res.json({ success: true, message: "School successfully updated" })
-        }).catch( err => {
-            res.json({ success: false, message: err });
-        })
-    } else {
-        res.status(401).send();
+    if(!req.isAuthenticated()){
+        return res.status(401).send();
     }
+
+    delete req.body._id;
+
+    return Schools.update(
+        { _id: req.params.schoolId },
+        { $set: req.body }
+    ).then( school => {
+        console.log(school);
+        res.json({ success: true, message: "School successfully updated" })
+    }).catch( err => {
+        res.json({ success: false, message: err });
+    });
 });
 
 module.exports = router;
