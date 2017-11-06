@@ -4,12 +4,16 @@ const router = require("express").Router();
 const passport = require("passport");
 const Users = require("../models/users");
 
-router.post("/login", passport.authenticate("local"), (req, res) => {
-  res.json({ success: true, firstName: req.user.firstName, lastName: req.user.lastName });
+router.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) return next(err);
+    if (!user) return res.json({ success: false });
+    return res.json({ success: true, firstName: user.firstName, lastName: user.lastName });
+  })(req, res, next);
 });
 
 router.get("/logout", (req, res) => {
-  req.session.destroy();
+  req.logout();
   res.json({ success: true });
 });
 
