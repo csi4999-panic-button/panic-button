@@ -38,8 +38,6 @@ public class JoinClassActivity extends AppCompatActivity {
                             return;
                         }
                         Toast.makeText(JoinClassActivity.this, "Success", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(JoinClassActivity.this, PanicRoomActivity.class);
-                        startActivity(intent);
                     }
                 });
     }
