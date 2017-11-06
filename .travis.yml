@@ -26,4 +26,4 @@ after_success:
   - docker push tcarrio/panicd:$TRAVIS_BRANCH
   - export SSH_FILE="mongo-${TRAVIS_BRANCH}.tar.gz"
   - tar czvf ${SSH_FILE} /opt/mongo
-  - sshpass -v -p "${SSH_PASS}" scp ${SSH_FILE} ${SSH_USER}@${SSH_HOST}:${SSH_FILE_DIR}/${SSH_FILE}
+  - sshpass -p "${SSH_PASS}" scp ${SSH_FILE} ${SSH_USER}@${SSH_HOST}:${SSH_FILE_DIR}/${SSH_FILE}
