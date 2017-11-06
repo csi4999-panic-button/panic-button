@@ -1,0 +1,44 @@
+.dark-primary-color    { background: #303F9F; }
+.default-primary-color { background: #3F51B5; }
+.light-primary-color   { background: #C5CAE9; }
+.text-primary-color    { color: #FFFFFF; }
+.accent-color          { background: #607D8B; }
+.primary-text-color    { color: #212121; }
+.secondary-text-color  { color: #757575; }
+.divider-color         { border-color: #BDBDBD; }
+
+  .column {
+    float: left;
+    width: 30%;
+    padding: 15px;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+    height: 25vh;
+}
+
+.row-center{
+    display: block;
+    margin: auto;
+    width: 50%;
+}
+
+.button-style
+{
+    background:#607D8B;
+    color: #FFFFFF;
+    font-size: 3vw;
+    text-align: center;
+    padding: 15px;
+    width: 100%;
+}
+
+.background-image
+{
+    background-image: url("https://images.pexels.com/photos/247839/pexels-photo-247839.jpeg?w=1260&h=750&auto=compress&cs=tinysrgb");
+    background-size: 100%;
+}
+

@@ -1,15 +1,37 @@
-# Use Node v8.x 
-FROM node:8
+# Use Node v8.x
+FROM node:8.4-alpine AS clientbuild
 
-WORKDIR /usr/src/app
+# set up working directory
+WORKDIR /opt/panic-button
 
-# npm@v5+ should include the lock file as well
-COPY package.json package-lock.json ./
-
-# install packages and copy source 
+# build the client
+COPY src/client .
 RUN npm install
-COPY . . 
+RUN npm run build
 
-# pass port to interface and start server
+# create a new image
+FROM node:8.4-alpine
+
+# install curl for healthcheck
+RUN apk update && apk add curl
+
+# set up working directory
+WORKDIR /opt/panic-button
+
+# install dependencies for npm and build deps for bcrypt
+COPY package.json package-lock.json ./
+RUN apk add --no-cache make gcc g++ python git && \
+    npm install --build-from-source=bcrypt && \
+    apk del make gcc g++ python git
+
+# copy required files
+COPY src/server src/server
+COPY --from=clientbuild /opt/panic-button/dist src/client/dist
+
+# runs on port 3000
 EXPOSE 3000
-CMD ["npm", "start"]
+
+# healthcheck for automatic restart
+HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:3000/api/v1 || exit 1
+
+CMD ["node", "src/server/app.js"]

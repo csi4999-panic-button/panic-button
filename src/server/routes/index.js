@@ -5,7 +5,7 @@ const passport = require("passport");
 const Users = require("../models/users");
 
 router.post("/login", passport.authenticate("local"), (req, res) => {
-  res.json({ success: true, name: req.user.name });
+  res.json({ success: true, firstName: req.user.firstName, lastName: req.user.lastName });
 });
 
 router.get("/logout", (req, res) => {
@@ -18,11 +18,13 @@ router.post("/register", async (req, res) => {
     const user = await Users.create({
       email: req.body.email,
       password: req.body.password,
-      name: req.body.name,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName
     });
-    res.json(user);
+
+    return res.json(user);
   } catch (err) {
-    res.status(400).json({ message: "User already exists" });
+    return res.status(400).json({ message: err });
   }
 });
 

@@ -1,67 +1,113 @@
 "use strict";
 
 const path = require("path");
+const fs = require("fs");
 
 const express = require("express");
 
 // Inintialize express app
 const app = express();
-app.use(express.static(path.join(__dirname, "../client/dist")));
 
 // connect to database
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost/panic-button", {
-  useMongoClient: true,
-  promiseLibrary: global.Promise,
-});
 
-mongoose.Promise = global.Promise;
-
-// decode requests
+// parsers
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
-app.use(bodyParser.json());
-app.use(cookieParser());
 
-// Session middleware
+// sessions
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
-app.use(session({
-  resave: false,
-  saveUninitialized: false,
-  secret: process.env.LOGIN_SECRET || "this is a secret",
-  cookie: {
-    httpOnly: true,
-  },
-  store: new MongoStore({
-    mongooseConnection: mongoose.connection,
-    touchAfter: 24 * 3600,
-  }),
-}));
 
-// set up passport middlewares
+// passport
 const passport = require("passport");
 const strategies = require("./auth");
 
 const localStrategy = strategies.local;
 const bearerStrategy = strategies.token;
 
-passport.use(localStrategy);
-passport.use(bearerStrategy);
-app.use(passport.initialize());
-app.use(passport.session());
+// request logging
+const morgan = require("morgan")("dev")
 
-// log all requests
-app.use(require("morgan")("dev"));
-
-
-// set up routes
+// routes
 const routes = require("./routes");
 
-const port = process.env.PORT || 3000;
+mongoose.Promise = global.Promise;
 
-app.use("/", routes);
+var mongoURI;
+if(process.env.MONGODB_PORT_27017_TCP_ADDR && process.env.MONGODB_PORT_27017_TCP_PORT){
+  var userPass = ''
+  if(process.env.MONGODB_USER && process.env.MONGODB_PASS){
+    userPass = process.env.MONGODB_USER + ":" + process.env.MONGODB_PASS + "@";
+  }
+  if(process.env.MONGODB_AUTH_SRC && userPass){
+    userPass = userPass + "?authSource=" + process.env.MONGODB_AUTH_SRC;
+  }
+  mongoURI = "mongodb://" + userPass + process.env.MONGODB_PORT_27017_TCP_ADDR + ":" + process.env.MONGODB_PORT_27017_TCP_PORT + "/panic-button"
+} else {
+  mongoURI = "mongodb://localhost/panic-button";
+}
 
-app.listen(port);
-console.log(`Listening on port ${port}`);
+console.log(mongoURI);
+
+mongoose.connect(mongoURI, {
+  useMongoClient: true,
+  promiseLibrary: global.Promise,
+}, (err) => {
+  if (err) {
+    // mongo connection failure
+    console.error(err);
+    process.exit(1);
+  }
+
+  // decode requests
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(cookieParser());
+
+  // Session middleware
+  app.use(session({
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.LOGIN_SECRET || "this is a secret",
+    cookie: {
+      httpOnly: true,
+    },
+    store: new MongoStore({
+      mongooseConnection: mongoose.connection,
+      touchAfter: 24 * 3600,
+    }),
+  }));
+
+  // set up passport middlewares
+  passport.use(localStrategy);
+  passport.use(bearerStrategy);
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // log all requests
+  app.use(morgan);
+
+
+
+  const addr = process.env.ADDR || '0.0.0.0';
+  const port = process.env.PORT || 3000;
+
+  // set up routes
+  app.use("/", routes);
+
+  app.use(express.static(path.join(__dirname, "../client/dist")));
+  app.use((req, res, next) => {
+    fs.exists(path.join(__dirname, "../client/dist/index.html"), (exists) => {
+      if (exists) {
+        res.sendFile(path.resolve(path.join(__dirname, "../client/dist/index.html")));
+      } else {
+        next();
+      }
+    });
+  });
+
+  app.listen(port);
+  console.log(`Listening on port ${port}`);
+});
 

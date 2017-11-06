@@ -1,0 +1,56 @@
+.column {
+    float: left;
+    width: 45%;
+    padding: 15px;
+}
+
+.column-spacer {
+    float: left;
+    width: 25%;
+    padding: 15px;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+    height: 20vh;
+}
+
+.row-center{
+    display: block;
+    margin: auto;
+    width: 50%;
+}
+
+.card-style
+{
+    display: flex;
+    align-items: center;
+    background-color: #FFFFFF;
+    min-width: 300px;
+
+}
+
+.input-style
+{
+    display: flex;
+    align-items: center;
+    background-color: #FFFFFF;
+
+   
+}
+
+.button-style
+{
+    background: #607D8B;
+    color: #FFFFFF;
+    text-align: center;
+    padding: 5px;
+}
+
+.background-image
+{
+    background-image: url("https://images.pexels.com/photos/247839/pexels-photo-247839.jpeg?w=1260&h=750&auto=compress&cs=tinysrgb");
+    background-size: 100%;
+}

@@ -4,8 +4,9 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "start": "ng serve --host 0.0.0.0",
+    "build": "ng build --aot --sourcemaps -ec",
+    "watch": "ng build --aot --sourcemaps -ec -w",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -13,17 +14,18 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^4.2.4",
+    "@angular/cdk": "^2.0.0-beta.11",
     "@angular/common": "^4.2.4",
     "@angular/compiler": "^4.2.4",
     "@angular/core": "^4.2.4",
     "@angular/forms": "^4.2.4",
     "@angular/http": "^4.2.4",
+    "@angular/material": "^2.0.0-beta.11",
     "@angular/platform-browser": "^4.2.4",
     "@angular/platform-browser-dynamic": "^4.2.4",
     "@angular/router": "^4.2.4",
-    "@angular/material": "^2.0.0-beta.11",
-    "@angular/cdk": "^2.0.0-beta.11",
     "core-js": "^2.4.1",
+    "material-design-icons": "^3.0.1",
     "rxjs": "^5.4.2",
     "zone.js": "^0.8.14"
   },

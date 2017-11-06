@@ -29,5 +29,8 @@ router.get("/users", async (req, res) => {
   }
 });
 
+router.use("/classrooms", require("./classrooms"));
+router.use("/schools", require("./schools"));
+
 module.exports = router;
 

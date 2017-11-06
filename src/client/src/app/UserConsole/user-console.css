@@ -1,0 +1,17 @@
+.column {
+    float: left;
+    padding: 15px;
+  
+}
+
+.cards {
+    height: 500px;
+}
+
+.secondary-toolbar
+{
+    background: #607D8B;
+    color: #FFFFFF;
+    font-size: 50px; 
+    text-align:center
+}
