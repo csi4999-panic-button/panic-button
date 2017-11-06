@@ -121,7 +121,7 @@ This will modify a classroom by the provided `$id` in the request route. An exam
 
 ### `POST /api/v1/classrooms/join`
 
-This will add the currently active user to the classroom referenced by the given invitation code. The return status is based on whether the user successfully **belongs** to the classroom, so if they already belonged to the classroom, joining the classroom will return in a success status. Pass the invitation code in the request:
+This will add the currently active user to the classroom referenced by the given invitation code. The return status is based on whether the user successfully **belongs** to the classroom, so the success status is true if the user had previously belonged to the classroom or they were successfully added to the roster. Pass the invitation code in the request:
 
 | Route                     | Request Type | Variables  | Type   | Required (*) |
 | ------------------------- | ------------ | ---------- | ------ | ------------ |
