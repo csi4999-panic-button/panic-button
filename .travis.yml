@@ -21,7 +21,12 @@ before_install:
   - docker run -p 3000:3000 -d --name panicd --link mongodb tcarrio/panicd:${TRAVIS_BRANCH}
 
 after_success:
-  - >
-    if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then 
-    docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}";
-    docker push tcarrio/panicd:${TRAVIS_BRANCH}; fi
+  # confirm this is a branch test not a PR in order to push to Docker tag
+  - |
+    if [ "$TRAVIS_PULL_REQUEST" == "false" ]
+    then 
+    docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
+    docker push tcarrio/panicd:${TRAVIS_BRANCH}
+    else
+    echo "Docker images are not updated on pull requests"
+    fi
