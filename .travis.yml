@@ -14,15 +14,16 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y install docker-ce sshpass
   # build/retrieve required Docker images for server stack
-  - docker build -t tcarrio/panicd:$TRAVIS_BRANCH .
+  - docker build -t tcarrio/panicd:${TRAVIS_BRANCH} .
   - docker pull mongo
   # run Mongo container with persistent storage and link with panicd container
   - docker run --name mongodb -v /opt/mongo:/data/db -d mongo
-  - docker run -p 3000:3000 -d --name panicd --link mongodb tcarrio/panicd:$TRAVIS_BRANCH
+  - docker run -p 3000:3000 -d --name panicd --link mongodb tcarrio/panicd:${TRAVIS_BRANCH}
 
 after_success:
   - printf "The current branch and tag is %s" "$TRAVIS_BRANCH"
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
   - docker push tcarrio/panicd:$TRAVIS_BRANCH
-  - tar czvf /tmp/mongo-$TRAVIS_BRANCH.tar.gz /opt/mongo
-  - sshpass -p "$SSH_PASS" scp /tmp/mongo-$TRAVIS_BRANCH.tar.gz $SSH_USER@$SSH_HOST:$SSH_FILE_DIR
+  - export SSH_FILE="mongo-${TRAVIS_BRANCH}.tar.gz"
+  - tar czvf /tmp/$SSH_FILE /opt/mongo
+  - sshpass -p "${SSH_PASS}" scp /tmp/${SSH_FILE} ${SSH_USER}@${SSH_HOST}:${SSH_FILE_DIR}/${SSH_FILE}
