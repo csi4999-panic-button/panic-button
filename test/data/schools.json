@@ -1,0 +1,29 @@
+[
+    {
+        "name": "Oakland University",
+        "address": "318 Meadow Brook Rd",
+        "city": "Rochester",
+        "state": "MI",
+        "country": "USA",
+        "zip": "48309",
+        "domain": "oakland.edu"
+    },
+    {
+        "name": "Michigan State University",
+        "address": "220 Trowbridge Rd",
+        "city": "East Lansing",
+        "state": "MI",
+        "country": "USA",
+        "zip": "48824",
+        "domain": "msu.edu"
+    },
+    {
+        "name": "Central Michigan University",
+        "address": "1200 S. Franklin St",
+        "city": "Mt Pleasant",
+        "state": "MI",
+        "country": "USA",
+        "zip": "48859",
+        "domain": "cmich.edu"
+    }
+]

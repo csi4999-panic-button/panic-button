@@ -8,19 +8,21 @@ services:
   - docker
 
 before_install:
-  # update travis docker version to allow latest syntax
+  # update travis docker version to allow latest syntax, as well as sshpass for successful run db sync
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
   - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
   - sudo apt-get update
-  - sudo apt-get -y install docker-ce
+  - sudo apt-get -y install docker-ce sshpass
   # build/retrieve required Docker images for server stack
   - docker build -t tcarrio/panicd:$TRAVIS_BRANCH .
   - docker pull mongo
-  # run Mongo container and link with panicd container
-  - docker run --name mongodb -d mongo
+  # run Mongo container with persistent storage and link with panicd container
+  - docker run --name mongodb -v /opt/mongo:/data/db -d mongo
   - docker run -p 3000:3000 -d --name panicd --link mongodb tcarrio/panicd:$TRAVIS_BRANCH
 
 after_success:
   - printf "The current branch and tag is %s" "$TRAVIS_BRANCH"
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
   - docker push tcarrio/panicd:$TRAVIS_BRANCH
+  - tar czvf /tmp/mongo-$TRAVIS_BRANCH.tar.gz /opt/mongo
+  - sshpass -p "$SSH_PASS" scp /tmp/mongo-$TRAVIS_BRANCH.tar.gz $SSH_USER@$SSH_HOST:$SSH_FILE_DIR
