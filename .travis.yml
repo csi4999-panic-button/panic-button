@@ -25,5 +25,5 @@ after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
   - docker push tcarrio/panicd:$TRAVIS_BRANCH
   - export SSH_FILE="mongo-${TRAVIS_BRANCH}.tar.gz"
-  - tar czvf /tmp/$SSH_FILE /opt/mongo
-  - sshpass -p "${SSH_PASS}" scp /tmp/${SSH_FILE} ${SSH_USER}@${SSH_HOST}:${SSH_FILE_DIR}/${SSH_FILE}
+  - tar czvf ${SSH_FILE} /opt/mongo
+  - sshpass -v -p "${SSH_PASS}" scp ${SSH_FILE} ${SSH_USER}@${SSH_HOST}:${SSH_FILE_DIR}/${SSH_FILE}
