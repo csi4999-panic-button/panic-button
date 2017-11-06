@@ -154,51 +154,6 @@ describe("Classrooms", () => {
         expect(newClass.courseTitle).to.equal(thisClassroom.courseTitle);
     });
 
-    it("should create the classroom with a registered user under given school", async() => {
-        const j = request.jar();
-        const thisUser = users[2];
-        const thisSchool = schools[2];
-        const thisClassroom = classrooms[2][0];
-        
-        const loginOpts = {
-            method: 'POST',
-            uri: baseUrl + "/login",
-            json: true,
-            body: {
-                email: thisUser.email,
-                password: thisUser.password
-            },
-            jar: j,
-        };
-        const schoolOpts = {
-            method: "POST",
-            uri: baseUrl + "/api/v1/schools",
-            json: true,
-            body: thisSchool,
-            jar: j,
-        };
-        const classOpts = {
-            method: "POST",
-            uri: baseUrl + "/api/v1/classrooms",
-            json: true,
-            body: thisClassroom,
-            jar: j,
-        };
-        
-        // login to the new user account
-        const login = await request(loginOpts);
-        expect(login.success).to.equal(true);
-    
-        // create school under user account
-        const newSchool = await request(schoolOpts);
-        expect(newSchool.name).to.equal(thisSchool.name);
-
-        // create classroom under user account
-        classOpts.schoolId = newSchool._id;
-        const newClass = await request(classOpts);
-        expect(newClass.courseTitle).to.equal(thisClassroom.courseTitle);
-    });
-
     // this joins classroom where user 2 is teacher, with the following types:
     // user[3]: student, user[4]: teacherAssistant, user[5]: teacher
     it("should join a classroom as a newly registered user", () => {
