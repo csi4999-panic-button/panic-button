@@ -11,7 +11,10 @@ const users = require("./test/data/users");
 const schools = require("./test/data/schools");
 const classrooms = require("./test/data/classrooms");
 const request = require("request-promise");
-const baseUrl = "http://localhost:3000";
+const panichost = process.env.PANIC_HOST || "localhost";
+const panicport = process.env.PANIC_PORT || "3000";
+
+const baseUrl = "http://"+panichost+":"+panicport;
 const mongoURI = require("./src/server/util").getMongoURI();
 
 let mongoose = require("mongoose");
