@@ -23,9 +23,6 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 
-// socket io session
-const sharedsession = require("express-socket.io-session");
-
 // passport
 const passport = require("passport");
 const strategies = require("./auth");
@@ -115,9 +112,17 @@ mongoose.connect(mongoURI, {
   const server = app.listen(port);
   const io = require("socket.io")(server);
 
-  io.use(sharedsession(session));
-
   require("./socketio")(app, io);
+
+  process.on("message", (msg) => {
+    if (msg === "shutdown") {
+      io.close(() => {
+        server.close(() => {
+          process.exit(0);
+        });
+      });
+    }
+  });
 
   console.log(`Listening on port ${port}`);
 });
