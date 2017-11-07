@@ -21,7 +21,10 @@ router.use((req, res, next) => {
 });
 
 router.get("/users", async (req, res) => {
+  console.log(req.isAuthenticated());
   if (req.isAuthenticated()) {
+    console.log(req.session);
+    console.log(req.user);
     const users = await Users.find();
     res.json(users);
   } else {

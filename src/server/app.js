@@ -2,11 +2,15 @@
 
 const path = require("path");
 const fs = require("fs");
+const EventEmitter = require('events');
 
 const express = require("express");
 
 // Inintialize express app
 const app = express();
+app.ee = new EventEmitter();
+
+app.ee.on("logout", console.log);
 
 // connect to database
 const mongoose = require("mongoose");
@@ -18,6 +22,9 @@ const bodyParser = require("body-parser");
 // sessions
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
+
+// socket io session
+const sharedsession = require("express-socket.io-session");
 
 // passport
 const passport = require("passport");
@@ -88,8 +95,6 @@ mongoose.connect(mongoURI, {
   // log all requests
   app.use(morgan);
 
-
-
   const addr = process.env.ADDR || '0.0.0.0';
   const port = process.env.PORT || 3000;
 
@@ -107,7 +112,13 @@ mongoose.connect(mongoURI, {
     });
   });
 
-  app.listen(port);
+  const server = app.listen(port);
+  const io = require("socket.io")(server);
+
+  io.use(sharedsession(session));
+
+  require("./socketio")(app, io);
+
   console.log(`Listening on port ${port}`);
 });
 
