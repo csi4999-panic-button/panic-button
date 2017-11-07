@@ -43,8 +43,8 @@ public class ClassActionsActivity extends AppCompatActivity {
         token = "Bearer ".concat(token);
         classIds = new ArrayList<>();
         listView = (ListView) findViewById(R.id.listView_classesJoined);
-        listView.setAdapter(arrayAdapter);
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, classIds);
+        listView.setAdapter(arrayAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -87,10 +87,10 @@ public class ClassActionsActivity extends AppCompatActivity {
                             return;
                         }
                         Log.d("Ion","Generating classIds");
-                        classIds = new ArrayList<>();
+                        arrayAdapter.clear();
                         for (int i = 0; i < result.size(); i++) {
                             jsonObject = result.get(i).getAsJsonObject();
-                            classIds.add(jsonObject.get("_id").toString());
+                            arrayAdapter.add(jsonObject.get("_id").toString());
                         }
                         Log.d("Ion","Successfully generated classIds");
                     }
