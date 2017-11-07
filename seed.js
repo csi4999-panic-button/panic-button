@@ -91,8 +91,6 @@ const generateSchools = async function() {
 const generateClassrooms = async function() {
     let classIndex = 0;
     const schoolsTeachers = schools.map((s)=>[classIndex++,fullUsers.filter((u)=>u.email.endsWith(s.domain))[0]]);
-    //teacherMapping = schoolsTeachers.map((s)=>s.email.split('@',2));
-    console.log(schoolsTeachers);
     fullClassrooms = await Promise.all(schoolsTeachers.map( async ([index, theTeacher])=>{
         return Promise.all(classrooms[index].map( (c) => {
             const classOpts = {
