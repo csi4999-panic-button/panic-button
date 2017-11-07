@@ -15,3 +15,11 @@
     font-size: 50px; 
     text-align:center
 }
+
+.button-style
+{
+    background: #303F9F;
+    color: #FFFFFF;
+    text-align: center;
+    padding: 20px;
+}

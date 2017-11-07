@@ -5,4 +5,6 @@ import { Component } from '@angular/core';
   templateUrl: './user-console.html',
   styleUrls: ['./user-console.css']
 })
-export class UserConsoleComponent { }
+export class UserConsoleComponent { 
+  displayedColumns = ['position', 'name', 'weight', 'symbol'];
+}

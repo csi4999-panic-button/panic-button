@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'login-page',
@@ -9,13 +10,61 @@ import { HttpClient } from '@angular/common/http';
 
 export class LoginPageComponent{
   protected userData: any;
-  protected userName: string;
-  protected password: any;
+  userName: string;
+  password: string;
+  protected HTTP: HttpClient
   protected body: any;
+  flag: boolean;
+  link: string;
+  badLogin: boolean;
 
   constructor(private http: HttpClient) {
-    const url = 'http://www.panic-button.stream/login';
-    http.post(url, {email:"dandyla@oakland.edu", password:"testpass"})
-    .subscribe();
-  }
+    this.HTTP = http;
  }
+ 
+ 
+ TryLogin(){
+   const url = '/login';
+   if(this.userName != null && this.password != null){
+    this.HTTP.post(url, {email:this.userName, password:this.password})
+    .subscribe((data) => {     
+        this.flag = data['success'];
+        console.log(this.flag);
+     });
+     return this.flag;
+   } 
+ }
+
+ BadLogin(thrownflag: boolean)
+ {
+   if(thrownflag)
+   {
+     this.badLogin = true;
+   }
+   else
+   {
+     this.badLogin = false;
+   }
+ }
+
+ GetLink()
+ {
+   if(this.TryLogin() == true)
+   {
+     this.link = '/user-console'
+   }
+   else
+   {
+     this.link= 'login-page'
+   }
+//    if(this.TryLogin())
+//    {
+//      return '/user-console'
+//    }
+//    else
+//    {
+//      return 
+//    }
+  }
+ 
+}

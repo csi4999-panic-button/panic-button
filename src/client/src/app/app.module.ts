@@ -1,11 +1,14 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { MdButtonModule } from '@angular/material';
+import { MatButtonModule } from '@angular/material';
 import { MatInputModule} from '@angular/material';
+import { MatTableModule } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
+
 
 import { AppComponent } from './app.component';
 import { HomePageComponent } from './home-page.component';
@@ -15,6 +18,8 @@ import { AboutUsComponent } from './AboutUs/about-us.component';
 import { SignUpComponent } from './SignUp/sign-up.component';
 import { UserConsoleComponent} from './UserConsole/user-console.component';
 import { ClassHubComponent } from './ClassHub/class-hub.component';
+import { CreateClassComponent } from './CreateClass/create-class.component';
+import { JoinClassComponent } from './JoinClass/join-class.component';
 
 
 const appRoutes: Routes = [
@@ -24,6 +29,8 @@ const appRoutes: Routes = [
   { path: 'sign-up', component: SignUpComponent },
   { path: 'user-console', component: UserConsoleComponent },
   { path: 'class-hub', component: ClassHubComponent },
+  { path: 'create-class', component: CreateClassComponent},
+  { path: 'join-class', component: JoinClassComponent},
   { path: '',   redirectTo: '/home', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent },
   
@@ -32,14 +39,16 @@ const appRoutes: Routes = [
 @NgModule({
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     FormsModule,
-    MdButtonModule,
+    MatButtonModule,
     MatInputModule,
+    MatTableModule,
     RouterModule.forRoot(
       appRoutes,
       { enableTracing: true } // <-- debugging purposes only
     ),
-    HttpClientModule
+    HttpClientModule,
   ],
   declarations: [
     AppComponent,
@@ -49,6 +58,8 @@ const appRoutes: Routes = [
     SignUpComponent,
     UserConsoleComponent,
     ClassHubComponent,
+    CreateClassComponent,
+    JoinClassComponent,
     PageNotFoundComponent
   ],
   bootstrap: [ AppComponent ]

@@ -1,0 +1,36 @@
+<body class="background-image">
+        <md-card class="card-style" >
+            <div *ngIf="isCreated">
+                 <button md-button class="button-style" md-raised-button routerLink="/user-console" routerLinkActive="active">
+                     Class Created - Go To User Controls</button>
+            </div>
+            <div *ngIf="!isCreated">
+                 <md-card-title class="input-style">
+                     <h2>Create a Class</h2>
+                 </md-card-title>
+                 <div>
+                 <md-card-content>
+                         <md-form-field class="input-style">
+                             <input type="text" [(ngModel)]="schoolId" mdInput placeholder="School Id" />
+                         </md-form-field>
+                         <md-form-field class="input-style">
+                             <input type="text" [(ngModel)]="courseType" mdInput placeholder="Course Type" />
+                         </md-form-field>
+                         <md-form-field class="input-style">
+                             <input type="text" [(ngModel)]="courseNumber" mdInput placeholder="Course Number" />
+                         </md-form-field>
+                         <md-form-field class="input-style">
+                             <input type="text" [(ngModel)]="sectionNumber" mdInput placeholder="Section Number" />
+                         </md-form-field>
+                          <md-form-field class="input-style">
+                             <input type="text" [(ngModel)]="courseTitle" mdInput placeholder="Course Title" />
+                         </md-form-field>
+                 </md-card-content>
+             </div>
+                 <md-card-actions>
+                     <button md-button class="button-style" (click)=Create() md-raised-button>Register</button>
+                     <button md-button class="button-style" md-raised-button routerLink="/user-console" routerLinkActive="active">Back</button>
+                 </md-card-actions>
+             </div>
+             </md-card>
+     </body>
