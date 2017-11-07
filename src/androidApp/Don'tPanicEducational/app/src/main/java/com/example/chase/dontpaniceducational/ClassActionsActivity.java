@@ -37,13 +37,11 @@ public class ClassActionsActivity extends AppCompatActivity {
         token = mySharedPreferences.getString("token", null);
         token = token.substring(1, token.length() - 1);
         token = "Bearer ".concat(token);
-        arrayAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, classIds);
         listView.setAdapter(arrayAdapter);
         final SharedPreferences.Editor editor = mySharedPreferences.edit();
         Ion.with(this)
                 .load("http://www.panic-button.stream/api/v1/classrooms")
-                .setHeader("Authorization", token)
+                .setHeader("Authorization", "Bearer c9a0094b7710ce5b12fe9e72a23df934a59007d826dac7622b770e08dc43870a13b03f7666e268e9072f8b67ad65d7f5")
                 .asJsonArray()
                 .setCallback(new FutureCallback<JsonArray>() {
                     @Override
@@ -53,6 +51,7 @@ public class ClassActionsActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                             return;
                         }
+                        classIds = new String[result.size()];
                         for (int i = 0; i < result.size(); i++) {
                             jsonElement = result.get(i).getAsJsonObject();
                             jsonObject = jsonElement.getAsJsonObject();
@@ -61,6 +60,7 @@ public class ClassActionsActivity extends AppCompatActivity {
                         }
                     }
                 });
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, classIds);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
