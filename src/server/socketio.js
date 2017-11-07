@@ -63,7 +63,7 @@ module.exports = (app, io) => {
       panicked[event.classroom].delete(event.user);
     }
 
-    io.in(event.classroom).emit("panic_count_change", {
+    io.in(event.classroom).emit("panic", {
       classroom: event.classroom,
       panicNumber: panicked[event.classroom].size,
     });
