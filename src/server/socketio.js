@@ -9,7 +9,7 @@ module.exports = (app, io) => {
   io.on("connection", async (socket) => {
     socket.once("login", async (token) => {
       const user = await Users.findOne({ apiToken: token });
-      if (!user return);
+      if (!user) return;
       socket.user = user;
 
       // join to all classrooms
