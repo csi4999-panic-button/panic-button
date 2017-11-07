@@ -7,8 +7,11 @@ const Users = require("../models/users");
 router.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
-    if (!user) return res.json({ success: false });
-    return res.json({ success: true, firstName: user.firstName, lastName: user.lastName });
+    if (!user) return res.status(401).json({ success: false, messagee: "Incorrect email or password" });
+    req.logIn(user, (err) => {
+      if (err) { return next(err); }
+      return res.json({ success: true, firstName: user.firstName, lastName: user.lastName });
+    });
   })(req, res, next);
 });
 
@@ -28,7 +31,7 @@ router.post("/register", async (req, res) => {
 
     return res.json(user);
   } catch (err) {
-    return res.status(400).json({ message: err });
+    return res.status(400).json({ success: false, message: err });
   }
 });
 

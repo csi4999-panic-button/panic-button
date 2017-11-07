@@ -1,0 +1,113 @@
+[
+    [
+        {
+            "courseType": "CSI",
+            "courseNumber": "3430",
+            "sectionNumber": "001-44762",
+            "courseTitle": "Theory of Computation"
+        },
+        {
+            "courseType": "CSI",
+            "courseNumber": "4999",
+            "sectionNumber": "001-44755",
+            "courseTitle": "Senior Capstone Project"
+        },
+        {
+            "courseType": "CSI",
+            "courseNumber": "4500",
+            "sectionNumber": "001-45113",
+            "courseTitle": "Fundamentals of Operating Systems"
+        },
+        {
+            "courseType": "STA",
+            "courseNumber": "2226",
+            "sectionNumber": "001-43727",
+            "courseTitle": "Theory of Computation"
+        },
+        {
+            "courseType": "CIT",
+            "courseNumber": "349",
+            "courseTitle": "Advanced System Administration"
+        },
+        {
+            "courseType": "CSE",
+            "courseNumber": "335",
+            "sectionNumber": "005-12349",
+            "courseTitle": "Programming Languages"
+        }
+    ],
+    [
+        {
+            "courseType": "CSI",
+            "courseNumber": "3430",
+            "sectionNumber": "001-44332",
+            "courseTitle": "Theory of Computation"
+        },
+        {
+            "courseType": "CSI",
+            "courseNumber": "4999",
+            "sectionNumber": "001-44444",
+            "courseTitle": "Senior Capstone Project"
+        },
+        {
+            "courseType": "CSI",
+            "courseNumber": "4500",
+            "sectionNumber": "001-45123",
+            "courseTitle": "Fundamentals of Operating Systems"
+        },
+        {
+            "courseType": "STA",
+            "courseNumber": "2226",
+            "sectionNumber": "001-41437",
+            "courseTitle": "Theory of Computation"
+        },
+        {
+            "courseType": "CIT",
+            "courseNumber": "349",
+            "courseTitle": "Advanced System Administration"
+        },
+        {
+            "courseType": "CSE",
+            "courseNumber": "335",
+            "sectionNumber": "005-12333",
+            "courseTitle": "Programming Languages"
+        }
+    ],
+    [
+        {
+            "courseType": "CSI",
+            "courseNumber": "3430",
+            "sectionNumber": "001-44332",
+            "courseTitle": "Theory of Computation"
+        },
+        {
+            "courseType": "CSI",
+            "courseNumber": "4999",
+            "sectionNumber": "001-44444",
+            "courseTitle": "Senior Capstone Project"
+        },
+        {
+            "courseType": "CSI",
+            "courseNumber": "4500",
+            "sectionNumber": "001-45123",
+            "courseTitle": "Fundamentals of Operating Systems"
+        },
+        {
+            "courseType": "STA",
+            "courseNumber": "2226",
+            "sectionNumber": "001-41437",
+            "courseTitle": "Theory of Computation"
+        },
+        {
+            "courseType": "CIT",
+            "courseNumber": "348",
+            "courseTitle": "System Administration"
+        },
+        {
+            "courseType": "CSE",
+            "courseNumber": "361",
+            "sectionNumber": "002-12442",
+            "courseTitle": "Design and Analysis of Algorithms"
+        }
+    ]
+]

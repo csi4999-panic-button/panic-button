@@ -1,37 +1,33 @@
-<!-- <body class="background-image">
-        <div class="column-spacer"></div>
-        <div class="column">
-            <div class="row-center">
-                <div class="row"></div>
-                
-            </div>
-            <div class="row"></div>
-        </div>
-        <div class="column-spacer"></div>
-    </body> -->
-
-    <md-card class="card-style" >
+<body class="background-image">
+   <md-card class="card-style" >
+       <div *ngIf="registrationSuccess">
+            <button md-button class="button-style" md-raised-button routerLink="/login-page" routerLinkActive="active">
+                Registration Successful - Go to Login</button>
+       </div>
+       <div *ngIf="!registrationSuccess">
             <md-card-title class="input-style">
                 <h2>Welcome</h2>
             </md-card-title>
-            <div >
-            <md-card-content >
-                <md-form-field class="input-style">
-                    <textarea mdInput placeholder="First Name"></textarea>
-                </md-form-field>
-                <md-form-field class="input-style">
-                    <textarea mdInput placeholder="Last Name"></textarea>
-                </md-form-field>
-                <md-form-field class="input-style">
-                        <textarea mdInput placeholder="Username"></textarea>
+            <div>
+            <md-card-content>
+                    <md-form-field class="input-style">
+                        <input type="email" [(ngModel)]="email" mdInput placeholder="Email" />
                     </md-form-field>
                     <md-form-field class="input-style">
-                        <textarea mdInput placeholder="Password"></textarea>
+                        <input type="password" [(ngModel)]="password" mdInput placeholder="Password" />
+                    </md-form-field>
+                    <md-form-field class="input-style">
+                        <input type="text" [(ngModel)]="firstName" mdInput placeholder="First Name" />
+                    </md-form-field>
+                    <md-form-field class="input-style">
+                        <input type="text" [(ngModel)]="lastName" mdInput placeholder="Last Name" />
                     </md-form-field>
             </md-card-content>
         </div>
             <md-card-actions>
-                <button md-button class="button-style" md-raised-button>Login</button>
-                <button md-button class="button-style" md-raised-button routerLink="/home" routerLinkActive="active">Go Back</button>
+                <button md-button class="button-style" (click)=Register() md-raised-button>Register</button>
+                <button md-button class="button-style" md-raised-button routerLink="/home" routerLinkActive="active">Back</button>
             </md-card-actions>
+        </div>
         </md-card>
+</body>

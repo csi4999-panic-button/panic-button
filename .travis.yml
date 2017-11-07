@@ -1,3 +1,32 @@
+sudo: required
+
 language: node_js
 node_js:
   - "8"
+
+services:
+  - docker
+
+before_install:
+  # update travis docker version to allow latest syntax, as well as sshpass for successful run db sync
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y install docker-ce
+  # build/retrieve required Docker images for server stack
+  - docker build -t tcarrio/panicd:${TRAVIS_BRANCH} .
+  - docker pull mongo
+  # run Mongo container with persistent storage and link with panicd container
+  - docker run --name mongodb -d mongo
+  - docker run -p 3000:3000 -d --name panicd --link mongodb tcarrio/panicd:${TRAVIS_BRANCH}
+
+after_success:
+  # confirm this is a branch test not a PR in order to push to Docker tag
+  - |
+    if [ "$TRAVIS_PULL_REQUEST" == "false" ]
+    then 
+    docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
+    docker push tcarrio/panicd:${TRAVIS_BRANCH}
+    else
+    echo "Docker images are not updated on pull requests"
+    fi

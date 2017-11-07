@@ -3,23 +3,26 @@
     <div class="column">
         <div class="row-center">
             <div class="row"></div>
-            
-            <md-card class="mat-elevation-z10 card-style" >
+            <md-card class="mat-elevation-z10 card-style">
+                <!-- <div *ngIf="!badLogin">Login Failed</div> -->
                 <md-card-title>
                     <h2>Welcome Back</h2>
                 </md-card-title>
-                <div >
-                <md-card-content >
-                    <md-form-field class="input-style">
-                        <textarea mdInput placeholder="Username"></textarea>
-                    </md-form-field>
-                    <md-form-field class="input-style">
-                        <textarea mdInput placeholder="Password"></textarea>
-                    </md-form-field>
-                </md-card-content>
-            </div>
-                <md-card-actions>
-                    <button md-button class="button-style" md-raised-button routerLink="/user-console">Login</button>
+                <div>
+                    <button md-button class="button-style" *ngIf="flag" md-raised-button routerLink="/user-console">
+                        Login Successful</button>
+                    <md-card-content *ngIf="!flag">
+                        <md-form-field class="input-style">
+                            <input type="email" [(ngModel)]="userName" mdInput placeholder="Email" />
+                        </md-form-field>
+                        <md-form-field class="input-style">
+                            <input type="password" [(ngModel)]="password" mdInput placeholder="Password" />
+                        </md-form-field>
+                    </md-card-content>
+                </div>
+                <md-card-actions *ngIf="!flag">
+                    <!-- <button md-button class="button-style" md-raised-button routerLink="/user-console">Login</button> -->
+                    <button md-button class="button-style" md-raised-button (click)=TryLogin()>Login</button>
                     <button md-button class="button-style" md-raised-button routerLink="/home" routerLinkActive="active">Go Back</button>
                 </md-card-actions>
             </md-card>
