@@ -17,7 +17,7 @@ before_install:
   - docker build -t tcarrio/panicd:${TRAVIS_BRANCH} .
   - docker pull mongo
   # run Mongo container with persistent storage and link with panicd container
-  - docker run --name mongodb -v /opt/mongo:/data/db -d mongo
+  - docker run --name mongodb -d mongo
   - docker run -p 3000:3000 -d --name panicd --link mongodb tcarrio/panicd:${TRAVIS_BRANCH}
 
 after_success:
