@@ -1,19 +1,29 @@
 "use strict";
 
-const ClassroomModel = require("./models/classrooms");
+const Classrooms = require("./models/classrooms");
+const Users = require("./models/users");
 
 const panicked = {};
 const timers = {};
 
 module.exports = (app, io) => {
   io.on("connection", async (socket) => {
+    console.log("New socket connection");
     socket.once("login", async (token) => {
       const user = await Users.findOne({ apiToken: token });
-      if (!user) return;
+      if (!user) {
+        socket.emit("login_success", false);
+        socket.disconnect(true);
+        console.log("Socket login failure");
+        return;
+      }
+
       socket.user = user;
+      console.log("Socket login success", user.email);
+      socket.emit("login_success", true);
 
       // join to all classrooms
-      const classrooms = await ClassroomModel.find({
+      const classrooms = await Classrooms.find({
         students: socket.user.id,
       });
       classrooms.forEach((classroom) => socket.join(classroom.id));
@@ -23,7 +33,7 @@ module.exports = (app, io) => {
       app.ee.on(`${socket.user.id}:leave`, (classroom) => socket.leave(classroom));
 
       socket.on("panic", async (event) => {
-        const classroom = await ClassroomModel.findOne({
+        const classroom = await Classrooms.findOne({
           _id: event.classroom,
           students: socket.user.id,
         });
@@ -70,5 +80,7 @@ module.exports = (app, io) => {
       panicNumber: panicked[event.classroom].size,
     });
   });
+
+  return io;
 };
 
