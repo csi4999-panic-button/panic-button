@@ -13,6 +13,7 @@ const options = {
 };
 
 let authToken;
+const sleep = (t) => new Promise((r) => setTimeout(r, t));
 
 // This series of tests uses user[2] for registration. login, and manipulation
 describe("Socket.IO", () => {
@@ -25,6 +26,8 @@ describe("Socket.IO", () => {
             client1.disconnect();
             done();
         });
+        sleep(2000)
+        .then(_=>{client1.disconnect(); done(new Error("Timed out"))});
     });
 
     it("should login to server using token", (done) => {
@@ -79,6 +82,8 @@ describe("Socket.IO", () => {
             client3.disconnect();
             done();
         });
+        sleep(2000)
+        .then(_=>{client3.disconnect(); done(new Error("Timed out"))});
     });
 
     it("should receive panic updates from the server", (done) => {
@@ -118,7 +123,7 @@ describe("Socket.IO", () => {
             client2.disconnect();
             done(err);
         });
-        ((t)=> new Promise((r) => setTimeout(r, t)))(2000)
+        sleep(2000)
         .then(_=>{client2.disconnect(); done(new Error("Timed out"))});
     });
 });
