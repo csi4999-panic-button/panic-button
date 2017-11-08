@@ -53,11 +53,13 @@ module.exports = (app, io) => {
   app.ee.on("panic", (event) => {
     if (!panicked[event.classroom]) {
       panicked[event.classroom] = new Set();
+      console.log("Created new classroom panic session");
     }
 
     // clear timer
     if (timers[event.user] && timers[event.user][event.classroom]) {
       clearTimeout(timers[event.user][event.classroom]);
+      console.log("Cleared",event.user,"due to timeout");
     }
 
     if (event.state) {
@@ -71,14 +73,17 @@ module.exports = (app, io) => {
           state: false,
         });
       }, 1000 * 10);
+      console.log("Added user",event.user,"to panic state");
     } else {
       panicked[event.classroom].delete(event.user);
+      console.log("Removed user",event.user,"from panic state");
     }
 
     io.in(event.classroom).emit("panic", {
       classroom: event.classroom,
       panicNumber: panicked[event.classroom].size,
     });
+    console.log("panicNumber:", panicked[event.classroom].size)
   });
 
   return io;
