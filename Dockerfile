@@ -27,7 +27,8 @@ RUN apk add --no-cache make gcc g++ python git && \
 # copy required files
 COPY src/server src/server
 COPY --from=clientbuild /opt/panic-button/dist src/client/dist
-COPY seed.js test/ ./
+COPY seed.js .
+COPY test/ test/
 
 # runs on port 3000
 EXPOSE 3000
