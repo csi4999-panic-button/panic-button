@@ -93,7 +93,7 @@ mongoose.connect(mongoURI, {
   app.use(morgan);
 
   const addr = process.env.ADDR || '0.0.0.0';
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 8080;
 
   // set up routes
   app.use("/", routes);
