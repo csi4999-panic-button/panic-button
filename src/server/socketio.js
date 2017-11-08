@@ -36,7 +36,8 @@ module.exports = (app, io) => {
       app.ee.on(`${socket.user.id}:leave`, (classroom) => socket.leave(classroom));
 
       socket.on("panic", async (event) => {
-        event = JSON.parse(event);
+        if(typeof event === String)
+          event = JSON.parse(event);
         console.log("socket panic event received");
         console.log("_id:",event.classroom);
         console.log("students:",socket.user.id);
