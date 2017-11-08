@@ -13,6 +13,9 @@ import com.github.nkzawa.socketio.client.Socket;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.URISyntaxException;
 
 public class PanicRoomActivity extends AppCompatActivity {
@@ -23,6 +26,7 @@ public class PanicRoomActivity extends AppCompatActivity {
     int prefMode = JoinClassActivity.MODE_PRIVATE;
     private String classroom, token, apiToken;
     private JsonObject jsonObject;
+    private boolean panicState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,7 @@ public class PanicRoomActivity extends AppCompatActivity {
         panicSocket.connect();
         numberOfPanicStudents.setText("0");
         panicSocket.emit("login", apiToken);
+        panicState = false;
     }
 
     private Emitter.Listener panicListener = new Emitter.Listener() {
@@ -57,13 +62,14 @@ public class PanicRoomActivity extends AppCompatActivity {
             PanicRoomActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    JsonObject data = (JsonObject) args[0];
+                    JSONObject data = (JSONObject) args[0];
                     String classID;
-                    int numberOfPanics;
+                    String numberOfPanics;
                     try {
-                        classID = data.get("username").toString();
-                        numberOfPanics = data.get("panicNumber").getAsInt();
-                    } catch (JsonIOException e) {
+                        classID = data.get("classroom").toString();
+                        numberOfPanics = data.get("panicNumber").toString();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                         return;
                     }
                     numberOfPanicStudents.setText(numberOfPanics);
@@ -79,7 +85,6 @@ public class PanicRoomActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
-
                     } catch (JsonIOException e) {
                         return;
                     }
@@ -112,13 +117,12 @@ public class PanicRoomActivity extends AppCompatActivity {
         super.onStart();
         panicSocket.emit("login", token);
     }
-
     public void panicButtonClick(View view) {
+        panicState = !panicState;
         jsonObject.addProperty("classroom", classroom);
-        jsonObject.addProperty("state", "true");
+        jsonObject.addProperty("state", panicState);
         Log.d("Socket.IO", "Trying to emit:");
         panicSocket.emit("panic", jsonObject);
         Log.d("Socket.IO", "Done emitting");
-        String something = "Chase";
     }
 }
