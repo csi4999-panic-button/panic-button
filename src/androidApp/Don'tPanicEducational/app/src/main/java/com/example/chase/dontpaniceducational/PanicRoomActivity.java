@@ -3,10 +3,10 @@ package com.example.chase.dontpaniceducational;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -21,7 +21,7 @@ public class PanicRoomActivity extends AppCompatActivity {
     private SharedPreferences mySharedPreferences;
     public static String MY_PREFS = "MY_PREFS";
     int prefMode = JoinClassActivity.MODE_PRIVATE;
-    private String classroom, token;
+    private String classroom, token, apiToken;
     private JsonObject jsonObject;
 
     @Override
@@ -39,12 +39,16 @@ public class PanicRoomActivity extends AppCompatActivity {
         classroom = mySharedPreferences.getString("classroom", null);
         token = mySharedPreferences.getString("token", null);
         token = token.substring(1, token.length() - 1);
+        apiToken = token;
         token = "Bearer ".concat(token);
         numberOfPanicStudents = (TextView) findViewById(R.id.textView_numberOfPanickedStudents);
         jsonObject = new JsonObject();
         panicSocket.on("panic", panicListener);
         panicSocket.on("connect", connectListener);
+        panicSocket.on("login_success", loginListener);
         panicSocket.connect();
+        numberOfPanicStudents.setText("0");
+        panicSocket.emit("login", apiToken);
     }
 
     private Emitter.Listener panicListener = new Emitter.Listener() {
@@ -54,10 +58,10 @@ public class PanicRoomActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     JsonObject data = (JsonObject) args[0];
-                    String classId;
+                    String classID;
                     int numberOfPanics;
                     try {
-                        classId = data.get("classroom").toString();
+                        classID = data.get("username").toString();
                         numberOfPanics = data.get("panicNumber").getAsInt();
                     } catch (JsonIOException e) {
                         return;
@@ -86,6 +90,23 @@ public class PanicRoomActivity extends AppCompatActivity {
         }
     };
 
+    private Emitter.Listener loginListener = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            PanicRoomActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                    } catch (JsonIOException e) {
+                        return;
+                    }
+                    Toast.makeText(PanicRoomActivity.this, "logged in",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    };
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -95,7 +116,9 @@ public class PanicRoomActivity extends AppCompatActivity {
     public void panicButtonClick(View view) {
         jsonObject.addProperty("classroom", classroom);
         jsonObject.addProperty("state", "true");
+        Log.d("Socket.IO", "Trying to emit:");
         panicSocket.emit("panic", jsonObject);
+        Log.d("Socket.IO", "Done emitting");
         String something = "Chase";
     }
 }

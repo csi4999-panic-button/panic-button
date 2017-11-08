@@ -40,7 +40,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="192dp"
         android:background="@color/colorAccent"
-        android:textColor="@color/colorPrimaryText"
+        android:textColor="@color/colorIcons"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
