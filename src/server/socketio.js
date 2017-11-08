@@ -26,24 +26,32 @@ module.exports = (app, io) => {
       const classrooms = await Classrooms.find({
         students: socket.user.id,
       });
-      classrooms.forEach((classroom) => socket.join(classroom.id));
+      classrooms.forEach((classroom) => {
+        socket.join(classroom.id);
+        console.log("Joining socket to classroom",classroom.id);
+      });
 
       // join/leave classrooms after socket connection
       app.ee.on(`${socket.user.id}:join`, (classroom) => socket.join(classroom));
       app.ee.on(`${socket.user.id}:leave`, (classroom) => socket.leave(classroom));
 
       socket.on("panic", async (event) => {
+        event = JSON.parse(event);
+        console.log("socket panic event received");
+        console.log("_id:",event.classroom);
+        console.log("students:",socket.user.id);
+        console.log("event contains:", event);
         const classroom = await Classrooms.findOne({
           _id: event.classroom,
           students: socket.user.id,
         });
-
+        
         if (!classroom) return;
-
+        console.log(socket.user.id, "belongs to", classroom.name);
         if (event.state === null || event.state === undefined) {
           event.state = true;
         }
-
+        console.log("emitted state:", event.state);
         app.ee.emit("panic", { user: socket.user.id, classroom: event.classroom, state: event.state });
       });
 
@@ -51,6 +59,7 @@ module.exports = (app, io) => {
   });
 
   app.ee.on("panic", (event) => {
+    console.log("app.ee panic event received");
     if (!panicked[event.classroom]) {
       panicked[event.classroom] = new Set();
       console.log("Created new classroom panic session");
