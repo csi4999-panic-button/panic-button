@@ -32,4 +32,5 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
     compile 'com.koushikdutta.ion:ion:2.+'
+    compile 'com.github.nkzawa:socket.io-client:0.3.0'
 }

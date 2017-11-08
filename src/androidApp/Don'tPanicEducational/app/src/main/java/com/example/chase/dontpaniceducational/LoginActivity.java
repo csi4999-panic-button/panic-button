@@ -60,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = mySharedPreferences.edit();
                         editor.putString("token", result.get("token").toString());
                         editor.commit();
-                        Toast.makeText(LoginActivity.this, result.get("token").toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "logged in", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(LoginActivity.this, ClassActionsActivity.class);
                         startActivity(intent);
                     }
