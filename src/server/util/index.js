@@ -36,7 +36,7 @@ module.exports.getKeyAsync = (size, cb) => {
 };
 
 module.exports.getMongoURI = () => {
-  var mongoURI;
+  let mongoURI;
   if(process.env.MONGODB_PORT_27017_TCP_ADDR && process.env.MONGODB_PORT_27017_TCP_PORT){
     var userPass = ''
     if(process.env.MONGODB_USER && process.env.MONGODB_PASS){
