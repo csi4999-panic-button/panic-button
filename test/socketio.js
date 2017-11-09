@@ -13,24 +13,31 @@ const options = {
 };
 
 let authToken;
-const sleep = (t) => new Promise((r) => setTimeout(r, t));
+const SOCKET_TIMEOUT = 1500
 
 // This series of tests uses user[2] for registration. login, and manipulation
 describe("Socket.IO", () => {
     let client1, client2, client3;
 
     it("should connect to the server successfully", (done) => {
+        let testError = new Error("Timeout exceeded");
         client1 = io(baseUrl, options);
         client1.on("connect",()=>{
             expect(client1.connected).to.equal(true);
             client1.disconnect();
-            done();
+            testError = null;
         });
-        sleep(2000)
-        .then(_=>{client1.disconnect(); done(new Error("Timed out"))});
+        sleep(SOCKET_TIMEOUT)
+        .then(_=>{
+            if(testError === null){
+                client3.disconnect(); 
+                done(new Error("Timed out"));
+            }
+        });
     });
 
     it("should login to server using token", (done) => {
+        let testError = new Error("Timeout exceeded");
         const thisUser = users[3];
         const j = request.jar();
         const loginOpts = {
@@ -64,13 +71,20 @@ describe("Socket.IO", () => {
                 client2.emit("login", authToken);
                 client2.on("login_success",(status)=>{
                     expect(status).to.equal(true);
-                    done();
+                    testError = null;
                 });
             });
         })
         .catch( (err) => {
-            done(err);
+            testError = err;
         }); 
+        sleep(1500)
+        .then(_=>{
+            if(testError === null){
+                client3.disconnect(); 
+                done(new Error("Timed out"));
+            }
+        });
     });
 
     it("should emit messages to server", (done) => {
@@ -82,11 +96,17 @@ describe("Socket.IO", () => {
             client3.disconnect();
             done();
         });
-        sleep(2000)
-        .then(_=>{client3.disconnect(); done(new Error("Timed out"))});
+        sleep(1500)
+        .then(_=>{
+            if(testError === null){
+                client3.disconnect(); 
+                done(new Error("Timed out"));
+            }
+        });
     });
 
     it("should receive panic updates from the server", (done) => {
+        let testError = new Error("Timeout exceeded");
         const thisUser = users[3];
         const j = request.jar();
         const loginOpts = {
@@ -117,13 +137,18 @@ describe("Socket.IO", () => {
             client2.emit("panic", { classroom: classes[0]._id, state: true });
             client2.on("panic",(body) => {
                 client2.disconnect();
-                done(); 
+                testError = null;
             });
         }).catch( (err) => {
             client2.disconnect();
-            done(err);
+            testError = err;
         });
-        sleep(2000)
-        .then(_=>{client2.disconnect(); done(new Error("Timed out"))});
+        sleep(SOCKET_TIMEOUT)
+        .then(_=>{
+            if(testError === null){
+                client3.disconnect(); 
+                done(new Error("Timed out"));
+            }
+        });
     });
 });
