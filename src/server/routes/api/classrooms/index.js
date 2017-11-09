@@ -231,7 +231,7 @@ router.post("/:classroomId/leave", async (req, res) => {
     return res.status(401).send();
   }
 
-  const queryObject = { 
+  const queryObject = {
     _id: req.params.classroomId,
   };
   const updateObject = {
@@ -250,6 +250,100 @@ router.post("/:classroomId/leave", async (req, res) => {
 
     return res.json({ success: true, message: "You are no longer a member of that classroom" });
   })
+});
+
+router.post("/:classroomId/ask", async (req, res) => {
+  const question = req.body.question;
+  const user = req.user;
+
+  if (typeof question !== "string") {
+    return res.status(400).json({
+      success: false,
+      message: "question must be a string",
+    });
+  }
+
+  const classroom = await Classrooms.findOneAndUpdate({
+    _id: req.params.classroomId,
+    $or: [
+      { teachers: req.user._id },
+      { teacherAssistants: req.user._id },
+      { students: req.user._id }
+    ],
+  }, {
+    $push: {
+      questions: {
+        user: req.user._id,
+        question,
+        ts: Date.now(),
+        resolution: -1,
+        answers: [],
+      },
+    },
+  });
+
+  if (!classroom) {
+    return res.json({ success: false, message: "You are not a member of that classroom" });
+  }
+
+  return res.json({ success: true });
+});
+
+router.post("/:classroomId/answer", async (req, res) => {
+  const answer = req.body.answer;
+  const _id = req.body._id;
+  const user = req.user;
+
+  if (typeof answer !== "string") {
+    return res.status(400).json({
+      success: false,
+      message: "answer must be a string",
+    });
+  }
+
+  if (typeof _id !== "string") {
+    return res.status(400).json({
+      success: false,
+      message: "question must be identified by _id",
+    });
+  }
+
+  const classroom = await Classrooms.findOne({
+    _id: req.params.classroomId,
+    $or: [
+      { teachers: req.user._id },
+      { teacherAssistants: req.user._id },
+      { students: req.user._id }
+    ],
+  });
+
+  if (!classroom) {
+    return res.status(404).json({
+      success: false,
+      message: "You are not a member of that classroom",
+    });
+  }
+
+  const question = classroom.questions.filter(q => q._id.toString() === _id)[0];
+
+  if (!question) {
+    return res.status(404).json({
+      success: false,
+      message: `that classroom does not have a question with _id ${_id}`,
+    });
+  }
+
+  question.answers.push({
+    user: req.user._id,
+    answer,
+    ts: Date.now(),
+  });
+
+  await Classrooms.findByIdAndUpdate(req.params.classroomId, {
+    questions: classroom.questions,
+  });
+
+  return res.json({ success: true });
 });
 
 module.exports = router;
