@@ -304,8 +304,8 @@ describe("Classrooms", () => {
     });
 
     // leave the classroom, user 3
-    it("should allow the student to leave the classroom", async () => {
-        const thisUser = testMembers[STUDENT];
+    it("should allow the user to leave the classroom", async () => {
+        const thisUser = testMembers[TA];
         const j = request.jar();
         const thisClassroom = classrooms[0][0];
         const loginOpts = {

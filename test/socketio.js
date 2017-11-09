@@ -30,9 +30,11 @@ describe("Socket.IO", () => {
         });
         sleep(SOCKET_TIMEOUT)
         .then(_=>{
-            if(testError === null){
-                client3.disconnect(); 
-                done(new Error("Timed out"));
+            client1.disconnect(); 
+            if(testError !== null){
+                done(testError);
+            } else {
+                done();
             }
         });
     });
@@ -81,34 +83,38 @@ describe("Socket.IO", () => {
         }); 
         sleep(SOCKET_TIMEOUT)
         .then(_=>{
-            if(testError === null){
-                client3.disconnect(); 
-                done(new Error("Timed out"));
+            if(testError !== null){
+                done(testError);
+            } else {
+                done();
             }
         });
     });
 
     it("should emit messages to server", (done) => {
+        let testError = new Error("Timeout exceeded");
         client3 = io(baseUrl, options);
         client3.emit("login",authToken);
         client3.on("login_success", (status)=>{
             expect(status).to.equal(true);
             client3.emit("panic", { classroom: "asdf", state: true });
             client3.disconnect();
-            done();
+            testError = null;
         });
         sleep(SOCKET_TIMEOUT)
         .then(_=>{
-            if(testError === null){
-                client3.disconnect(); 
-                done(new Error("Timed out"));
+            client3.disconnect(); 
+            if(testError !== null){
+                done(testError);
+            } else {
+                done();
             }
         });
     });
 
     it("should receive panic updates from the server", (done) => {
         let testError = new Error("Timeout exceeded");
-        const thisUser = users[3];
+        const thisUser = users[4];
         const j = request.jar();
         const loginOpts = {
             method: "POST",
@@ -137,18 +143,18 @@ describe("Socket.IO", () => {
             expect(classes.length).to.equal(1);
             client2.emit("panic", { classroom: classes[0]._id, state: true });
             client2.on("panic",(body) => {
-                client2.disconnect();
                 testError = null;
             });
         }).catch( (err) => {
-            client2.disconnect();
             testError = err;
         });
         sleep(SOCKET_TIMEOUT)
         .then(_=>{
-            if(testError === null){
-                client3.disconnect(); 
-                done(new Error("Timed out"));
+            client2.disconnect(); 
+            if(testError !== null){
+                done(testError);
+            } else {
+                done();
             }
         });
     });
