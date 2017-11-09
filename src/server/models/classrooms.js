@@ -26,12 +26,21 @@ const classroomSchema = new mongoose.Schema({
       default: [],
     },
 
-    // teacherCode: { type: "ObjectId", ref: "InviteCode" },
-    // taCode: { type: "ObjectId", ref: "InviteCode" },
-    // studentCode: { type: "ObjectId", ref: "InviteCode" }
     teacherCode: String,
     taCode: String,
     studentCode: String,
+
+    questions: [{
+      user: { type: "ObjectId", ref: "User" },
+      question: String,
+      ts: Number,
+      resolution: Number,
+      answers: [{
+        user: { type: "ObjectId", ref: "User" },
+        answer: String,
+        ts: Number,
+      }],
+    }],
 }, {
     timestamps: true,
 });
@@ -43,30 +52,36 @@ classroomSchema.methods.isTeacher = function (user) {
 
 classroomSchema.methods.sanitize = function (user) {
   const out = this.toObject();
+
+  out.questions = out.questions.map((question) => {
+    question.mine = question.user.toString() === user.id;
+    question.isTeacher = this.isTeacher({ id: question.user.toString() });
+    question.answers = question.answers.map((answer) => {
+      answer.mine = answer.user.toString() === user.id;
+      answer.isTeacher = this.isTeacher({ id: answer.user.toString() });
+      return answer;
+    });
+    return question;
+  });
+
   if (!this.isTeacher(user)) {
     // remove codes from classrooms where user
     // is not teacher
     delete out.teacherCode;
     delete out.taCode;
     delete out.studentCode;
-  } // else {
-    // make codes strings instead of objects
-    // out.teacherCode = this.teacherCode.code;
-    // out.taCode = this.taCode.code;
-    // out.studentCode = this.studentCode.code;
-  // }
+
+    out.questions = out.questions.map((question) => {
+      delete question.user;
+      question.answers = question.answers.map((answer) => {
+        delete answer.user;
+        return answer;
+      });
+      return question;
+    });
+  }
   return out;
 }
-
-// function populateCodes (next) {
-//   this.populate("teacherCode");
-//   this.populate("taCode");
-//   this.populate("studentCode");
-//   next();
-// }
-//
-// classroomSchema.pre("find", populateCodes);
-// classroomSchema.pre("findOne", populateCodes);
 
 module.exports = mongoose.model("Classroom", classroomSchema);
 
