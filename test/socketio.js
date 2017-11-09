@@ -79,7 +79,7 @@ describe("Socket.IO", () => {
         .catch( (err) => {
             testError = err;
         }); 
-        sleep(1500)
+        sleep(SOCKET_TIMEOUT)
         .then(_=>{
             if(testError === null){
                 client3.disconnect(); 
@@ -97,7 +97,7 @@ describe("Socket.IO", () => {
             client3.disconnect();
             done();
         });
-        sleep(1500)
+        sleep(SOCKET_TIMEOUT)
         .then(_=>{
             if(testError === null){
                 client3.disconnect(); 
