@@ -14,6 +14,7 @@ const options = {
 
 let authToken;
 const SOCKET_TIMEOUT = 1500
+const sleep = (t) => new Promise((r) => setTimeout(r, t));
 
 // This series of tests uses user[2] for registration. login, and manipulation
 describe("Socket.IO", () => {
