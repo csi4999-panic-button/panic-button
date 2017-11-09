@@ -18,13 +18,16 @@ function getTimeout(done,sock=false) {
         if(sock)
             sock.disconnect();
         done(new Error("Timed out"));
-    },1500);
+    },1800);
     return function (err=false) {
         clearTimeout(timeout);
-        if(!err)
+        if(sock)
+            sock.disconnect();
+        if(!err){
             done();
-        else
-            done(err);
+            return;
+        }
+        done(err);
     }
 }
 
@@ -92,7 +95,7 @@ describe("Socket.IO", () => {
         client3.emit("login",authToken);
         client3.on("login_success", (status)=>{
             expect(status).to.equal(true);
-            client3.emit("panic", { classroom: "asdf", state: true });
+            client3.emit("panic", { classroom: "5a03b8d2e6aaf33d86b4d9f4", state: true });
             endTest();
         });
     });

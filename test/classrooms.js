@@ -237,7 +237,7 @@ describe("Classrooms", () => {
         }).catch( err => { console.log(err); false });
     });
 
-    // leave the classroom, user 3
+    // list the classroom the teacher belongs to with codes
     it("should list the classroom the teacher belongs to with codes", async () => {
         const thisUser = testMembers[TEACHER];
         const j = request.jar();
@@ -270,7 +270,7 @@ describe("Classrooms", () => {
         expect(classList[0].teacherCode).to.not.equal(undefined);
     });
 
-    // leave the classroom, user 3
+    // allow a student to list their classroom without codes
     it("should allow a student to list their classroom without codes", async () => {
         const thisUser = testMembers[STUDENT];
         const j = request.jar();

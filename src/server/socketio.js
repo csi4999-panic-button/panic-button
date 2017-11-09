@@ -46,9 +46,9 @@ module.exports = (app, io) => {
           _id: event.classroom,
           students: socket.user.id,
         });
-        
+        console.log(classroom);
         if (!classroom) return;
-        console.log(socket.user.id, "belongs to", classroom.name);
+        console.log(socket.user.id, "belongs to", classroom.courseTitle);
         if (event.state === null || event.state === undefined) {
           event.state = true;
         }
