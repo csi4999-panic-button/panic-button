@@ -1,10 +1,4 @@
 node_modules/
 *.iml
-.gradle
-/src/androidApp/Don'tPanicEducational/local.properties
-/src/androidApp/Don'tPanicEducational/.idea/workspace.xml
-/src/androidApp/Don'tPanicEducational/.idea/libraries
 .DS_Store
-/src/androidApp/Don'tPanicEducational/build
-/src/androidApp/Don'tPanicEducational/captures
 .externalNativeBuild
