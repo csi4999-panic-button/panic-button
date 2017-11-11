@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { MatButtonModule } from '@angular/material';
 import { MatInputModule} from '@angular/material';
-import { MatTableModule } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 
@@ -43,7 +42,6 @@ const appRoutes: Routes = [
     FormsModule,
     MatButtonModule,
     MatInputModule,
-    MatTableModule,
     RouterModule.forRoot(
       appRoutes,
       { enableTracing: true } // <-- debugging purposes only

@@ -20,6 +20,7 @@ export class LoginPageComponent{
 
   constructor(private http: HttpClient) {
     this.HTTP = http;
+    
  }
  
  
@@ -32,7 +33,7 @@ export class LoginPageComponent{
         console.log(this.flag);
      });
      return this.flag;
-   } 
+   }
  }
 
  BadLogin(thrownflag: boolean)

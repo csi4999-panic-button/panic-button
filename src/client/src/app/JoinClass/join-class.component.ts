@@ -24,10 +24,10 @@ export class JoinClassComponent {
              console.log(data["api hit"]);    
           });
           this.isCreated = true; 
-          // this.HTTP.get(url)
-          // .subscribe((data) => {
-          //     console.log(data);     
-          //  });
+          this.HTTP.get(url)
+          .subscribe((data) => {
+              console.log(data);     
+           });
         }
     }
 }
