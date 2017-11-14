@@ -78,7 +78,7 @@ module.exports = (app, io) => {
 
         // return if neither next/previous are defined
         if (invalidTypeOf("boolean", event.next) && invalidTypeOf("boolean", event.previous)) return;
-        
+
         // get new index or return if invalid (false/false, for example)
         let newIndex = classroom.currentTopic;
         if(event.next && newIndex < (classroom.topics.length-1)) newIndex += 1;

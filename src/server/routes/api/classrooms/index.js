@@ -394,7 +394,10 @@ router.post("/:classroomId/topics", async (req, res) => {
       teachers: req.user.id,
       _id: req.params.classroomId,
     }, {
-      $set: { topics: req.body.topics.concat(["General"]) }
+      $set: { 
+        topics: req.body.topics.concat(["General"]),
+        currentTopic: 0,
+      }
     })
     // confirm that it was successfully performed
     if (!classroom) throw new Error("No classroom could be updated");

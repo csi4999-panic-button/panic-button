@@ -8,7 +8,8 @@ const classrooms = require("./data/classrooms");
 const schools = require("./data/schools");
 let testMembers = [null,null,null];
 const [STUDENT,TA, TEACHER] = [0,1,2]
-
+let topicClassId;
+const classTopics = [ "Introduction", "Syllabus", "Exam Expectations" ];
 
 // This series of tests uses user[2] for registration. login, and manipulation
 describe("Classrooms", () => {
@@ -16,7 +17,7 @@ describe("Classrooms", () => {
         const thisClassroom = classrooms[0][0];
         const classOpts = {
             method: "POST",
-            uri: baseUrl + "/api/v1/classrooms",
+            uri: `${baseUrl}/api/v1/classrooms`,
             json: true,
             body: thisClassroom,
             resolveWithFullResponse: true,
@@ -36,14 +37,14 @@ describe("Classrooms", () => {
         const thisClassroom = classrooms[0][0];
         const userOpts = {
             method: 'POST',
-            uri: baseUrl + "/register",
+            uri: `${baseUrl}/register`,
             json: true,
             body: thisUser,
             jar: j,
         };
         const loginOpts = {
             method: 'POST',
-            uri: baseUrl + "/login",
+            uri: `${baseUrl}/login`,
             json: true,
             body: {
                 email: thisUser.email,
@@ -53,7 +54,7 @@ describe("Classrooms", () => {
         };
         const classOpts = {
             method: "POST",
-            uri: baseUrl + "/api/v1/classrooms",
+            uri: `${baseUrl}/api/v1/classrooms`,
             json: true,
             body: thisClassroom,
             jar: j,
@@ -69,6 +70,7 @@ describe("Classrooms", () => {
     
         // create classroom as new user account
         const newClass = await request(classOpts);
+        topicClassId = newClass._id;
         expect(newClass.courseTitle).to.equal(thisClassroom.courseTitle);
     });
 
@@ -80,7 +82,7 @@ describe("Classrooms", () => {
         
         const loginOpts = {
             method: 'POST',
-            uri: baseUrl + "/login",
+            uri: `${baseUrl}/login`,
             json: true,
             body: {
                 email: thisUser.email,
@@ -90,7 +92,7 @@ describe("Classrooms", () => {
         };
         const classOpts = {
             method: "POST",
-            uri: baseUrl + "/api/v1/classrooms",
+            uri: `${baseUrl}/api/v1/classrooms`,
             json: true,
             body: thisClassroom,
             jar: j,
@@ -117,7 +119,7 @@ describe("Classrooms", () => {
         
         const loginOpts = {
             method: 'POST',
-            uri: baseUrl + "/login",
+            uri: `${baseUrl}/login`,
             json: true,
             body: {
                 email: thisUser.email,
@@ -127,14 +129,14 @@ describe("Classrooms", () => {
         };
         const schoolOpts = {
             method: "POST",
-            uri: baseUrl + "/api/v1/schools",
+            uri: `${baseUrl}/api/v1/schools`,
             json: true,
             body: thisSchool,
             jar: j,
         };
         const classOpts = {
             method: "POST",
-            uri: baseUrl + "/api/v1/classrooms",
+            uri: `${baseUrl}/api/v1/classrooms`,
             json: true,
             body: thisClassroom,
             jar: j,
@@ -162,7 +164,7 @@ describe("Classrooms", () => {
         const thisClassroom = classrooms[0][0];
         const teacherOpts = {
             method: 'POST',
-            uri: baseUrl + "/login",
+            uri: `${baseUrl}/login`,
             json: true,
             body: {
                 email: teacher.email,
@@ -172,14 +174,14 @@ describe("Classrooms", () => {
         };
         const classOpts = {
             method: "POST",
-            uri: baseUrl + "/api/v1/classrooms",
+            uri: `${baseUrl}/api/v1/classrooms`,
             json: true,
             body: thisClassroom,
             jar: teaJar,
         };
         const inviteOpts = {
             method: 'POST',
-            uri: baseUrl + "/api/v1/classrooms/join",
+            uri: `${baseUrl}/api/v1/classrooms/join`,
             json: true,
         };
     
@@ -196,14 +198,14 @@ describe("Classrooms", () => {
                 const stuJar = request.jar();
                 const studentOpts = {
                     method: 'POST',
-                    uri: baseUrl + "/register",
+                    uri: `${baseUrl}/register`,
                     json: true,
                     body: student,
                     jar: stuJar,
                 };
                 const stuLogOpts = {
                     method: 'POST',
-                    uri: baseUrl + "/login",
+                    uri: `${baseUrl}/login`,
                     json: true,
                     body: {
                         email: student.email,
@@ -222,7 +224,7 @@ describe("Classrooms", () => {
                     testMembers[codeIndex] = student;
                     const stuInviteOpts = {
                         method: 'POST',
-                        uri: baseUrl + "/api/v1/classrooms/join",
+                        uri: `${baseUrl}/api/v1/classrooms/join`,
                         json: true,
                         body: { inviteCode: codes[codeIndex++] },
                         jar: stuJar,
@@ -244,7 +246,7 @@ describe("Classrooms", () => {
         const thisClassroom = classrooms[0][0];
         const loginOpts = {
             method: 'POST',
-            uri: baseUrl + "/login",
+            uri: `${baseUrl}/login`,
             json: true,
             body: {
                 email: thisUser.email,
@@ -254,7 +256,7 @@ describe("Classrooms", () => {
         };
         const classListOpts = {
             method: 'GET',
-            uri: baseUrl + "/api/v1/classrooms",
+            uri: `${baseUrl}/api/v1/classrooms`,
             json: true,
             jar: j
         }
@@ -277,7 +279,7 @@ describe("Classrooms", () => {
         const thisClassroom = classrooms[0][0];
         const loginOpts = {
             method: 'POST',
-            uri: baseUrl + "/login",
+            uri: `${baseUrl}/login`,
             json: true,
             body: {
                 email: thisUser.email,
@@ -287,7 +289,7 @@ describe("Classrooms", () => {
         };
         const classListOpts = {
             method: 'GET',
-            uri: baseUrl + "/api/v1/classrooms",
+            uri: `${baseUrl}/api/v1/classrooms`,
             json: true,
             jar: j
         }
@@ -310,7 +312,7 @@ describe("Classrooms", () => {
         const thisClassroom = classrooms[0][0];
         const loginOpts = {
             method: 'POST',
-            uri: baseUrl + "/login",
+            uri: `${baseUrl}/login`,
             json: true,
             body: {
                 email: thisUser.email,
@@ -320,7 +322,7 @@ describe("Classrooms", () => {
         };
         const classListOpts = {
             method: 'GET',
-            uri: baseUrl + "/api/v1/classrooms",
+            uri: `${baseUrl}/api/v1/classrooms`,
             json: true,
             jar: j
         }
@@ -331,5 +333,124 @@ describe("Classrooms", () => {
         const classList = await request(classListOpts);
         expect(classList.length).to.equal(1);
         expect(classList[0].courseTitle).to.equal(thisClassroom.courseTitle);
+    });
+
+    it("should let the teacher get the current topic in the classroom", async () => {
+        const thisUser = users[2];
+        const j = request.jar();
+        const thisClassroom = classrooms[0][0];
+        const loginOpts = {
+            method: 'POST',
+            uri: `${baseUrl}/login`,
+            json: true,
+            body: {
+                email: thisUser.email,
+                password: thisUser.password
+            },
+            jar: j,
+        };
+        const currentTopicOpts = {
+            method: 'GET',
+            uri: `${baseUrl}/api/v1/classrooms/${topicClassId}/topics/current`,
+            json: true,
+            body: { topics: classTopics },
+            jar: j,
+        }
+
+        const login = await request(loginOpts);
+        expect(login.success).to.equal(true);
+
+        const topicUpdate = await request(currentTopicOpts);
+        expect(topicUpdate.topic).to.equal("General");
+    });
+
+    it("should let the teacher update the topics of the classroom", async () => {
+        const thisUser = users[2];
+        const j = request.jar();
+        const thisClassroom = classrooms[0][0];
+        const loginOpts = {
+            method: 'POST',
+            uri: `${baseUrl}/login`,
+            json: true,
+            body: {
+                email: thisUser.email,
+                password: thisUser.password
+            },
+            jar: j,
+        };
+        const topicUpdateOpts = {
+            method: 'POST',
+            uri: `${baseUrl}/api/v1/classrooms/${topicClassId}/topics`,
+            json: true,
+            body: { topics: classTopics },
+            jar: j,
+        };
+        const currentTopicOpts = {
+            method: 'GET',
+            uri: `${baseUrl}/api/v1/classrooms/${topicClassId}/topics/current`,
+            json: true,
+            body: { topics: classTopics },
+            jar: j,
+        };
+
+        const login = await request(loginOpts);
+        expect(login.success).to.equal(true);
+
+        const topicUpdate = await request(topicUpdateOpts);
+        expect(topicUpdate.success).to.equal(true);
+
+        const currentTopic = await request(currentTopicOpts);
+        expect(currentTopic.topic).to.equal(classTopics[0]);
+    });
+
+    it("should let the teacher switch between topics in the classroom", async () => {
+        const thisUser = users[2];
+        const j = request.jar();
+        const thisClassroom = classrooms[0][0];
+        const classTopics = [ "Introduction", "Syllabus", "Exam Expectations" ];
+        const baseRoute = `${baseUrl}/api/v1/classrooms/${topicClassId}/topics`;
+        const loginOpts = {
+            method: 'POST',
+            uri: `${baseUrl}/login`,
+            json: true,
+            body: {
+                email: thisUser.email,
+                password: thisUser.password
+            },
+            jar: j,
+        };
+        const currentTopicOpts = {
+            method: 'GET',
+            uri: `${baseUrl}/api/v1/classrooms/${topicClassId}/topics/current`,
+            json: true,
+            body: { topics: classTopics },
+            jar: j,
+        };
+        const nextTopicOpts = {
+            method: 'PUT',
+            uri: `${baseRoute}/next`,
+            json: true,
+            jar: j,
+        };
+        const previousTopicOpts = {
+            method: 'PUT',
+            uri: `${baseRoute}/previous`,
+            json: true,
+            jar: j,
+        };
+
+        const login = await request(loginOpts);
+        expect(login.success).to.equal(true);
+
+        const currentTopic = await request(currentTopicOpts);
+        expect(currentTopic.topic).to.equal(classTopics[0]);
+
+        let localTopicIndex = 0;
+        const nextTopic = await request(nextTopicOpts);
+        expect(nextTopic.topic).to.equal(classTopics[++localTopicIndex]);
+        const nextTopic2 = await request(nextTopicOpts);
+        expect(nextTopic2.topic).to.equal(classTopics[++localTopicIndex]);
+        const previousTopic = await request(previousTopicOpts);
+        expect(previousTopic.topic).to.equal(classTopics[--localTopicIndex]);
     });
 });
