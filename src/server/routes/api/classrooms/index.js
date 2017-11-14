@@ -323,7 +323,7 @@ router.post("/:classroomId/answer", async (req, res) => {
   return res.json({ success: true });
 });
 
-router.get("/:classroomId/topic", async (req, res) => {
+router.get("/:classroomId/topics/current", async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).send();
   }

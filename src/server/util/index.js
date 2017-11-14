@@ -87,3 +87,7 @@ module.exports.joinClassroomByInviteCode = async (code, userId) => {
     return { success: false, message: err.message };
   }
 }
+
+module.exports.invalidBoolean = (type, val) => {
+  return (val === null || val === undefined || typeof val !== type);
+}

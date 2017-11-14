@@ -2,6 +2,7 @@
 
 const Classrooms = require("./models/classrooms");
 const Users = require("./models/users");
+const invalidBoolean = require("./util").invalidBoolean;
 
 const panicked = {};
 const timers = {};
@@ -75,9 +76,8 @@ module.exports = (app, io) => {
         if (!classroom) return;
         console.log(socket.user.id, "is a teacher of", classroom.name);
 
-        // return if neither next/previous is defined
-        if (event.next === null || event.next === undefined) return;
-        if (event.previous === null || event.previous === undefined) return;
+        // return if neither next/previous are defined
+        if (invalidOf("boolean", event.next) && invalidOf("boolean", event.previous)) return;
         
         // get new index or return if invalid (false/false, for example)
         let newIndex = classroom.currentTopic;
