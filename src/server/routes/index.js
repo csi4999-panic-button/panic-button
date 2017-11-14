@@ -3,6 +3,7 @@
 const router = require("express").Router();
 const passport = require("passport");
 const Users = require("../models/users");
+const util = require("../util");
 
 router.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
@@ -33,6 +34,15 @@ router.post("/register", async (req, res) => {
   } catch (err) {
     return res.status(400).json({ success: false, message: err });
   }
+});
+
+// adds user to the listing for a classroom based on a given invite code
+router.get("/join/:inviteCode([0-9A-Za-z+/=]+)", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+  const ret = await util.joinClassroomByInviteCode(req.params.inviteCode,req.user._id);
+  return (ret.success) ? res.redirect("/user-console") : res.status(400).json(ret);
 });
 
 router.use("/api/v1", require("./api"));
