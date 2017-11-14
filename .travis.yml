@@ -32,6 +32,12 @@ after_success:
     fi
 
 notifications:
-  slack: bleachboys:xo7cosUubMzuwfZFVVEncJ94
+  slack: 
+    rooms:
+      - bleachboys:xo7cosUubMzuwfZFVVEncJ94
     on_success: change # default: always
     on_failure: always # default: always
+    on_pull_requests: false
+    template:
+      - "%{repository} (%{commit}) : %{message} %{foo} "
+      - "Build details: %{build_url}"
