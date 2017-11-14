@@ -446,11 +446,17 @@ describe("Classrooms", () => {
         expect(currentTopic.topic).to.equal(classTopics[0]);
 
         let localTopicIndex = 0;
+        // classTopics[1] ===  "Syllabus"
         const nextTopic = await request(nextTopicOpts);
         expect(nextTopic.topic).to.equal(classTopics[++localTopicIndex]);
+        // classTopics[2] ===  "Exam Expectations"
+        const nextTopic1 = await request(nextTopicOpts);
+        expect(nextTopic1.topic).to.equal(classTopics[++localTopicIndex]);
+        // classTopics[3] === undefined, but server should append "General" to array
         const nextTopic2 = await request(nextTopicOpts);
-        expect(nextTopic2.topic).to.equal(classTopics[++localTopicIndex]);
+        expect(nextTopic2.topic).to.equal("General");
+        // classTopics[2] === "Exam Expectations"
         const previousTopic = await request(previousTopicOpts);
-        expect(previousTopic.topic).to.equal(classTopics[--localTopicIndex]);
+        expect(previousTopic.topic).to.equal(classTopics[localTopicIndex]);
     });
 });
