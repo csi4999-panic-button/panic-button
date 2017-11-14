@@ -39,5 +39,6 @@ notifications:
     on_failure: always # default: always
     on_pull_requests: false
     template:
-      - "%{repository} (%{commit}) : %{message} %{foo} "
-      - "Build details: %{build_url}"
+      - "%{repository_name} by %{author} in branch %{branch}"
+      - "Build #%{build_number} has %{result} in %{elapsed_time}"
+      - "Commit: %{message}"
