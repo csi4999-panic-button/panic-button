@@ -33,3 +33,5 @@ after_success:
 
 notifications:
   slack: bleachboys:xo7cosUubMzuwfZFVVEncJ94
+    on_success: change # default: always
+    on_failure: always # default: always
