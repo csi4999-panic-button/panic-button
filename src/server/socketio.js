@@ -28,24 +28,26 @@ module.exports = (app, io) => {
       });
       classrooms.forEach((classroom) => {
         socket.join(classroom.id);
+        socket.join(socket.user.id);
         console.log("Joining socket to classroom",classroom.id);
+        console.log("Joining socket to user",socket.user.id);
       });
 
-      // join/leave classrooms after socket connection
-      app.ee.on(`${socket.user.id}:join`, (classroom) => socket.join(classroom));
-      app.ee.on(`${socket.user.id}:leave`, (classroom) => socket.leave(classroom));
-
       socket.on("panic", async (event) => {
-        event = JSON.parse(event);
+        // Android app sends strings, Web UI sends objects
+        event = (typeof event === "string") ? JSON.parse(event) : event;
+
+        // judicious logging
         console.log("socket panic event received");
         console.log("_id:",event.classroom);
         console.log("students:",socket.user.id);
         console.log("event contains:", event);
+
         const classroom = await Classrooms.findOne({
           _id: event.classroom,
           students: socket.user.id,
         });
-        
+
         if (!classroom) return;
         console.log(socket.user.id, "belongs to", classroom.name);
         if (event.state === null || event.state === undefined) {
@@ -55,35 +57,41 @@ module.exports = (app, io) => {
         app.ee.emit("panic", { user: socket.user.id, classroom: event.classroom, state: event.state });
       });
 
+      // join/leave classrooms after socket connection
+      app.ee.on(`${socket.user.id}:join`, (classroom) => socket.join(classroom));
+      app.ee.on(`${socket.user.id}:leave`, (classroom) => socket.leave(classroom));
     });
   });
 
   app.ee.on("panic", (event) => {
     console.log("app.ee panic event received");
+
+    // ensure set of panicked students exists for classroom
+    // default empty set
     if (!panicked[event.classroom]) {
       panicked[event.classroom] = new Set();
       console.log("Created new classroom panic session");
     }
 
-    // clear timer
+    // clear timer. Will be reset if panic state is true
     if (timers[event.user] && timers[event.user][event.classroom]) {
       clearTimeout(timers[event.user][event.classroom]);
       console.log("Cleared",event.user,"due to timeout");
     }
 
     if (event.state) {
+      // set user's panicked state true
       panicked[event.classroom].add(event.user);
-      // set timer
+
+      // ensure timers object exists for user
       timers[event.user] = timers[event.user] || {};
+
+      // after 10 seconds, set panic to false for user in classroom
       timers[event.user][event.classroom] = setTimeout(() => {
-        app.ee.emit("panic", {
-          classroom: event.classroom,
-          user: event.user,
-          state: false,
-        });
+        app.ee.emit("panic", { classroom: event.classroom, user: event.user, state: false });
       }, 1000 * 10);
-      console.log("Added user",event.user,"to panic state");
     } else {
+      // unpanick user
       panicked[event.classroom].delete(event.user);
       console.log("Removed user",event.user,"from panic state");
     }
@@ -91,7 +99,11 @@ module.exports = (app, io) => {
     io.in(event.classroom).emit("panic", {
       classroom: event.classroom,
       panicNumber: panicked[event.classroom].size,
-    });
+    })
+      .in(event.user).emit("panic_state_change", {
+        classroom: event.classroom,
+        state: event.state,
+      });
     console.log("panicNumber:", panicked[event.classroom].size)
   });
 
