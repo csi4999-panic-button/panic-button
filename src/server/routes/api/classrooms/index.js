@@ -115,7 +115,6 @@ router.post("/join", async (req, res) => {
   return res.status(status).json(ret);
 });
 
-
 // rotate the invite code of $type for $classroomId
 router.put("/:classroomId/code/:type(student|teacherAssistant|teacher)", async (req,res) => {
   try {
@@ -323,15 +322,29 @@ router.post("/:classroomId/answer", async (req, res) => {
   return res.json({ success: true });
 });
 
+router.get("/:classroomId/topics", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
+  return Classrooms.findOne({
+    _id: req.params.classroomId,
+    teachers: req.user.id,
+  })
+  .then(classroom => res.json({ success: true, topics: classroom.topics, index: classroom.currentTopic }))
+  .catch( err => res.json({ success: false, message: err.message }));
+});
+
 router.get("/:classroomId/topics/current", async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).send();
   }
 
-  return Classrooms.findById(req.params.classroomId)
-  .then(classroom => { return res.json({
-    topic: classroom.topics[classroom.currentTopic]
-  })})
+  return Classrooms.findOne({
+    _id: req.params.classroomId,
+    teachers: req.user.id,
+  })
+  .then(classroom => res.json({ success: true, topic: classroom.topics[classroom.currentTopic] }))
   .catch( err => res.json({ success: false, message: err.message }));
 });
 
@@ -360,7 +373,7 @@ router.post("/:classroomId/topic/:direction(next|previous)", async (req, res) =>
     // any way to confirm this works or does it throw an error if it doesn't?
     await classroom.save();
     
-    return res.status(200).json({ success: true, message: "Topic successfully updated", topic: classroom.topics[newIndex] });
+    return res.status(200).json({ success: true, message: "Topic index moved successfully", topic: classroom.topics[newIndex] });
   } catch(err) {
     console.log(err.message);
     return res.status(400).json({ success: false, message: err.message });
