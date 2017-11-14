@@ -88,6 +88,6 @@ module.exports.joinClassroomByInviteCode = async (code, userId) => {
   }
 }
 
-module.exports.invalidBoolean = (type, val) => {
+module.exports.invalidTypeOf = (type, val) => {
   return (val === null || val === undefined || typeof val !== type);
 }

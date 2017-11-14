@@ -77,7 +77,7 @@ module.exports = (app, io) => {
         console.log(socket.user.id, "is a teacher of", classroom.name);
 
         // return if neither next/previous are defined
-        if (invalidOf("boolean", event.next) && invalidOf("boolean", event.previous)) return;
+        if (invalidTypeOf("boolean", event.next) && invalidTypeOf("boolean", event.previous)) return;
         
         // get new index or return if invalid (false/false, for example)
         let newIndex = classroom.currentTopic;
