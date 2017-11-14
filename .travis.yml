@@ -30,3 +30,6 @@ after_success:
     else
     echo "Docker images are not updated on pull requests"
     fi
+
+notifications:
+  slack: bleachboys:xo7cosUubMzuwfZFVVEncJ94
