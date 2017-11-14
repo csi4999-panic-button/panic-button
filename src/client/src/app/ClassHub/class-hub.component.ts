@@ -29,6 +29,7 @@ export class ClassHubComponent {
     this.panicNumbers = {};
     this.currentClassroom = '5a045d038e83e6a7a32d634d';
 
+
     const url = '/api/v1/authenticate'
     http.post(url, {})
       .subscribe((data) => {
@@ -41,19 +42,19 @@ export class ClassHubComponent {
         this.socket.on('login_success', function(sucess:boolean){
           console.log('connected', sucess);
         })
-        // event has the form:
-        // {
-        //   classroom: String - classroom id receiving the event
-        //   panicNumber: number - the number of currently panic'd students
-        // }
           .on('panic', (event) => {
             console.log(event);
             this.panicNumbers[event.classroom] = event.panicNumber;
-            // this.UpdateView(event.panicNumber);
+            this.UpdateView();
           })
           .on('panic_state_change', (event) => {
             this.panicStates[event.classroom] = event.state;
             console.log("panicked", this.panicStates);
+            this.UpdateView();
+          })
+          .on('refresh', (event) => {
+            // set values
+            this.UpdateView();
           });
       });
   }
@@ -63,7 +64,18 @@ export class ClassHubComponent {
     this.socket.emit("panic", { classroom: this.currentClassroom, state: !this.panicStates[this.currentClassroom] });
   }
 
-  UpdateView(panicNumber: number){
+  UpdateView(){
     console.log(panicNumber);
+    const panicState = this.panicStates[this.currentClassroom];
+    const panicNumber = this.panicNumbers[this.currentClassroom];
+
+    // set current number in textbox
+    //
+    // if panicState true
+    //    turn panic number red
+    //    panic button text set to "unpanic"
+    // else
+    //    turn panic number black
+    //    panic button text set to "panic"
   }
 }
