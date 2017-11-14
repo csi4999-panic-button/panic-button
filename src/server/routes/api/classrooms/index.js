@@ -222,6 +222,10 @@ router.post("/:classroomId/leave", async (req, res) => {
 });
 
 router.post("/:classroomId/ask", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
   const question = req.body.question;
   const user = req.user;
 
@@ -259,6 +263,10 @@ router.post("/:classroomId/ask", async (req, res) => {
 });
 
 router.post("/:classroomId/answer", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
   const answer = req.body.answer;
   const _id = req.body._id;
   const user = req.user;
@@ -313,6 +321,18 @@ router.post("/:classroomId/answer", async (req, res) => {
   });
 
   return res.json({ success: true });
+});
+
+router.get("/:classroomId/topic", async (req,res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
+  return Classrooms.findById(req.params.classroomId)
+  .then(classroom => { return res.json({
+    topic: classroom.topics[classroom.currentTopic]
+  })})
+  .catch( err => res.json({ success: false, message: err.message }));
 });
 
 module.exports = router;
