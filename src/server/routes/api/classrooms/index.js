@@ -348,7 +348,7 @@ router.get("/:classroomId/topics/current", async (req, res) => {
   .catch( err => res.json({ success: false, message: err.message }));
 });
 
-router.post("/:classroomId/topic/:direction(next|previous)", async (req, res) => {
+router.put("/:classroomId/topic/:direction(next|previous)", async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).send();
   }
