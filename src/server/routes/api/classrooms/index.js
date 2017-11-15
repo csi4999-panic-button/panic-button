@@ -334,14 +334,25 @@ router.post("/:classroomId/answer", async (req, res) => {
     });
   }
 
+  const answerDoc = {
+    user: req.user._id,
+    answer,
+    ts: Date.now(),
+  };
+
   question.answers.push({
     user: req.user._id,
     answer,
     ts: Date.now(),
   });
 
-  await Classrooms.findByIdAndUpdate(req.params.classroomId, {
-    questions: classroom.questions,
+  await Classrooms.findOneAndUpdate({
+    _id: req.params.classroomId,
+    questions: {
+      $elemMatch: { _id: question._id, },
+    }, 
+  }, {
+    $push: { 'questions.$.answers': answerDoc, }
   });
 
   return res.json({ success: true });
