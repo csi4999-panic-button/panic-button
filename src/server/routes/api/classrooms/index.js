@@ -283,6 +283,10 @@ router.post("/:classroomId/ask", async (req, res) => {
   });
 
   if (!classroom) {
+    req.app.ee.emit("new_question", {
+      classroom: req.params.classroomId,
+      question: classroom.questions[classroom.questions.length-1],
+    })
     return res.json({ success: false, message: "You are not a member of that classroom" });
   }
 

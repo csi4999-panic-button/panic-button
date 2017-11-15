@@ -110,9 +110,10 @@ module.exports = (app, io) => {
   app.ee.on("new_question", (event) => {
     console.log("event contains", event);
 
+    // send new question to all users in classroom
     io.in(event.classroom).emit("new_question", {
       classroom: event.classroom,
-      questionId: event.question.id,
+      questionId: event.question._id,
       questionStr: event.question.question,
     });
   });
@@ -120,10 +121,11 @@ module.exports = (app, io) => {
   app.ee.on("new_answer", (event) => {
     console.log("event contains", event);
     
+    // send new answer to all users in classroom
     io.in(event.classroom).emit("new_question", {
       classroom: event.classroom,
-      questionId: event.question.id,
-      answerId: event.answer.id,
+      questionId: event.question._id,
+      answerId: event.answer._id,
       answerStr: event.answer.answer,
     });
   });
@@ -132,7 +134,11 @@ module.exports = (app, io) => {
   app.ee.on("refresh_questions", (event) => {
     console.log("event contains", event);
     
-    io.in(event.user).emit("refresh_questions", event.questions);
+    // refresh given user of updated questions for classroom
+    io.in(event.user).emit("refresh_questions", {
+      classroom: event.classroom,
+      questions: event.questions
+    });
   })
   
   return io;
