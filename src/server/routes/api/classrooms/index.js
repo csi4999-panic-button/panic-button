@@ -107,45 +107,14 @@ router.put("/id/:classroomId", async (req, res) => {
 
 // adds user to the listing for a classroom based on a given invite code
 router.post("/join", async (req, res) => {
-  try {
-    if (!req.isAuthenticated()) {
-      return res.status(401).send();
-    }
-
-    const code = req.body.inviteCode;
-
-    const classroom = await Classrooms.findOne({
-      $or: [
-      { teacherCode: code },
-      { taCode: code },
-      { studentCode: code },
-      ],
-    });
-
-    if (!code || !classroom) {
-      throw new Error("Classroom not found");
-    }
-
-
-    if (classroom.teacherCode === code) {
-      await Classrooms.findByIdAndUpdate(classroom.id,
-          { $addToSet: { teachers: req.user.id } });
-    } else if (classroom.taCode === code) {
-      await Classrooms.findByIdAndUpdate(classroom.id,
-          { $addToSet: { teacherAssistants: req.user.id } });
-    } else if (classroom.studentCode === code) {
-      await Classrooms.findByIdAndUpdate(classroom.id,
-          { $addToSet: { students: req.user.id } });
-    }
-
-    return res.json({ success: true, message: "You successfully belong to the classroom" });
-  } catch (err) {
-    return res.json({
-      success: false,
-      message: err.message,
-    });
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
   }
+  const ret = await util.joinClassroomByInviteCode(req.body.inviteCode,req.user.id);
+  const status = (ret.success) ? 200 : 500;
+  return res.status(status).json(ret);
 });
+
 
 // rotate the invite code of $type for $classroomId
 router.put("/:classroomId/code/:type(student|teacherAssistant|teacher)", async (req,res) => {

@@ -1,6 +1,7 @@
 "use strict";
 
 const crypto = require("crypto");
+const Classrooms = require("../models/classrooms");
 
 module.exports.getKey = (size) => {
     const buffer = crypto.randomBytes(size);
@@ -52,3 +53,37 @@ module.exports.getMongoURI = () => {
   return mongoURI;
 }
 
+module.exports.joinClassroomByInviteCode = async (code, userId) => {
+  try {
+
+    console.log("Code",code);
+    console.log("UserId",userId);
+    const classroom = await Classrooms.findOne({
+      $or: [
+      { teacherCode: code },
+      { taCode: code },
+      { studentCode: code },
+      ],
+    });
+
+    if (!code || !classroom) {
+      throw new Error("Classroom not found");
+    }
+
+
+    if (classroom.teacherCode === code) {
+      await Classrooms.findByIdAndUpdate(classroom.id,
+          { $addToSet: { teachers: userId } });
+    } else if (classroom.taCode === code) {
+      await Classrooms.findByIdAndUpdate(classroom.id,
+          { $addToSet: { teacherAssistants: userId } });
+    } else if (classroom.studentCode === code) {
+      await Classrooms.findByIdAndUpdate(classroom.id,
+          { $addToSet: { students: userId } });
+    }
+
+    return { success: true, message: "You successfully belong to the classroom" };
+  } catch (err) {
+    return { success: false, message: err.message };
+  }
+}

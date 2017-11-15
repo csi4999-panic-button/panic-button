@@ -61,11 +61,11 @@ export class ClassHubComponent {
 
   Panic(){
     // set the panic state to the opposite of the current saved state
-    this.socket.emit("panic", { classroom: this.currentClassroom, state: !this.panicStates[this.currentClassroom] });
+    this.socket.emit('panic', { classroom: this.currentClassroom, state: !this.panicStates[this.currentClassroom] });
   }
 
   UpdateView(){
-    console.log(panicNumber);
+    console.log(this.panicNumbers[this.currentClassroom]);
     const panicState = this.panicStates[this.currentClassroom];
     const panicNumber = this.panicNumbers[this.currentClassroom];
 
