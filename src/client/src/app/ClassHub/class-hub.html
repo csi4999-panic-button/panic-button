@@ -1,1 +1,4 @@
-<button md-button class="button-style" (click)=Panic() md-raised-button>Panic</button>
+<button mat-button class="button-style" (click)=Panic() mat-raised-button>Panic</button>
+<button mat-button class="button-style" (click)=UpdateView() mat-raised-button>Panic</button>
+<button mat-button *ngIf="!isPanic" (click)=Panic()><i class="material-icons icon-size">radio_button_unchecked</i></button>
+<button mat-button *ngIf="isPanic"(click)=Panic()><i class="material-icons red-color icon-size">radio_button_checked</i></button>
