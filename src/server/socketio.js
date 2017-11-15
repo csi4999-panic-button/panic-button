@@ -87,11 +87,12 @@ module.exports = (app, io) => {
 
         // set topic and emit to eventemitter with user/classroom/topic
         const newTopic = classroom.topics[newIndex];
-        console.log("Changing topic to", newTopic);
         app.ee.emit("topic_change", { 
           user: socket.user.id, 
           classroom: event.classroom, 
           topic: newTopic,
+          first: newIndex === 0,
+          last: newIndex === classroom.topics.length-1,
         });
       });
 
@@ -146,10 +147,13 @@ module.exports = (app, io) => {
   });
 
   app.ee.on("topic_change", (event) => {
+    console.log("Changing topic to", event.topic);
     // update all users with current topic string
     io.in(event.classroom).emit("topic_change", {
       classroom: event.classroom,
       topic: event.topic,
+      first: event.first,
+      last: event.last,
     });
     // user is not used but maybe there's some use for it coming up
   });

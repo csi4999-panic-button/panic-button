@@ -372,6 +372,14 @@ router.put("/:classroomId/topics/:direction(next|previous)", async (req, res) =>
     classroom.currentTopic = newIndex;
     // any way to confirm this works or does it throw an error if it doesn't?
     await classroom.save();
+
+    // update the classroom of the topic change via sockets
+    req.app.ee.emit("topic_change", {
+      classroom: classroom._id,
+      topic: classroom.topics[newIndex],
+      first: newIndex === 0,
+      last: newIndex === (classroom.topics.length-1),
+    });
     
     return res.status(200).json({ success: true, message: "Topic index moved successfully", topic: classroom.topics[newIndex] });
   } catch(err) {
@@ -390,17 +398,26 @@ router.post("/:classroomId/topics", async (req, res) => {
     if(req.body.topics === null || req.body.topics === undefined) req.body.topics = [];
     // any other data types will end processing
     if (!Array.isArray(req.body.topics)) throw new Error("The data type of topics was not acceptable");
+    const newTopics = req.body.topics.concat(["General"]);
     const classroom = await Classrooms.findOneAndUpdate({
       teachers: req.user.id,
       _id: req.params.classroomId,
     }, {
       $set: { 
-        topics: req.body.topics.concat(["General"]),
+        topics: newTopics,
         currentTopic: 0,
       }
     })
     // confirm that it was successfully performed
     if (!classroom) throw new Error("No classroom could be updated");
+    
+    // update the classroom of the topics update via sockets!
+    req.app.ee.emit("topic_change", {
+      classroom: req.params.classroomId,
+      topic: newTopics[0],
+      first: true,
+      last: newTopics.length === 1,
+    });
     return res.status(200).json({ success: true, message: "Topics successfully updated" });
   } catch(err) {
     return res.status(400).json({ success: false, message: err.message });
