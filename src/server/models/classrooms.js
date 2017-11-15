@@ -50,6 +50,14 @@ classroomSchema.methods.isTeacher = function (user) {
   return this.teachers.map(t => t.toString()).includes(user.id);
 }
 
+classroomSchema.methods.isTeacherAssistant = function (user) {
+  return this.teacherAssistants.map(t => t.toString()).includes(user.id);
+}
+
+classroomSchema.methods.isStudent = function (user) {
+  return this.students.map(t => t.toString()).includes(user.id);
+}
+
 classroomSchema.methods.sanitize = function (user) {
   const out = this.toObject();
 
@@ -80,6 +88,11 @@ classroomSchema.methods.sanitize = function (user) {
       return question;
     });
   }
+
+  out.role = (this.isTeacher(user)) ? "teacher" :
+    (this.isTeacherAssistant(user)) ? "teacherAssistant" :
+    (this.isStudent(user)) ? "student" : null;
+
   return out;
 }
 
