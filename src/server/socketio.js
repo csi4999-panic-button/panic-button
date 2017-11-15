@@ -107,6 +107,34 @@ module.exports = (app, io) => {
     console.log("panicNumber:", panicked[event.classroom].size)
   });
 
+  app.ee.on("new_question", (event) => {
+    console.log("event contains", event);
+
+    io.in(event.classroom).emit("new_question", {
+      classroom: event.classroom,
+      questionId: event.question.id,
+      questionStr: event.question.question,
+    });
+  });
+
+  app.ee.on("new_answer", (event) => {
+    console.log("event contains", event);
+    
+    io.in(event.classroom).emit("new_question", {
+      classroom: event.classroom,
+      questionId: event.question.id,
+      answerId: event.answer.id,
+      answerStr: event.answer.answer,
+    });
+  });
+  
+
+  app.ee.on("refresh_questions", (event) => {
+    console.log("event contains", event);
+    
+    io.in(event.user).emit("refresh_questions", event.questions);
+  })
+  
   return io;
 };
 
