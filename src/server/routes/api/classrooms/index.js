@@ -31,6 +31,35 @@ router.get("/", async (req, res) => {
   }
 });
 
+// returns a specific classroom this user belongs to
+router.get("/:classroomId", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
+  try {
+    // get all classrooms with current user
+    // (prepoulated)
+    const classrooms = await Classrooms.findOne({ 
+      _id: req.params.classroomId,
+      $or: [
+        { teachers: req.user._id },
+        { teacherAssistants: req.user._id },
+        { students: req.user._id }
+      ],
+    });
+
+    // remove codes from non-teacher rooms
+    // and cast to object
+    const sanitizedClassroom = classrooms.sanitize(req.user);
+
+    // send to user
+    return res.json(sanitizedClassroom);
+  } catch (err) {
+    return res.json({ status: false, message: err });
+  }
+});
+
 // creates a classroom and returns invite codes for teachers, TAs, and students
 router.post("/", async (req, res) => {
   try {
@@ -115,7 +144,6 @@ router.post("/join", async (req, res) => {
   return res.status(status).json(ret);
 });
 
-
 // rotate the invite code of $type for $classroomId
 router.put("/:classroomId/code/:type(student|teacherAssistant|teacher)", async (req,res) => {
   try {
@@ -155,6 +183,7 @@ router.put("/:classroomId/code/:type(student|teacherAssistant|teacher)", async (
   }
 });
 
+// remove a specified user from the classroom 
 router.delete("/:classroomId/:type(student|teacherAssistant|teacher)(student|teacherAssistant|teacher)/:userId", async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).send();
@@ -195,6 +224,7 @@ router.delete("/:classroomId/:type(student|teacherAssistant|teacher)(student|tea
   }).catch( (err) => res.json({ success: false, message: err.message }));
 });
 
+// removes the current user from the specified classroom
 router.post("/:classroomId/leave", async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).send();
@@ -221,6 +251,7 @@ router.post("/:classroomId/leave", async (req, res) => {
   })
 });
 
+// asks a question in the specified classroom
 router.post("/:classroomId/ask", async (req, res) => {
   const question = req.body.question;
   const user = req.user;
@@ -258,9 +289,10 @@ router.post("/:classroomId/ask", async (req, res) => {
   return res.json({ success: true });
 });
 
+// answers a specific question in a classroom
 router.post("/:classroomId/answer", async (req, res) => {
   const answer = req.body.answer;
-  const _id = req.body._id;
+  const questionId = req.body.questionId;
   const user = req.user;
 
   if (typeof answer !== "string") {
@@ -270,10 +302,10 @@ router.post("/:classroomId/answer", async (req, res) => {
     });
   }
 
-  if (typeof _id !== "string") {
+  if (typeof questionId !== "string") {
     return res.status(400).json({
       success: false,
-      message: "question must be identified by _id",
+      message: "question must be identified by questionId",
     });
   }
 
@@ -293,7 +325,7 @@ router.post("/:classroomId/answer", async (req, res) => {
     });
   }
 
-  const question = classroom.questions.filter(q => q._id.toString() === _id)[0];
+  const question = classroom.questions.filter(q => q._id.toString() === questionId)[0];
 
   if (!question) {
     return res.status(404).json({
