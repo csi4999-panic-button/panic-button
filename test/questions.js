@@ -104,7 +104,6 @@ describe("Questions", () => {
         expect(questioned.success).to.equal(true);
 
         const classWithQ = await request(classOpts);
-        console.log("Class with Q", classWithQ);
         expect(classWithQ.questions[1].question).to.equal(question);
 
         const answerOpts = {
@@ -117,13 +116,11 @@ describe("Questions", () => {
             json: true,
             jar: teaJar,
         };
-        console.log("Question ID", classWithQ.questions[1]._id);
 
         const answered = await request(answerOpts);
         expect(answered.success).to.equal(true);
 
         const classWithQA = await request(classOpts);
-        console.log("Class with QA", classWithQA);
         expect(classWithQA.questions[1].question).to.equal(question);
         expect(classWithQA.questions[1].answers[0].answer).to.equal(answer);
     });

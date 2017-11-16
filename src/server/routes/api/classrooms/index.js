@@ -259,7 +259,7 @@ router.post("/:classroomId/ask", async (req, res) => {
   if (typeof question !== "string") {
     return res.status(400).json({
       success: false,
-      message: "question must be a string",
+      message: "Question must be a string",
     });
   }
 
@@ -271,7 +271,7 @@ router.post("/:classroomId/ask", async (req, res) => {
       { students: req.user._id }
     ],
   }, {
-    $push: {
+    $addToSet: {
       questions: {
         user: req.user._id,
         question,
@@ -283,12 +283,21 @@ router.post("/:classroomId/ask", async (req, res) => {
   });
 
   if (!classroom) {
-    req.app.ee.emit("new_question", {
-      classroom: req.params.classroomId,
-      question: classroom.questions[classroom.questions.length-1],
-    })
     return res.json({ success: false, message: "You are not a member of that classroom" });
   }
+
+  const updatedClassroom = await Classrooms.findById(req.params.classroomId);
+  const usersQuestions = updatedClassroom.questions.filter( q => 
+    (q.user.toString() === req.user.id.toString()) 
+    && (q.question === question)
+  );
+  const newQuestion = usersQuestions[usersQuestions.length-1];
+
+  req.app.ee.emit("new_question", {
+    classroom: req.params.classroomId,
+    question: newQuestion,
+    numberOfQuestions: updatedClassroom.questions.length,
+  })
 
   return res.json({ success: true });
 });
@@ -302,14 +311,14 @@ router.post("/:classroomId/answer", async (req, res) => {
   if (typeof answer !== "string") {
     return res.status(400).json({
       success: false,
-      message: "answer must be a string",
+      message: "Answer must be a string",
     });
   }
 
   if (typeof questionId !== "string") {
     return res.status(400).json({
       success: false,
-      message: "question must be identified by questionId",
+      message: "Question must be identified by questionId",
     });
   }
 
@@ -334,7 +343,7 @@ router.post("/:classroomId/answer", async (req, res) => {
   if (!question) {
     return res.status(404).json({
       success: false,
-      message: `that classroom does not have a question with _id ${_id}`,
+      message: `That classroom does not have a question with _id ${_id}`,
     });
   }
 
@@ -344,19 +353,29 @@ router.post("/:classroomId/answer", async (req, res) => {
     ts: Date.now(),
   };
 
-  question.answers.push({
-    user: req.user._id,
-    answer,
-    ts: Date.now(),
-  });
-
   await Classrooms.findOneAndUpdate({
     _id: req.params.classroomId,
     questions: {
       $elemMatch: { _id: question._id, },
     }, 
   }, {
-    $push: { 'questions.$.answers': answerDoc, }
+    $addToSet: { 'questions.$.answers': answerDoc, }
+  });
+
+  const updatedC = await Classrooms.findById(req.params.classroomId);
+  const updatedQ = updatedC.questions.filter( q => q._id.toString() === questionId)[0];
+  console.log("Updated question:", updatedQ);
+  if(updatedQ.answers.length < 1)
+    return res.status(300).send({ success: false, message: "Answer not created successfully" });
+  const newAnswerDoc = updatedQ.answers[updatedQ.answers.length-1];
+
+  // update users with new answer over sockets
+  req.app.ee.emit("new_answer", {
+    classroom: req.params.classroomId,
+    questionId: updatedQ._id.toString(),
+    answerId: newAnswerDoc._id.toString(),
+    answer: newAnswerDoc.answer,
+    numberOfAnswers: updatedQ.answers.length,
   });
 
   return res.json({ success: true });

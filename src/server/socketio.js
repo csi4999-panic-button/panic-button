@@ -5,6 +5,7 @@ const Users = require("./models/users");
 
 const panicked = {};
 const timers = {};
+const votes = {};
 
 module.exports = (app, io) => {
   io.on("connection", async (socket) => {
@@ -55,6 +56,48 @@ module.exports = (app, io) => {
         }
         console.log("emitted state:", event.state);
         app.ee.emit("panic", { user: socket.user.id, classroom: event.classroom, state: event.state });
+      });
+      
+      socket.on("question_vote", async (event) => {
+        console.log("question_vote event received:", event);
+
+        const classroom = await Classrooms.findOne({
+          _id: event.classroom,
+          students: socket.user.id,
+        });
+
+        if (!classroom) return;
+        console.log(`${socket.user.id} belongs to ${classroom.name}`);
+        if(event.up === undefined || event.up === null) event.up = false;
+        if(typeof event.up !== "boolean") return;
+        console.log("emitted upvote:", event.up);
+        app.ee.emit("question_vote", { 
+          user: socket.user.id, 
+          classroom: event.classroom, 
+          question: event.question,
+          up: event.up,
+        });
+      });
+      socket.on("answer_vote", async (event) => {
+        console.log("answer_vote event received:", event);
+
+        const classroom = await Classrooms.findOne({
+          _id: event.classroom,
+          students: socket.user.id,
+        });
+
+        if (!classroom) return;
+        console.log(`${socket.user.id} belongs to ${classroom.name}`);
+        if(event.up === undefined || event.up === null) event.up = false;
+        if(typeof event.up !== "boolean") return;
+        console.log("emitted upvote:", event.up);
+        app.ee.emit("answer_vote", { 
+          user: socket.user.id, 
+          classroom: event.classroom, 
+          question: event.question,
+          answer: event.answer,
+          up: event.up, 
+        });
       });
 
       // join/leave classrooms after socket connection
@@ -107,8 +150,18 @@ module.exports = (app, io) => {
     console.log("panicNumber:", panicked[event.classroom].size)
   });
 
+  /* Receives:
+    {
+      classroom: string,
+      question: {
+        _id: string,
+        question: string,
+      },
+      numberOfQuestions: number
+    }
+  */
   app.ee.on("new_question", (event) => {
-    console.log("event contains", event);
+    console.log("new_question event contains", event);
 
     // send new question to all users in classroom
     io.in(event.classroom).emit("new_question", {
@@ -118,29 +171,116 @@ module.exports = (app, io) => {
     });
   });
 
+  /* Receives
+    {
+      classroom: string,
+      questionId: string,
+      answerId: string,
+      answerStr: string,
+      numberOfAnswers: number
+    }
+  */
   app.ee.on("new_answer", (event) => {
-    console.log("event contains", event);
+    console.log("new_answer event contains", event);
     
     // send new answer to all users in classroom
     io.in(event.classroom).emit("new_question", {
       classroom: event.classroom,
-      questionId: event.question._id,
-      answerId: event.answer._id,
-      answerStr: event.answer.answer,
+      questionId: event.questionId,
+      answerId: event.answerId,
+      answerStr: event.answerStr,
     });
   });
   
-
+  /* Receives
+    [{
+      question: String,
+      ts: Number,
+      resolution: Number,
+      answers: [{
+        answer: String,
+        ts: Number,
+      }],
+    }]
+  */
   app.ee.on("refresh_questions", (event) => {
-    console.log("event contains", event);
+    console.log("refresh_questions event contains", event);
     
     // refresh given user of updated questions for classroom
     io.in(event.user).emit("refresh_questions", {
       classroom: event.classroom,
-      questions: event.questions
+      questions: event.questions,
     });
   })
   
+  app.ee.on("question_vote", (event) => {
+    console.log("question_vote event contains");
+
+    if (!votes[event.classroom]) {
+      votes[event.classroom] = new Set();
+      console.log("Created new classroom votes set");
+      if (!votes[event.classroom][event.question]) {
+        votes[event.classroom][event.question] = new Set();
+        console.log("Created new question votes set");
+      }
+    }
+
+    if(event.up)
+      votes[event.classroom][event.question].add(event.user);
+    else
+      votes[event.classroom][event.question].delete(event.user);
+
+    const classroom = await Classrooms.findById(event.classroom);
+    const question = classroom.questions.filter(q => q._id === event.question)[0];
+    question.resolution = votes[event.classroom][event.question].size;
+
+    await classroom.save();
+
+    // update users with current votes on question
+    io.in(event.classroom).emit("question_vote", {
+      classroom: event.classroom,
+      questionId: event.questionId,
+      votes: question.resolution,
+    });
+  })
+
+  app.ee.on("answer_vote", (event) => {
+    console.log("answer_vote event contains");
+
+    if (!votes[event.classroom]) {
+      votes[event.classroom] = new Set();
+      console.log("Created new classroom votes set");
+      if (!votes[event.classroom][event.question]) {
+        votes[event.classroom][event.question] = new Set();
+        console.log("Created new question votes set");
+        if (!votes[event.classroom][event.question][event.answer]) {
+          votes[event.classroom][event.question][event.answer] = new Set();
+          console.log("Created new answer votes set");
+        }
+      }
+    }
+
+    if(event.up)
+    votes[event.classroom][event.question].add(event.user);
+    else
+      votes[event.classroom][event.question].delete(event.user);
+
+    const classroom = await Classrooms.findById(event.classroom);
+    const question = classroom.questions.filter(q => q._id === event.question)[0];
+    const answer = question.filter(a => a._id === event.answer)[0];
+    answer.resolution = votes[event.classroom][event.question][event.answer].size;
+
+    await classroom.save();
+    
+    // update users with current votes on question
+    io.in(event.classroom).emit("answer_vote", {
+      classroom: event.classroom,
+      questionId: event.question,
+      answerId: event.answer,
+      votes: answer.resolution,
+    });
+  })
+
   return io;
 };
 
