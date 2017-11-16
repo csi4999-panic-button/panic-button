@@ -58,19 +58,30 @@ module.exports = (app, io) => {
         app.ee.emit("panic", { user: socket.user.id, classroom: event.classroom, state: event.state });
       });
       
+      // handle events for voting questions up/down
       socket.on("question_vote", async (event) => {
+        event = (typeof event === "string") ? JSON.parse(event) : event;
         console.log("question_vote event received:", event);
 
+        // confirm that a classroom with that question exists
         const classroom = await Classrooms.findOne({
           _id: event.classroom,
           students: socket.user.id,
+          questions: { _id: event.question, },
         });
-
+        // else, stop now
         if (!classroom) return;
+
         console.log(`${socket.user.id} belongs to ${classroom.name}`);
+
+        // if 'up' not included, assume false
         if(event.up === undefined || event.up === null) event.up = false;
+        // if 'up' was included but not a boolean, stop now
         if(typeof event.up !== "boolean") return;
+
         console.log("emitted upvote:", event.up);
+
+        // emit to EventEmitter for general handling
         app.ee.emit("question_vote", { 
           user: socket.user.id, 
           classroom: event.classroom, 
@@ -78,19 +89,36 @@ module.exports = (app, io) => {
           up: event.up,
         });
       });
+
+      // handle events for voting answers up/down
       socket.on("answer_vote", async (event) => {
+        event = (typeof event === "string") ? JSON.parse(event) : event;
         console.log("answer_vote event received:", event);
 
+        // confirm that a classroom with that question and answer exists
         const classroom = await Classrooms.findOne({
           _id: event.classroom,
           students: socket.user.id,
+          questions: { 
+            _id: event.question, 
+            answers: {
+              _id: event.answer,
+            }
+          },
         });
-
+        // else, stop now
         if (!classroom) return;
+
         console.log(`${socket.user.id} belongs to ${classroom.name}`);
+
+        // if 'up' not included in request, assume false
         if(event.up === undefined || event.up === null) event.up = false;
+        // if 'up' was included but not a boolean, stop now
         if(typeof event.up !== "boolean") return;
+
         console.log("emitted upvote:", event.up);
+        
+        // emit to EventEmitter for general handling
         app.ee.emit("answer_vote", { 
           user: socket.user.id, 
           classroom: event.classroom, 
@@ -213,28 +241,30 @@ module.exports = (app, io) => {
     });
   })
   
+  // general handling for voting a question up/down
   app.ee.on("question_vote", async (event) => {
     console.log("question_vote event contains");
 
-    if (!votes[event.classroom]) {
-      votes[event.classroom] = new Set();
-      console.log("Created new classroom votes set");
-      if (!votes[event.classroom][event.question]) {
-        votes[event.classroom][event.question] = new Set();
-        console.log("Created new question votes set");
-      }
-    }
-
+    // Use Mongo for user votes Set logic
+    let voteSetDoc = {};
+    
+    // Set update document based on queries $elemMatch
     if(event.up)
-      votes[event.classroom][event.question].add(event.user);
+      voteSetDoc = { $addToSet: { 'questions.$.votes': event.user }};
     else
-      votes[event.classroom][event.question].delete(event.user);
+      voteSetDoc = { $pull: { 'questions.$.votes': event.user }};
+
+    await Classrooms.findOneAndUpdate({
+      _id: event.classroom,
+      questions: {
+        $elemMatch: { 
+          _id: event.question,
+        },
+      }, 
+    }, voteSetDoc);
 
     const classroom = await Classrooms.findById(event.classroom);
-    const question = classroom.questions.filter(q => q._id === event.question)[0];
-    question.resolution = votes[event.classroom][event.question].size;
-
-    await classroom.save();
+    const voteCount = classroom.questions.id(event.question).votes.size;
 
     // update users with current votes on question
     io.in(event.classroom).emit("question_vote", {
@@ -244,40 +274,38 @@ module.exports = (app, io) => {
     });
   })
 
+  // general handling for voting an answer up/down
   app.ee.on("answer_vote", async (event) => {
     console.log("answer_vote event contains");
 
-    if (!votes[event.classroom]) {
-      votes[event.classroom] = new Set();
-      console.log("Created new classroom votes set");
-      if (!votes[event.classroom][event.question]) {
-        votes[event.classroom][event.question] = new Set();
-        console.log("Created new question votes set");
-        if (!votes[event.classroom][event.question][event.answer]) {
-          votes[event.classroom][event.question][event.answer] = new Set();
-          console.log("Created new answer votes set");
-        }
-      }
-    }
+    // Use Mongo for user votes Set logic
+    let voteSetDoc = {};
 
+    // Set update document based on queries $elemMatch
     if(event.up)
-    votes[event.classroom][event.question].add(event.user);
+      voteSetDoc = { $addToSet: { 'questions.$.votes': event.user }};
     else
-      votes[event.classroom][event.question].delete(event.user);
+      voteSetDoc = { $pull: { 'questions.$.votes': event.user }};
+
+    await Classrooms.findOneAndUpdate({
+      _id: event.classroom,
+      questions: {
+        $elemMatch: { 
+          _id: event.question, 
+          answers: { _id: event.answer, }
+        },
+      }, 
+    }, voteSetDoc);
 
     const classroom = await Classrooms.findById(event.classroom);
-    const question = classroom.questions.filter(q => q._id === event.question)[0];
-    const answer = question.filter(a => a._id === event.answer)[0];
-    answer.resolution = votes[event.classroom][event.question][event.answer].size;
-
-    await classroom.save();
+    const voteCount = classroom.questions.id(event.question).answers.id(event.answer).votes.size;
     
     // update users with current votes on question
     io.in(event.classroom).emit("answer_vote", {
       classroom: event.classroom,
       questionId: event.question,
       answerId: event.answer,
-      votes: answer.resolution,
+      votes: voteCount,
     });
   })
 
