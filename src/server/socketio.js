@@ -2,6 +2,7 @@
 
 const Classrooms = require("./models/classrooms");
 const Users = require("./models/users");
+const util = require("./util");
 
 const panicked = {};
 const timers = {};
@@ -63,31 +64,12 @@ module.exports = (app, io) => {
         event = (typeof event === "string") ? JSON.parse(event) : event;
         console.log("question_vote event received:", event);
 
-        // confirm that a classroom with that question exists
-        const classroom = await Classrooms.findOne({
-          _id: event.classroom,
-          students: socket.user.id,
-          questions: { _id: event.question, },
-        });
-        // else, stop now
-        if (!classroom) return;
-
-        console.log(`${socket.user.id} belongs to ${classroom.name}`);
-
-        // if 'up' not included, assume false
-        if(event.up === undefined || event.up === null) event.up = false;
-        // if 'up' was included but not a boolean, stop now
-        if(typeof event.up !== "boolean") return;
-
-        console.log("emitted upvote:", event.up);
-
-        // emit to EventEmitter for general handling
-        app.ee.emit("question_vote", { 
-          user: socket.user.id, 
-          classroom: event.classroom, 
-          question: event.question,
-          up: event.up,
-        });
+        await util.voteQuestion(
+          socket.user, 
+          event.classroom, 
+          event.question, 
+          event.up, 
+          app.ee);
       });
 
       // handle events for voting answers up/down
@@ -95,37 +77,14 @@ module.exports = (app, io) => {
         event = (typeof event === "string") ? JSON.parse(event) : event;
         console.log("answer_vote event received:", event);
 
-        // confirm that a classroom with that question and answer exists
-        const classroom = await Classrooms.findOne({
-          _id: event.classroom,
-          students: socket.user.id,
-          questions: { 
-            _id: event.question, 
-            answers: {
-              _id: event.answer,
-            }
-          },
-        });
-        // else, stop now
-        if (!classroom) return;
-
-        console.log(`${socket.user.id} belongs to ${classroom.name}`);
-
-        // if 'up' not included in request, assume false
-        if(event.up === undefined || event.up === null) event.up = false;
-        // if 'up' was included but not a boolean, stop now
-        if(typeof event.up !== "boolean") return;
-
-        console.log("emitted upvote:", event.up);
-        
-        // emit to EventEmitter for general handling
-        app.ee.emit("answer_vote", { 
-          user: socket.user.id, 
-          classroom: event.classroom, 
-          question: event.question,
-          answer: event.answer,
-          up: event.up, 
-        });
+        await util.voteAnswer(
+          socket.user,
+          event.classroom,
+          event.question,
+          event.answer,
+          event.up,
+          app.ee
+        )
       });
 
       // join/leave classrooms after socket connection
@@ -181,10 +140,8 @@ module.exports = (app, io) => {
   /* Receives:
     {
       classroom: string,
-      question: {
-        _id: string,
-        question: string,
-      },
+      questionId: string,
+      questionStr: string,
       numberOfQuestions: number
     }
   */
@@ -194,8 +151,9 @@ module.exports = (app, io) => {
     // send new question to all users in classroom
     io.in(event.classroom).emit("new_question", {
       classroom: event.classroom,
-      questionId: event.question._id,
-      questionStr: event.question.question,
+      questionId: event.questionId,
+      questionStr: event.questionStr,
+      numberOfQuestions: event.numberOfQuestions,
     });
   });
 
@@ -241,61 +199,33 @@ module.exports = (app, io) => {
     });
   })
   
+  /*
+    {
+      user: string,
+      classroom: string,
+      questionId: string,
+      votes: number
+    }
+  */
   // general handling for voting a question up/down
-  app.ee.on("question_vote", async (event) => {
+  app.ee.on("question_vote", (event) => {
     console.log("question_vote event contains");
-
-    // Use Mongo for user votes Set logic
-    let voteSetDoc = {};
-    
-    // Set update document based on queries $elemMatch
-    if(event.up)
-      voteSetDoc = { $addToSet: { 'questions.$.votes': event.user }};
-    else
-      voteSetDoc = { $pull: { 'questions.$.votes': event.user }};
-
-    // query and perform operation on questions array in one command
-    await Classrooms.findOneAndUpdate({
-      _id: event.classroom,
-      questions: {
-        $elemMatch: { _id: event.question },
-      }, 
-    }, voteSetDoc);
-
-    // query latest classroom info and get voteCount
-    const classroom = await Classrooms.findById(event.classroom);
-    const voteCount = classroom.questions.id(event.question).votes.size;
 
     // update users with current votes on question
     io.in(event.classroom).emit("question_vote", {
       classroom: event.classroom,
-      questionId: event.questionId,
-      votes: voteCount,
+      questionId: event.question,
+      votes: event.votes,
+    }).in(event.user).emit("question_vote_change", {
+      classroom: event.classroom,
+      question: question,
+      state: event.up,
     });
   })
 
   // general handling for voting an answer up/down
-  app.ee.on("answer_vote", async (event) => {
+  app.ee.on("answer_vote", (event) => {
     console.log("answer_vote event contains");
-
-    // Use Mongo for user votes Set logic
-    let voteSetDoc = {};
-
-    // nested $elemMatch doesn't seem possible so we have to modify this in the server and save()
-    const answerClass = await Classrooms.findOne({
-      _id: event.classroom,
-      questions: {
-          _id: event.question, 
-          answers: { _id: event.answer, }
-      }, 
-    });
-    if(event.up)
-      answerClass.questions.id(event.question).answers.id(event.answer).votes.add(event.user);
-    else
-      answerClass.questions.id(event.question).answers.id(event.answer).votes.delete(event.user);
-    
-    answerClass.save();
-    const voteCount = answerClass.questions.id(event.question).answers.id(event.answer).votes.size;
     
     // update users with current votes on question
     io.in(event.classroom).emit("answer_vote", {
@@ -303,6 +233,11 @@ module.exports = (app, io) => {
       questionId: event.question,
       answerId: event.answer,
       votes: voteCount,
+    }).in(event.user).emit("question_vote_change", {
+      classroom: event.classroom,
+      question: question,
+      answer: answer,
+      state: event.up,
     });
   })
 

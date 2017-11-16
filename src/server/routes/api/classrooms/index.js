@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
     return res.status(401).send();
   }
 
-  try {
+  try{
     // get all classrooms with current user
     // (prepoulated)
     const classrooms = await Classrooms.find({ $or: [
@@ -252,134 +252,73 @@ router.post("/:classroomId/leave", async (req, res) => {
 });
 
 // asks a question in the specified classroom
-router.post("/:classroomId/ask", async (req, res) => {
-  const question = req.body.question;
-  const user = req.user;
-
-  if (typeof question !== "string") {
-    return res.status(400).json({
-      success: false,
-      message: "Question must be a string",
-    });
+router.post("/:classroomId/questions", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
   }
 
-  const classroom = await Classrooms.findOneAndUpdate({
-    _id: req.params.classroomId,
-    $or: [
-      { teachers: req.user._id },
-      { teacherAssistants: req.user._id },
-      { students: req.user._id }
-    ],
-  }, {
-    $addToSet: {
-      questions: {
-        user: req.user._id,
-        question,
-        ts: Date.now(),
-        resolution: -1,
-        answers: [],
-      },
-    },
-  });
-
-  if (!classroom) {
-    return res.json({ success: false, message: "You are not a member of that classroom" });
-  }
-
-  const updatedClassroom = await Classrooms.findById(req.params.classroomId);
-  const usersQuestions = updatedClassroom.questions.filter( q => 
-    (q.user.toString() === req.user.id.toString()) 
-    && (q.question === question)
+  const { status, body } = await util.askQuestion(
+    req.user,
+    req.params.classroomId,
+    req.body.question,
+    req.app.ee
   );
-  const newQuestion = usersQuestions[usersQuestions.length-1];
 
-  req.app.ee.emit("new_question", {
-    classroom: req.params.classroomId,
-    question: newQuestion,
-    numberOfQuestions: updatedClassroom.questions.length,
-  })
-
-  return res.json({ success: true });
+  return res.status(status).json(body);
 });
 
 // answers a specific question in a classroom
-router.post("/:classroomId/answer", async (req, res) => {
-  const answer = req.body.answer;
-  const questionId = req.body.questionId;
-  const user = req.user;
-
-  if (typeof answer !== "string") {
-    return res.status(400).json({
-      success: false,
-      message: "Answer must be a string",
-    });
+router.post("/:classroomId/questions/:questionId/answers", async (req, res) => {  
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
   }
 
-  if (typeof questionId !== "string") {
-    return res.status(400).json({
-      success: false,
-      message: "Question must be identified by questionId",
-    });
-  }
+  const { status, body } = await util.answerQuestion(
+    req.user,
+    req.params.classroomId, 
+    req.params.questionId,
+    req.body.answer,
+    req.app.ee
+  );
 
-  const classroom = await Classrooms.findOne({
-    _id: req.params.classroomId,
-    $or: [
-      { teachers: req.user._id },
-      { teacherAssistants: req.user._id },
-      { students: req.user._id }
-    ],
-  });
-
-  if (!classroom) {
-    return res.status(404).json({
-      success: false,
-      message: "You are not a member of that classroom",
-    });
-  }
-
-  const question = classroom.questions.filter(q => q._id.toString() === questionId)[0];
-
-  if (!question) {
-    return res.status(404).json({
-      success: false,
-      message: `That classroom does not have a question with _id ${_id}`,
-    });
-  }
-
-  const answerDoc = {
-    user: req.user._id,
-    answer,
-    ts: Date.now(),
-  };
-
-  await Classrooms.findOneAndUpdate({
-    _id: req.params.classroomId,
-    questions: {
-      $elemMatch: { _id: question._id, },
-    }, 
-  }, {
-    $addToSet: { 'questions.$.answers': answerDoc, }
-  });
-
-  const updatedC = await Classrooms.findById(req.params.classroomId);
-  const updatedQ = updatedC.questions.filter( q => q._id.toString() === questionId)[0];
-  console.log("Updated question:", updatedQ);
-  if(updatedQ.answers.length < 1)
-    return res.status(300).send({ success: false, message: "Answer not created successfully" });
-  const newAnswerDoc = updatedQ.answers[updatedQ.answers.length-1];
-
-  // update users with new answer over sockets
-  req.app.ee.emit("new_answer", {
-    classroom: req.params.classroomId,
-    questionId: updatedQ._id.toString(),
-    answerId: newAnswerDoc._id.toString(),
-    answer: newAnswerDoc.answer,
-    numberOfAnswers: updatedQ.answers.length,
-  });
-
-  return res.json({ success: true });
+  return res.status(status).json(body);
 });
+
+router.put("/:classroomId/questions/:questionId/", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
+  const { status, body } = await util.voteQuestion(
+    req.user,
+    req.params.classroomId,
+    req.params.questionId,
+    req.body.up,
+    req.app.ee
+  )
+
+  return res.status(status).json(body);
+});
+
+router.put("/:classroomId/questions/:questionId/answers/:answerId", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
+  const { status, body } = await util.voteQuestion(
+    req.user,
+    req.params.classroomId,
+    req.params.questionId,
+    req.params.answerId,
+    req.body.up,
+    req.app.ee
+  )
+
+  return res.status(status).json(body);
+});
+
+
+
 
 module.exports = router;
 

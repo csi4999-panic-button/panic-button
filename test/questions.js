@@ -44,7 +44,7 @@ describe("Questions", () => {
 
         const questionOpts = {
             method: 'POST',
-            uri: `${baseUrl}/api/v1/classrooms/${testId}/ask`,
+            uri: `${baseUrl}/api/v1/classrooms/${testId}/questions`,
             body: {
                 question: question1,
             },
@@ -86,7 +86,7 @@ describe("Questions", () => {
 
         const questionOpts = {
             method: 'POST',
-            uri: `${baseUrl}/api/v1/classrooms/${testId}/ask`,
+            uri: `${baseUrl}/api/v1/classrooms/${testId}/questions`,
             body: {
                 question
             },
@@ -104,11 +104,12 @@ describe("Questions", () => {
         expect(questioned.success).to.equal(true);
 
         const classWithQ = await request(classOpts);
-        expect(classWithQ.questions[1].question).to.equal(question);
+        const dbQuest = classWithQ.questions[1];
+        expect(dbQuest.question).to.equal(question);
 
         const answerOpts = {
             method: 'POST',
-            uri: `${baseUrl}/api/v1/classrooms/${testId}/answer`,
+            uri: `${baseUrl}/api/v1/classrooms/${testId}/questions/${dbQuest._id}/answers`,
             body: { 
                 questionId: classWithQ.questions[1]._id,
                 answer,
