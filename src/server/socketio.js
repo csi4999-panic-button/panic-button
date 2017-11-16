@@ -175,6 +175,7 @@ module.exports = (app, io) => {
       questionId: event.questionId,
       answerId: event.answerId,
       answerStr: event.answerStr,
+      numberOfAnswers: event.numberOfAnswers,
     });
   });
   
