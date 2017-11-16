@@ -307,7 +307,7 @@ router.put("/:classroomId/questions/:questionId/answers/:answerId", async (req, 
     return res.status(401).send();
   }
 
-  const { status, body } = await util.voteQuestion(
+  const { status, body } = await util.voteAnswer(
     req.user.id,
     req.params.classroomId,
     req.params.questionId,

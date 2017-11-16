@@ -144,7 +144,7 @@ describe("Questions", () => {
             uri: `${baseUrl}/api/v1/classrooms/${testId}/questions/${questId}`,
             json: true,
             jar: stuJar,
-            body: { 'up': true, }
+            body: { up: true, }
         };
         const classOpts = {
             method: 'GET',
@@ -153,18 +153,54 @@ describe("Questions", () => {
             jar: stuJar,
         };
 
+        // upvote the question
         const upvoted = await request(voteQuestOpts);
         expect(upvoted.success).to.equal(true);
         
+        // confirm the vote count is 1
         const upvotedQClass = await request(classOpts);
         expect(upvotedQClass.questions[1].votes.length).to.equal(1);
         
+        // remove vote
         voteQuestOpts.body.up = false;
-
         const novoted = await request(voteQuestOpts);
         expect(novoted.success).to.equal(true);
         
+        // confirm vote count is 0
         const novotedQClass = await request(classOpts);
         expect(novotedQClass.questions[1].votes.length).to.equal(0);
+    });
+
+    it("should allow answers to being voted for", async () => {
+        const voteAnswOpts = {
+            method: 'PUT',
+            uri: `${baseUrl}/api/v1/classrooms/${testId}/questions/${questId}/answers/${answerId}`,
+            json: true,
+            jar: stuJar,
+            body: { up: true, }
+        };
+        const classOpts = {
+            method: 'GET',
+            uri: `${baseUrl}/api/v1/classrooms/${testId}`,
+            json: true,
+            jar: stuJar,
+        };
+
+        // upvote the answer
+        const upvoted = await request(voteAnswOpts);
+        expect(upvoted.success).to.equal(true);
+        
+        // confirm vote count is 1
+        const upvotedQClass = await request(classOpts);
+        expect(upvotedQClass.questions[1].answers[0].votes.length).to.equal(1);
+        
+        // remove vote 
+        voteAnswOpts.body.up = false;
+        const novoted = await request(voteAnswOpts);
+        expect(novoted.success).to.equal(true);
+        
+        // confirm vote count is 0
+        const novotedQClass = await request(classOpts);
+        expect(novotedQClass.questions[1].answers[0].votes.length).to.equal(0);
     });
 });

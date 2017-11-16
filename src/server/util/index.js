@@ -238,7 +238,7 @@ module.exports.voteQuestion = async (userId, classId, questId, up, ee) => {
     // else, stop now
     if (!classroom) return failObject("Could not confirm user belongs to classroom");
 
-    console.log(`${userId} belongs to ${classroom.name}`);
+    console.log(`${userId} belongs to ${classroom.courseTitle}`);
 
     // if 'up' not included, assume false
     if(up === undefined || up === null) up = false;
@@ -292,17 +292,11 @@ module.exports.voteAnswer = async (userId, classId, questId, answId, up, ee) => 
     const classroom = await Classrooms.findOne({
       _id: classId,
       students: userId,
-      questions: { 
-        _id: questId, 
-        answers: {
-          _id: answId,
-        }
-      },
     });
     // else, stop now
     if (!classroom) return failObject("Could not confirm user belongs to classroom");
 
-    console.log(`${userId} belongs to ${classroom.name}`);
+    console.log(`${userId} belongs to ${classroom.courseTitle}`);
 
     // if 'up' not included in request, assume false
     if(up === undefined || up === null) up = false;
@@ -312,24 +306,19 @@ module.exports.voteAnswer = async (userId, classId, questId, answId, up, ee) => 
     // Use Mongo for user votes Set logic
     let voteSetDoc = {};
 
-    // nested $elemMatch doesn't seem possible so we have to modify this in the server and save()
-    const answerClass = await Classrooms.findOne({
-      _id: classroom,
-      questions: {
-          _id: questId, 
-          answers: { _id: answId, }
-      }, 
-    });
-    if(up)
-      answerClass.questions.id(questId).answers.id(answId).votes.add(userId);
-    else
-      answerClass.questions.id(questId).answers.id(answId).votes.delete(userId);
+    if(up){
+      classroom.questions.id(questId).answers.id(answId).votes.push(userId);
+    } else {
+      classroom.questions.id(questId).answers.id(answId).votes.pull(userId);
+    }
     
-    answerClass.save();
-    const voteCount = answerClass.questions.id(questId).answers.id(answId).votes.size;
+    console.log("classroom:", classroom);
+    classroom.save();
+    console.log("classroom:", classroom);
+    const voteCount = classroom.questions.id(questId).answers.id(answId).votes.size;
 
     // emit to EventEmitter for general handling
-    app.ee.emit("answer_vote", { 
+    ee.emit("answer_vote", { 
       user: userId, 
       classroom: classId, 
       question: questId,
