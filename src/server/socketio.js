@@ -254,15 +254,15 @@ module.exports = (app, io) => {
     else
       voteSetDoc = { $pull: { 'questions.$.votes': event.user }};
 
+    // query and perform operation on questions array in one command
     await Classrooms.findOneAndUpdate({
       _id: event.classroom,
       questions: {
-        $elemMatch: { 
-          _id: event.question,
-        },
+        $elemMatch: { _id: event.question },
       }, 
     }, voteSetDoc);
 
+    // query latest classroom info and get voteCount
     const classroom = await Classrooms.findById(event.classroom);
     const voteCount = classroom.questions.id(event.question).votes.size;
 
@@ -270,7 +270,7 @@ module.exports = (app, io) => {
     io.in(event.classroom).emit("question_vote", {
       classroom: event.classroom,
       questionId: event.questionId,
-      votes: question.resolution,
+      votes: voteCount,
     });
   })
 
@@ -281,24 +281,21 @@ module.exports = (app, io) => {
     // Use Mongo for user votes Set logic
     let voteSetDoc = {};
 
-    // Set update document based on queries $elemMatch
-    if(event.up)
-      voteSetDoc = { $addToSet: { 'questions.$.votes': event.user }};
-    else
-      voteSetDoc = { $pull: { 'questions.$.votes': event.user }};
-
-    await Classrooms.findOneAndUpdate({
+    // nested $elemMatch doesn't seem possible so we have to modify this in the server and save()
+    const answerClass = await Classrooms.findOne({
       _id: event.classroom,
       questions: {
-        $elemMatch: { 
           _id: event.question, 
           answers: { _id: event.answer, }
-        },
       }, 
-    }, voteSetDoc);
-
-    const classroom = await Classrooms.findById(event.classroom);
-    const voteCount = classroom.questions.id(event.question).answers.id(event.answer).votes.size;
+    });
+    if(event.up)
+      answerClass.questions.id(event.question).answers.id(event.answer).votes.add(event.user);
+    else
+      answerClass.questions.id(event.question).answers.id(event.answer).votes.delete(event.user);
+    
+    answerClass.save();
+    const voteCount = answerClass.questions.id(event.question).answers.id(event.answer).votes.size;
     
     // update users with current votes on question
     io.in(event.classroom).emit("answer_vote", {
