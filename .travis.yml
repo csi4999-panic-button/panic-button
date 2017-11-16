@@ -10,7 +10,6 @@ services:
 before_install:
   # update travis docker version to allow latest syntax, as well as sshpass for successful run db sync
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  - sudo cat /etc/apt/sources.list
   - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
   - sudo apt-get update
   - sudo apt-get -y install docker-ce
@@ -32,14 +31,14 @@ after_success:
     echo "Docker images are not updated on pull requests"
     fi
 
-# notifications:
-#   slack: 
-#     rooms:
-#       - bleachboys:xo7cosUubMzuwfZFVVEncJ94
-#     on_success: change # default: always
-#     on_failure: always # default: always
-#     on_pull_requests: false
-#     template:
-#       - "%{repository_name} by %{author} in branch %{branch}"
-#       - "Build #%{build_number} has %{result} in %{elapsed_time}"
-#       - "Commit: %{message}"
+notifications:
+  slack: 
+    rooms:
+      - bleachboys:xo7cosUubMzuwfZFVVEncJ94
+    on_success: change # default: always
+    on_failure: always # default: always
+    on_pull_requests: false
+    template:
+      - "%{repository_name} by %{author} in branch %{branch}"
+      - "Build #%{build_number} has %{result} in %{elapsed_time}"
+      - "Commit: %{message}"
