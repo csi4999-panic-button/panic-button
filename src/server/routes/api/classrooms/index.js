@@ -284,13 +284,14 @@ router.post("/:classroomId/questions/:questionId/answers", async (req, res) => {
   return res.status(status).json(body);
 });
 
+// votes yes/no for a specific question in a classroom
 router.put("/:classroomId/questions/:questionId/", async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).send();
   }
 
   const { status, body } = await util.voteQuestion(
-    req.user,
+    req.user.id,
     req.params.classroomId,
     req.params.questionId,
     req.body.up,
@@ -300,13 +301,14 @@ router.put("/:classroomId/questions/:questionId/", async (req, res) => {
   return res.status(status).json(body);
 });
 
+// votes yes/no for a specific answer to a specific question in a classroom
 router.put("/:classroomId/questions/:questionId/answers/:answerId", async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).send();
   }
 
   const { status, body } = await util.voteQuestion(
-    req.user,
+    req.user.id,
     req.params.classroomId,
     req.params.questionId,
     req.params.answerId,

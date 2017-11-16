@@ -9,16 +9,26 @@ const schools = require("./data/schools");
 const Classrooms = require("../src/server/models/classrooms");
 const stuJar = request.jar();
 const teaJar = request.jar();
+const questions = [
+    "How do you put your pants on in the morning?",
+    "How do you find the square root of a negative number?"
+]
+const answers = [
+    "One leg at a time",
+    "You use your imagination"
+]
 
 
 describe("Questions", () => {
 
     let testId;
+    let questId;
+    let answerId;
     
     it("should let students of the classroom ask questions", async () => {
         
         const thisUser = users[3];
-        const question1 = "How do you put your pants on in the morning?"
+        const question1 = questions[0];
         const loginOpts = {
             method: 'POST',
             uri: `${baseUrl}/login`,
@@ -68,8 +78,8 @@ describe("Questions", () => {
     it("should let users of the classroom answer questions", async () => {
         
         const thisUser = users[3];
-        const question = "How do you find the square root of a negative number?"
-        const answer = "You use your imagination"
+        const question = questions[1];
+        const answer = answers[1];
         const loginOpts = {
             method: 'POST',
             uri: `${baseUrl}/login`,
@@ -106,6 +116,7 @@ describe("Questions", () => {
         const classWithQ = await request(classOpts);
         const dbQuest = classWithQ.questions[1];
         expect(dbQuest.question).to.equal(question);
+        questId = dbQuest._id;
 
         const answerOpts = {
             method: 'POST',
@@ -124,5 +135,36 @@ describe("Questions", () => {
         const classWithQA = await request(classOpts);
         expect(classWithQA.questions[1].question).to.equal(question);
         expect(classWithQA.questions[1].answers[0].answer).to.equal(answer);
+        answerId = classWithQA.questions[1].answers[0]._id;
+    });
+
+    it("should allow questions to being voted for", async () => {
+        const voteQuestOpts = {
+            method: 'PUT',
+            uri: `${baseUrl}/api/v1/classrooms/${testId}/questions/${questId}`,
+            json: true,
+            jar: stuJar,
+            body: { 'up': true, }
+        };
+        const classOpts = {
+            method: 'GET',
+            uri: `${baseUrl}/api/v1/classrooms/${testId}`,
+            json: true,
+            jar: stuJar,
+        };
+
+        const upvoted = await request(voteQuestOpts);
+        expect(upvoted.success).to.equal(true);
+        
+        const upvotedQClass = await request(classOpts);
+        expect(upvotedQClass.questions[1].votes.length).to.equal(1);
+        
+        voteQuestOpts.body.up = false;
+
+        const novoted = await request(voteQuestOpts);
+        expect(novoted.success).to.equal(true);
+        
+        const novotedQClass = await request(classOpts);
+        expect(novotedQClass.questions[1].votes.length).to.equal(0);
     });
 });

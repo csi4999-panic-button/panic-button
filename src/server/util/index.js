@@ -2,6 +2,7 @@
 
 const crypto = require("crypto");
 const Classrooms = require("../models/classrooms");
+const oid = require("mongoose").Schema.ObjectId; // objectIds!
 
 module.exports.getKey = (size) => {
     const buffer = crypto.randomBytes(size);
@@ -105,7 +106,7 @@ module.exports.askQuestion = async (user, classId, question, ee) => {
         { students: user._id }
       ],
     }, {
-      $addToSet: {
+      $push: {
         questions: {
           user: user._id,
           question,
@@ -180,7 +181,7 @@ module.exports.answerQuestion = async (user, classId, questId, answer, ee) => {
   if (!question) {
     return { status: 404, body: {
       success: false,
-      message: `That classroom does not have a question with _id ${_id}`,
+      message: `That classroom does not have a question with _id ${questId}`,
     }};
   }
 
@@ -196,7 +197,7 @@ module.exports.answerQuestion = async (user, classId, questId, answer, ee) => {
       $elemMatch: { _id: question._id, },
     }, 
   }, {
-    $addToSet: { 'questions.$.answers': answerDoc, }
+    $push: { 'questions.$.answers': answerDoc, }
   });
   
   // now get the answer info
@@ -225,53 +226,56 @@ module.exports.answerQuestion = async (user, classId, questId, answer, ee) => {
   return { status: 200, body: { success: true }};
 }
 
-module.exports.voteQuestion = async (user, classId, question, up, ee) => {
+module.exports.voteQuestion = async (userId, classId, questId, up, ee) => {
   try {
+    console.log("Received:",{userId, classId, questId, up});
+
     // confirm that a classroom with that question exists
     const classroom = await Classrooms.findOne({
       _id: classId,
-      students: user.id,
-      questions: { _id: question, },
+      students: userId,
     });
     // else, stop now
-    if (!classroom) return;
+    if (!classroom) return failObject("Could not confirm user belongs to classroom");
 
-    console.log(`${user.id} belongs to ${classroom.name}`);
+    console.log(`${userId} belongs to ${classroom.name}`);
 
     // if 'up' not included, assume false
     if(up === undefined || up === null) up = false;
     // if 'up' was included but not a boolean, stop now
-    if(typeof up !== "boolean") return;
+    if(typeof up !== "boolean") return failObject("property 'up' was not a boolean");
 
     // Use Mongo for user votes Set logic
     let voteSetDoc = {};
     
     // Set update document based on queries $elemMatch
-    if(event.up)
-      voteSetDoc = { $addToSet: { 'questions.$.votes': event.user }};
+    if(up)
+      voteSetDoc = { $addToSet: { 'questions.$.votes': userId }};
     else
-      voteSetDoc = { $pull: { 'questions.$.votes': event.user }};
+      voteSetDoc = { $pull: { 'questions.$.votes': userId }};
 
     // query and perform operation on questions array in one command
     await Classrooms.findOneAndUpdate({
-      _id: event.classroom,
+      _id: classroom,
       questions: {
-        $elemMatch: { _id: event.question },
+        $elemMatch: { _id: questId },
       }, 
     }, voteSetDoc);
 
     // query latest classroom info and get voteCount
-    const updatedClass = await Classrooms.findById(event.classroom);
-    const voteCount = updatedClass.questions.id(event.question).votes.size;
-
-    // emit to EventEmitter for general handling
-    ee.emit("question_vote", { 
-      user: user.id, 
+    const updatedClass = await Classrooms.findById(classroom);
+    const voteCount = updatedClass.questions.id(questId).votes.length;
+    const emitDoc = { 
+      user: userId, 
       classroom: classId, 
-      question: question,
+      question: questId,
       votes: voteCount,
       up: up,
-    });
+    };
+    console.log("Ready to emit vote:", emitDoc);
+
+    // emit to EventEmitter for general handling
+    ee.emit("question_vote", emitDoc);
 
     return { status: 200, body: { success: true, message: "Successfully voted for question" }};
   } catch (err) {
@@ -281,54 +285,55 @@ module.exports.voteQuestion = async (user, classId, question, up, ee) => {
   }
 }
 
-module.exports.voteAnswer = async (user, classId, question, answer, up, ee) => {
+module.exports.voteAnswer = async (userId, classId, questId, answId, up, ee) => {
   try {
+    console.log("Received:",{userId, classId, questId, answId, up});
     // confirm that a classroom with that question and answer exists
     const classroom = await Classrooms.findOne({
       _id: classId,
-      students: user.id,
+      students: userId,
       questions: { 
-        _id: event.question, 
+        _id: questId, 
         answers: {
-          _id: event.answer,
+          _id: answId,
         }
       },
     });
     // else, stop now
-    if (!classroom) return;
+    if (!classroom) return failObject("Could not confirm user belongs to classroom");
 
-    console.log(`${user.id} belongs to ${classroom.name}`);
+    console.log(`${userId} belongs to ${classroom.name}`);
 
     // if 'up' not included in request, assume false
     if(up === undefined || up === null) up = false;
     // if 'up' was included but not a boolean, stop now
-    if(typeof up !== "boolean") return;
+    if(typeof up !== "boolean") return failObject("property 'up' was not a boolean");
 
     // Use Mongo for user votes Set logic
     let voteSetDoc = {};
 
     // nested $elemMatch doesn't seem possible so we have to modify this in the server and save()
     const answerClass = await Classrooms.findOne({
-      _id: event.classroom,
+      _id: classroom,
       questions: {
-          _id: event.question, 
-          answers: { _id: event.answer, }
+          _id: questId, 
+          answers: { _id: answId, }
       }, 
     });
-    if(event.up)
-      answerClass.questions.id(event.question).answers.id(event.answer).votes.add(event.user);
+    if(up)
+      answerClass.questions.id(questId).answers.id(answId).votes.add(userId);
     else
-      answerClass.questions.id(event.question).answers.id(event.answer).votes.delete(event.user);
+      answerClass.questions.id(questId).answers.id(answId).votes.delete(userId);
     
     answerClass.save();
-    const voteCount = answerClass.questions.id(event.question).answers.id(event.answer).votes.size;
+    const voteCount = answerClass.questions.id(questId).answers.id(answId).votes.size;
 
     // emit to EventEmitter for general handling
     app.ee.emit("answer_vote", { 
-      user: user.id, 
+      user: userId, 
       classroom: classId, 
-      question: event.question,
-      answer: event.answer,
+      question: questId,
+      answer: answId,
       votes: voteCount,
       up: up, 
     });
@@ -338,5 +343,13 @@ module.exports.voteAnswer = async (user, classId, question, answer, up, ee) => {
     console.log("Could not vote answer");
     console.log("Error occurred:", err);
     return { status: 404, body: { success: false, message: err.message }};
+  }
+}
+
+function failObject(message){
+  console.log("Creating failed object:", message);
+  return {
+    status: 404,
+    body: { success: false, message: message, }
   }
 }

@@ -209,7 +209,7 @@ module.exports = (app, io) => {
   */
   // general handling for voting a question up/down
   app.ee.on("question_vote", (event) => {
-    console.log("question_vote event contains");
+    console.log("question_vote event contains", event);
 
     // update users with current votes on question
     io.in(event.classroom).emit("question_vote", {
@@ -218,25 +218,25 @@ module.exports = (app, io) => {
       votes: event.votes,
     }).in(event.user).emit("question_vote_change", {
       classroom: event.classroom,
-      question: question,
+      question: event.question,
       state: event.up,
     });
   })
 
   // general handling for voting an answer up/down
   app.ee.on("answer_vote", (event) => {
-    console.log("answer_vote event contains");
+    console.log("answer_vote event contains", event);
     
     // update users with current votes on question
     io.in(event.classroom).emit("answer_vote", {
       classroom: event.classroom,
       questionId: event.question,
       answerId: event.answer,
-      votes: voteCount,
+      votes: event.votes,
     }).in(event.user).emit("question_vote_change", {
       classroom: event.classroom,
-      question: question,
-      answer: answer,
+      question: event.question,
+      answer: event.answer,
       state: event.up,
     });
   })
