@@ -213,7 +213,7 @@ module.exports = (app, io) => {
     });
   })
   
-  app.ee.on("question_vote", (event) => {
+  app.ee.on("question_vote", async (event) => {
     console.log("question_vote event contains");
 
     if (!votes[event.classroom]) {
@@ -244,7 +244,7 @@ module.exports = (app, io) => {
     });
   })
 
-  app.ee.on("answer_vote", (event) => {
+  app.ee.on("answer_vote", async (event) => {
     console.log("answer_vote event contains");
 
     if (!votes[event.classroom]) {
