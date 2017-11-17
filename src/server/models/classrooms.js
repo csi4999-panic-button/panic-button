@@ -34,11 +34,19 @@ const classroomSchema = new mongoose.Schema({
       user: { type: "ObjectId", ref: "User" },
       question: String,
       ts: Number,
-      resolution: Number,
+      resolution: { type: Number, default: -1 },
+      votes: {
+        type: [{ type: "ObjectId", ref: "User" }],
+        default: [],
+      },
       answers: [{
         user: { type: "ObjectId", ref: "User" },
         answer: String,
         ts: Number,
+        votes: {
+          type: [{ type: "ObjectId", ref: "User" }],
+          default: [],
+        }
       }],
     }],
 }, {

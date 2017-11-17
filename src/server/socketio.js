@@ -2,9 +2,11 @@
 
 const Classrooms = require("./models/classrooms");
 const Users = require("./models/users");
+const util = require("./util");
 
 const panicked = {};
 const timers = {};
+const votes = {};
 
 module.exports = (app, io) => {
   io.on("connection", async (socket) => {
@@ -56,6 +58,34 @@ module.exports = (app, io) => {
         console.log("emitted state:", event.state);
         app.ee.emit("panic", { user: socket.user.id, classroom: event.classroom, state: event.state });
       });
+      
+      // handle events for voting questions up/down
+      socket.on("question_vote", async (event) => {
+        event = (typeof event === "string") ? JSON.parse(event) : event;
+        console.log("question_vote event received:", event);
+
+        await util.voteQuestion(
+          socket.user, 
+          event.classroom, 
+          event.question, 
+          event.up, 
+          app.ee);
+      });
+
+      // handle events for voting answers up/down
+      socket.on("answer_vote", async (event) => {
+        event = (typeof event === "string") ? JSON.parse(event) : event;
+        console.log("answer_vote event received:", event);
+
+        await util.voteAnswer(
+          socket.user,
+          event.classroom,
+          event.question,
+          event.answer,
+          event.up,
+          app.ee
+        )
+      });
 
       // join/leave classrooms after socket connection
       app.ee.on(`${socket.user.id}:join`, (classroom) => socket.join(classroom));
@@ -106,6 +136,111 @@ module.exports = (app, io) => {
       });
     console.log("panicNumber:", panicked[event.classroom].size)
   });
+
+  /* Receives:
+    {
+      classroom: string,
+      questionId: string,
+      questionStr: string,
+      numberOfQuestions: number
+    }
+  */
+  app.ee.on("new_question", (event) => {
+    console.log("new_question event contains", event);
+
+    // send new question to all users in classroom
+    io.in(event.classroom).emit("new_question", {
+      classroom: event.classroom,
+      questionId: event.questionId,
+      questionStr: event.questionStr,
+      numberOfQuestions: event.numberOfQuestions,
+    });
+  });
+
+  /* Receives
+    {
+      classroom: string,
+      questionId: string,
+      answerId: string,
+      answerStr: string,
+      numberOfAnswers: number
+    }
+  */
+  app.ee.on("new_answer", (event) => {
+    console.log("new_answer event contains", event);
+    
+    // send new answer to all users in classroom
+    io.in(event.classroom).emit("new_question", {
+      classroom: event.classroom,
+      questionId: event.questionId,
+      answerId: event.answerId,
+      answerStr: event.answerStr,
+      numberOfAnswers: event.numberOfAnswers,
+    });
+  });
+  
+  /* Receives
+    [{
+      question: String,
+      ts: Number,
+      resolution: Number,
+      answers: [{
+        answer: String,
+        ts: Number,
+      }],
+    }]
+  */
+  app.ee.on("refresh_questions", (event) => {
+    console.log("refresh_questions event contains", event);
+    
+    // refresh given user of updated questions for classroom
+    io.in(event.user).emit("refresh_questions", {
+      classroom: event.classroom,
+      questions: event.questions,
+    });
+  })
+  
+  /*
+    {
+      user: string,
+      classroom: string,
+      questionId: string,
+      votes: number
+    }
+  */
+  // general handling for voting a question up/down
+  app.ee.on("question_vote", (event) => {
+    console.log("question_vote event contains", event);
+
+    // update users with current votes on question
+    io.in(event.classroom).emit("question_vote", {
+      classroom: event.classroom,
+      questionId: event.question,
+      votes: event.votes,
+    }).in(event.user).emit("question_vote_change", {
+      classroom: event.classroom,
+      question: event.question,
+      state: event.up,
+    });
+  })
+
+  // general handling for voting an answer up/down
+  app.ee.on("answer_vote", (event) => {
+    console.log("answer_vote event contains", event);
+    
+    // update users with current votes on question
+    io.in(event.classroom).emit("answer_vote", {
+      classroom: event.classroom,
+      questionId: event.question,
+      answerId: event.answer,
+      votes: event.votes,
+    }).in(event.user).emit("question_vote_change", {
+      classroom: event.classroom,
+      question: event.question,
+      answer: event.answer,
+      state: event.up,
+    });
+  })
 
   return io;
 };
