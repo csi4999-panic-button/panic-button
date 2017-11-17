@@ -8,18 +8,18 @@ After sending this event, the socket should expect a `login_success` event, whos
 
 Once the `login_success` event has been received containing `true`, the client is ready to listen for and emit events to the `panicd` server. These events include (and are generally related row-wise):
 
-| Client emits  | Server emits  |
-|---------------|---------------|
-|`login`        |`login_success`|
-|`panic`        |`panic`        |
-|               |`panic_state_change`|
-|`topic_change` |`topic_change`  |
-|               |`new_question` |
-|               |`new_answer`   |
-|`question_vote`|`question_vote_change`|
-|               |`question_vote`|
-|`answer_vote`  |`answer_vote_change`|
-|               |`answer_vote`  |
+| Client emits                         | Server emits                         |
+|--------------------------------------|--------------------------------------|
+|[`login`](#login)                     |[`login_success`](#login_success)     |
+|[`panic`](#panic)                     |[`panic`](#panic)                     |
+|                                      |[`panic_state_change`](#panic_state_change)|
+|[`topic_change`](#topic_change)       |[`topic_change`](#topic_change)       |
+|                                      |[`new_question`](#new_question)       |
+|                                      |[`new_answer`](#new_answer)           |
+|[`question_vote`](#question_vote)     |[`question_vote_change`](#question_vote_change)|
+|                                      |[`question_vote`](#question_vote)     |
+|[`answer_vote`](#answer_vote)         |[`answer_vote_change`](#answer_vote_change)|
+|                                      |[`answer_vote`](#answer_vote)  |
 
 ## Socket Specification
 
