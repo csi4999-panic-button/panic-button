@@ -13,7 +13,7 @@ Once the `login_success` event has been received containing `true`, the client i
 |`login`        |`login_success`|
 |`panic`        |`panic`        |
 |               |`panic_state_change`|
-|`topic_change` |`topic_change  |
+|`topic_change` |`topic_change`  |
 |               |`new_question` |
 |               |`new_answer`   |
 |`question_vote`|`question_vote_change`|
@@ -38,7 +38,7 @@ The `login` event is used by the client to initiate a socket connection with the
 The `login_success` event is used by the server after receiving a "login" event from a client. Upon verifying the user ID associated with the API token, the server will hook the socket connection to the existing socket if one has been created previously, as well as joining the user to all classroom sockets they belong to and further server-side logic for socket management internally. If the API token is associated with a user ID, the `login_success` will return a boolean of `true`, otherwise it will return `false`.
 
 ```json
-boolean
+true
 ```
 
 ### panic   [Client/Server]
@@ -47,8 +47,8 @@ The `panic` event is used by both client-side and server-side. It is used by cli
 
 ```json
 {
-    classroom: "classroomId",
-    state: boolean
+    'classroom': "classroomId",
+    'state': true
 }
 ```
 
@@ -56,8 +56,8 @@ It is used by the server to notify all users belonging to the classroom of the c
 
 ```json
 {
-    classroom: "classroomId",
-    panicNumber: number
+    'classroom': "classroomId",
+    'panicNumber': number
 }
 ```
 
@@ -67,8 +67,8 @@ The `panic_state_change` event is used by the server to notify the client that t
 
 ```json
 {
-    classroom: "classroomId",
-    state: boolean
+    'classroom': "classroomId",
+    'state': true
 }
 ```
 
@@ -78,9 +78,9 @@ The `topic_change` event is used by both the client and server. However, the onl
 
 ```json
 {
-    classroom: "classroomId",
-    next: boolean,
-    previous: boolean
+    'classroom': "classroomId",
+    'next': false,
+    'previous': true
 }
 ```
 
@@ -88,10 +88,10 @@ The server sends `topic_change` events to notify clients of the current topic in
 
 ```json
 {
-    classroom: "classroomId",
-    topic: "New Class Topic",
-    first: boolean,
-    last: boolean
+    'classroom': "classroomId",
+    'topic': "Second Class Topic",
+    'first': false,
+    'last': false
 }
 ```
 
@@ -101,10 +101,10 @@ The `new_question` event is used by the server to notify clients in the classroo
 
 ```json
 {
-    classroom: "classroomId",
-    questionId: "questionId",
-    questionStr: "How do you put your pants on in the morning?",
-    numberOfQuestions: 4
+    'classroom': "classroomId",
+    'questionId': "questionId",
+    'questionStr': "How do you put your pants on in the morning?",
+    'numberOfQuestions': 4
 }
 ```
 
@@ -114,11 +114,11 @@ The `new_answer` event is used by the server to notify clients in the classroom 
 
 ```json
 {
-    classroom: "classroomId",
-    questionId: "questionId",
-    answerId: "answerId",
-    answerStr: "One leg at a time, boys",
-    numberOfQuestions: 4
+    'classroom': "classroomId",
+    'questionId': "questionId",
+    'answerId': "answerId",
+    'answerStr': "One leg at a time, boys",
+    'numberOfQuestions': 4
 }
 ```
 
@@ -128,9 +128,9 @@ The `question_vote` event is used by the client to tell the server to vote a spe
 
 ```json
 {
-    classroom: "classroomId",
-    question: "questionId",
-    up: boolean
+    'classroom': "classroomId",
+    'question': "questionId",
+    'up': true
 }
 ```
 
@@ -138,7 +138,7 @@ On the server-side, the `question_vote` event is used to notify all users of the
 
 ```json
 {
-    classroom: "classroomId",
+    'classroom': "classroomId",
     question: "questionId",
     votes: 12
 }
@@ -150,9 +150,9 @@ The server will also emit a `question_vote_change` event back to a user after th
 
 ```json
 {
-    classroom: "classroomId",
-    question: "questionId",
-    state: boolean
+    'classroom': "classroomId",
+    'question': "questionId",
+    'state': true
 }
 ```
 
@@ -162,10 +162,10 @@ The `answer_vote` event is used by the client to tell the server to vote a speci
 
 ```json
 {
-    classroom: "classroomId",
-    question: "questionId",
-    answer: "answerId",
-    up: boolean
+    'classroom': "classroomId",
+    'question': "questionId",
+    'answer': "answerId",
+    'up': false
 }
 ```
 
@@ -173,10 +173,10 @@ On the server-side, the `answer_vote` event is used to notify all users of the c
 
 ```json
 {
-    classroom: "classroomId",
-    question: "questionId",
-    answer: "answerId",
-    votes: 0
+    'classroom': "classroomId",
+    'question': "questionId",
+    'answer': "answerId",
+    'votes': 0
 }
 ```
 
@@ -186,9 +186,9 @@ The server will also emit a `answer_vote_change` event back to a user after they
 
 ```json
 {
-    classroom: "classroomId",
-    question: "questionId",
-    answer: "answerId",
-    state: boolean
+    'classroom': "classroomId",
+    'question': "questionId",
+    'answer': "answerId",
+    'state': false
 }
 ```
