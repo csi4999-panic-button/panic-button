@@ -21,19 +21,22 @@
         "email" : "mattli@oakland.edu",
         "firstName": "Matt",
         "lastName": "Li",
-        "password": "testpass"
+        "password": "testpass",
+        "codeIndex": 0 
     },
     {
         "email" : "jadams@msu.edu",
         "firstName": "John",
         "lastName": "Adams",
-        "password": "testpass"
+        "password": "testpass",
+        "codeIndex": 1
     },
     {
         "email" : "jdoe1@msu.edu",
         "firstName": "Jane",
         "lastName": "Doe",
-        "password": "testpass"
+        "password": "testpass",
+        "codeIndex": 2
     },
     {
         "email" : "bgoodman@msu.edu",

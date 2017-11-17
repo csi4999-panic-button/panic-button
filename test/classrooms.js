@@ -39,7 +39,12 @@ describe("Classrooms", () => {
             method: 'POST',
             uri: `${baseUrl}/register`,
             json: true,
-            body: thisUser,
+            body: {
+                email: thisUser.email,
+                firstName: thisUser.firstName,
+                lastName: thisUser.lastName,
+                password: thisUser.password,
+            },
             jar: j,
         };
         const loginOpts = {
@@ -185,8 +190,8 @@ describe("Classrooms", () => {
             json: true,
         };
     
+        let codes = null;
         // login to the new user account
-        let [codeIndex, codes] = [0, null];
         return request(teacherOpts)
         .then( (teaLoggedIn) => {
             expect(teaLoggedIn.success).to.equal(true);
@@ -200,7 +205,12 @@ describe("Classrooms", () => {
                     method: 'POST',
                     uri: `${baseUrl}/register`,
                     json: true,
-                    body: student,
+                    body: {
+                        email: student.email,
+                        firstName: student.firstName,
+                        lastName: student.lastName,
+                        password: student.password,
+                    },
                     jar: stuJar,
                 };
                 const stuLogOpts = {
@@ -221,12 +231,12 @@ describe("Classrooms", () => {
                     return request(stuLogOpts);
                 }).then( (stuLoggedIn) => {
                     expect(stuLoggedIn.success).to.equal(true);
-                    testMembers[codeIndex] = student;
+                    testMembers[student.codeIndex] = student;
                     const stuInviteOpts = {
                         method: 'POST',
                         uri: `${baseUrl}/api/v1/classrooms/join`,
                         json: true,
-                        body: { inviteCode: codes[codeIndex++] },
+                        body: { inviteCode: codes[student.codeIndex] },
                         jar: stuJar,
                     }
                     return request(stuInviteOpts);

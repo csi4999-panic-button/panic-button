@@ -34,11 +34,19 @@ const classroomSchema = new mongoose.Schema({
       user: { type: "ObjectId", ref: "User" },
       question: String,
       ts: Number,
-      resolution: Number,
+      resolution: { type: Number, default: -1 },
+      votes: {
+        type: [{ type: "ObjectId", ref: "User" }],
+        default: [],
+      },
       answers: [{
         user: { type: "ObjectId", ref: "User" },
         answer: String,
         ts: Number,
+        votes: {
+          type: [{ type: "ObjectId", ref: "User" }],
+          default: [],
+        }
       }],
     }],
 
@@ -57,6 +65,14 @@ const classroomSchema = new mongoose.Schema({
 
 classroomSchema.methods.isTeacher = function (user) {
   return this.teachers.map(t => t.toString()).includes(user.id);
+}
+
+classroomSchema.methods.isTeacherAssistant = function (user) {
+  return this.teacherAssistants.map(t => t.toString()).includes(user.id);
+}
+
+classroomSchema.methods.isStudent = function (user) {
+  return this.students.map(t => t.toString()).includes(user.id);
 }
 
 classroomSchema.methods.sanitize = function (user) {
@@ -89,6 +105,11 @@ classroomSchema.methods.sanitize = function (user) {
       return question;
     });
   }
+
+  out.role = (this.isTeacher(user)) ? "teacher" :
+    (this.isTeacherAssistant(user)) ? "teacherAssistant" :
+    (this.isStudent(user)) ? "student" : null;
+
   return out;
 }
 

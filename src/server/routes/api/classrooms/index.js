@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
     return res.status(401).send();
   }
 
-  try {
+  try{
     // get all classrooms with current user
     // (prepoulated)
     const classrooms = await Classrooms.find({ $or: [
@@ -28,6 +28,35 @@ router.get("/", async (req, res) => {
     return res.json(sanitizedClassrooms);
   } catch (err) {
     return res.json({ status: false, message: err.message });
+  }
+});
+
+// returns a specific classroom this user belongs to
+router.get("/:classroomId", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
+  try {
+    // get all classrooms with current user
+    // (prepoulated)
+    const classrooms = await Classrooms.findOne({ 
+      _id: req.params.classroomId,
+      $or: [
+        { teachers: req.user._id },
+        { teacherAssistants: req.user._id },
+        { students: req.user._id }
+      ],
+    });
+
+    // remove codes from non-teacher rooms
+    // and cast to object
+    const sanitizedClassroom = classrooms.sanitize(req.user);
+
+    // send to user
+    return res.json(sanitizedClassroom);
+  } catch (err) {
+    return res.json({ status: false, message: err });
   }
 });
 
@@ -154,6 +183,7 @@ router.put("/:classroomId/code/:type(student|teacherAssistant|teacher)", async (
   }
 });
 
+// remove a specified user from the classroom 
 router.delete("/:classroomId/:type(student|teacherAssistant|teacher)(student|teacherAssistant|teacher)/:userId", async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).send();
@@ -194,6 +224,7 @@ router.delete("/:classroomId/:type(student|teacherAssistant|teacher)(student|tea
   }).catch( (err) => res.json({ success: false, message: err.message }));
 });
 
+// removes the current user from the specified classroom
 router.post("/:classroomId/leave", async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).send();
@@ -220,106 +251,73 @@ router.post("/:classroomId/leave", async (req, res) => {
   })
 });
 
-router.post("/:classroomId/ask", async (req, res) => {
+// asks a question in the specified classroom
+router.post("/:classroomId/questions", async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).send();
   }
 
-  const question = req.body.question;
-  const user = req.user;
+  const { status, body } = await util.askQuestion(
+    req.user,
+    req.params.classroomId,
+    req.body.question,
+    req.app.ee
+  );
 
-  if (typeof question !== "string") {
-    return res.status(400).json({
-      success: false,
-      message: "question must be a string",
-    });
-  }
-
-  const classroom = await Classrooms.findOneAndUpdate({
-    _id: req.params.classroomId,
-    $or: [
-      { teachers: req.user._id },
-      { teacherAssistants: req.user._id },
-      { students: req.user._id }
-    ],
-  }, {
-    $push: {
-      questions: {
-        user: req.user._id,
-        question,
-        ts: Date.now(),
-        resolution: -1,
-        answers: [],
-      },
-    },
-  });
-
-  if (!classroom) {
-    return res.json({ success: false, message: "You are not a member of that classroom" });
-  }
-
-  return res.json({ success: true });
+  return res.status(status).json(body);
 });
 
-router.post("/:classroomId/answer", async (req, res) => {
+
+// answers a specific question in a classroom
+router.post("/:classroomId/questions/:questionId/answers", async (req, res) => {  
   if (!req.isAuthenticated()) {
     return res.status(401).send();
   }
 
-  const answer = req.body.answer;
-  const _id = req.body._id;
-  const user = req.user;
+  const { status, body } = await util.answerQuestion(
+    req.user,
+    req.params.classroomId, 
+    req.params.questionId,
+    req.body.answer,
+    req.app.ee
+  );
 
-  if (typeof answer !== "string") {
-    return res.status(400).json({
-      success: false,
-      message: "answer must be a string",
-    });
+  return res.status(status).json(body);
+});
+
+// votes yes/no for a specific question in a classroom
+router.put("/:classroomId/questions/:questionId/", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
   }
 
-  if (typeof _id !== "string") {
-    return res.status(400).json({
-      success: false,
-      message: "question must be identified by _id",
-    });
+  const { status, body } = await util.voteQuestion(
+    req.user.id,
+    req.params.classroomId,
+    req.params.questionId,
+    req.body.up,
+    req.app.ee
+  )
+
+  return res.status(status).json(body);
+});
+
+// votes yes/no for a specific answer to a specific question in a classroom
+router.put("/:classroomId/questions/:questionId/answers/:answerId", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
   }
 
-  const classroom = await Classrooms.findOne({
-    _id: req.params.classroomId,
-    $or: [
-      { teachers: req.user._id },
-      { teacherAssistants: req.user._id },
-      { students: req.user._id }
-    ],
-  });
+  const { status, body } = await util.voteAnswer(
+    req.user.id,
+    req.params.classroomId,
+    req.params.questionId,
+    req.params.answerId,
+    req.body.up,
+    req.app.ee
+  )
 
-  if (!classroom) {
-    return res.status(404).json({
-      success: false,
-      message: "You are not a member of that classroom",
-    });
-  }
-
-  const question = classroom.questions.filter(q => q._id.toString() === _id)[0];
-
-  if (!question) {
-    return res.status(404).json({
-      success: false,
-      message: `that classroom does not have a question with _id ${_id}`,
-    });
-  }
-
-  question.answers.push({
-    user: req.user._id,
-    answer,
-    ts: Date.now(),
-  });
-
-  await Classrooms.findByIdAndUpdate(req.params.classroomId, {
-    questions: classroom.questions,
-  });
-
-  return res.json({ success: true });
+  return res.status(status).json(body);
 });
 
 router.get("/:classroomId/topics", async (req, res) => {
