@@ -49,6 +49,15 @@ const classroomSchema = new mongoose.Schema({
         }
       }],
     }],
+
+    currentTopic: { 
+      type: Number,
+      default: 0,
+    },
+    topics: { 
+      type: [String],
+      default: ["General"],
+    },
 }, {
     timestamps: true,
 });

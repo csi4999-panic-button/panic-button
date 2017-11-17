@@ -3,6 +3,7 @@
 const Classrooms = require("./models/classrooms");
 const Users = require("./models/users");
 const util = require("./util");
+const invalidBoolean = util.invalidBoolean;
 
 const panicked = {};
 const timers = {};
@@ -41,7 +42,7 @@ module.exports = (app, io) => {
 
         // judicious logging
         console.log("socket panic event received");
-        console.log("_id:",event.classroom);
+        console.log("classroom:",event.classroom);
         console.log("students:",socket.user.id);
         console.log("event contains:", event);
 
@@ -85,6 +86,44 @@ module.exports = (app, io) => {
           event.up,
           app.ee
         )
+      });
+
+      socket.on("topic_change", async (event) => {
+        event = (typeof event === "string") ? JSON.parse(event) : event;
+
+        // judicious logging
+        console.log("socket topic_change event received");
+        console.log("classroom:",event.classroom);
+        console.log("user:",socket.user.id);
+        console.log("event contains:", event);
+
+        // confirm user is teacher of given classroom
+        const classroom = await Classrooms.findOne({
+          _id: event.classroom,
+          teachers: socket.user.id,
+        })
+
+        if (!classroom) return;
+        console.log(socket.user.id, "is a teacher of", classroom.name);
+
+        // return if neither next/previous are defined
+        if (invalidTypeOf("boolean", event.next) && invalidTypeOf("boolean", event.previous)) return;
+
+        // get new index or return if invalid (false/false, for example)
+        let newIndex = classroom.currentTopic;
+        if(event.next && newIndex < (classroom.topics.length-1)) newIndex += 1;
+        else if(event.previous && newIndex > 0) newIndex -= 1;
+        else return;
+
+        // set topic and emit to eventemitter with user/classroom/topic
+        const newTopic = classroom.topics[newIndex];
+        app.ee.emit("topic_change", { 
+          user: socket.user.id, 
+          classroom: event.classroom, 
+          topic: newTopic,
+          first: newIndex === 0,
+          last: newIndex === classroom.topics.length-1,
+        });
       });
 
       // join/leave classrooms after socket connection
@@ -137,6 +176,18 @@ module.exports = (app, io) => {
     console.log("panicNumber:", panicked[event.classroom].size)
   });
 
+  app.ee.on("topic_change", (event) => {
+    console.log("Changing topic to", event.topic);
+    // update all users with current topic string
+    io.in(event.classroom).emit("topic_change", {
+      classroom: event.classroom,
+      topic: event.topic,
+      first: event.first,
+      last: event.last,
+    });
+    // user is not used but maybe there's some use for it coming up
+  });
+  
   /* Receives:
     {
       classroom: string,

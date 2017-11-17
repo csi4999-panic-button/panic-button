@@ -89,6 +89,11 @@ module.exports.joinClassroomByInviteCode = async (code, userId) => {
   }
 }
 
+
+module.exports.invalidTypeOf = (type, val) => {
+  return (val === null || val === undefined || typeof val !== type);
+}
+
 module.exports.askQuestion = async (user, classId, question, ee) => {
   try {
     if (typeof question !== "string") {

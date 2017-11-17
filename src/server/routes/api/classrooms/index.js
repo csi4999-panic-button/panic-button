@@ -267,6 +267,7 @@ router.post("/:classroomId/questions", async (req, res) => {
   return res.status(status).json(body);
 });
 
+
 // answers a specific question in a classroom
 router.post("/:classroomId/questions/:questionId/answers", async (req, res) => {  
   if (!req.isAuthenticated()) {
@@ -319,8 +320,107 @@ router.put("/:classroomId/questions/:questionId/answers/:answerId", async (req, 
   return res.status(status).json(body);
 });
 
+router.get("/:classroomId/topics", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
 
+  return Classrooms.findOne({
+    _id: req.params.classroomId,
+    teachers: req.user.id,
+  })
+  .then(classroom => res.json({ success: true, topics: classroom.topics, index: classroom.currentTopic }))
+  .catch( err => res.json({ success: false, message: err.message }));
+});
 
+router.get("/:classroomId/topics/current", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
+  return Classrooms.findOne({
+    _id: req.params.classroomId,
+    teachers: req.user.id,
+  })
+  .then(classroom => res.json({ success: true, topic: classroom.topics[classroom.currentTopic] }))
+  .catch( err => res.json({ success: false, message: err.message }));
+});
+
+router.put("/:classroomId/topics/:direction(next|previous)", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
+  try {
+    // confirm user is teacher of given classroom
+    const classroom = await Classrooms.findOne({
+      _id: req.params.classroomId,
+      teachers: req.user.id,
+    })
+
+    if (!classroom) return;
+    console.log(req.user.id, "is a teacher of", classroom.name);
+    
+    // get new index or return if invalid (false/false, for example)
+    let newIndex = classroom.currentTopic;
+    if(req.params.direction === "next" && newIndex < (classroom.topics.length-1)) newIndex += 1;
+    else if(req.params.direction === "previous" && newIndex > 0) newIndex -= 1;
+    else throw new Error("The index cannot be moved in that direction");
+
+    classroom.currentTopic = newIndex;
+    // any way to confirm this works or does it throw an error if it doesn't?
+    await classroom.save();
+
+    // update the classroom of the topic change via sockets
+    req.app.ee.emit("topic_change", {
+      classroom: classroom._id,
+      topic: classroom.topics[newIndex],
+      first: newIndex === 0,
+      last: newIndex === (classroom.topics.length-1),
+    });
+    
+    return res.status(200).json({ success: true, message: "Topic index moved successfully", topic: classroom.topics[newIndex] });
+  } catch(err) {
+    console.log(err.message);
+    return res.status(400).json({ success: false, message: err.message });
+  }
+});
+
+router.post("/:classroomId/topics", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
+  try {
+    // supports null/undefined as resetting array
+    if(req.body.topics === null || req.body.topics === undefined) req.body.topics = [];
+    // any other data types will end processing
+    if (!Array.isArray(req.body.topics)) throw new Error("The data type of topics was not acceptable");
+    const newTopics = req.body.topics.concat(["General"]);
+    const classroom = await Classrooms.findOneAndUpdate({
+      teachers: req.user.id,
+      _id: req.params.classroomId,
+    }, {
+      $set: { 
+        topics: newTopics,
+        currentTopic: 0,
+      }
+    })
+    // confirm that it was successfully performed
+    if (!classroom) throw new Error("No classroom could be updated");
+    
+    // update the classroom of the topics update via sockets!
+    req.app.ee.emit("topic_change", {
+      classroom: req.params.classroomId,
+      topic: newTopics[0],
+      first: true,
+      last: newTopics.length === 1,
+    });
+    return res.status(200).json({ success: true, message: "Topics successfully updated" });
+  } catch(err) {
+    return res.status(400).json({ success: false, message: err.message });
+  }
+});
 
 module.exports = router;
 
