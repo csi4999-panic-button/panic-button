@@ -25,30 +25,30 @@ Once the `login_success` event has been received containing `true`, the client i
 
 The following specifications give detail to what user roles should use emit or listen for which events.
 
-### login   [Client]
+### login
 
-The `login` event is used by the client to initiate a socket connection with the server. The body of the event should contain **only a string**, the `apiToken`. See REST documentation for `/api/v1/authenticate` to retrieve your API token:
+**[Client]** The `login` event is used by the client to initiate a socket connection with the server. The body of the event should contain **only a string**, the `apiToken`. See REST documentation for `/api/v1/authenticate` to retrieve your API token:
 
 ```json
 "exampleUserApiToken"
 ```
 
-### login_success   [Server]
+### login_success
 
-The `login_success` event is used by the server after receiving a "login" event from a client. Upon verifying the user ID associated with the API token, the server will hook the socket connection to the existing socket if one has been created previously, as well as joining the user to all classroom sockets they belong to and further server-side logic for socket management internally. If the API token is associated with a user ID, the `login_success` will return a boolean of `true`, otherwise it will return `false`.
+**[Server]** The `login_success` event is used by the server after receiving a "login" event from a client. Upon verifying the user ID associated with the API token, the server will hook the socket connection to the existing socket if one has been created previously, as well as joining the user to all classroom sockets they belong to and further server-side logic for socket management internally. If the API token is associated with a user ID, the `login_success` will return a boolean of `true`, otherwise it will return `false`.
 
 ```json
 true
 ```
 
-### panic   [Client/Server]
+### panic
 
-The `panic` event is used by both client-side and server-side. It is used by clients to notify the server of their current panic state. From the client-side, the emitted event should contain the body:
+**[Client/Server]** The `panic` event is used by both client-side and server-side. It is used by clients to notify the server of their current panic state. From the client-side, the emitted event should contain the body:
 
 ```json
 {
-    'classroom': "classroomId",
-    'state': true
+    "classroom": "classroomId",
+    "state": true
 }
 ```
 
@@ -56,31 +56,31 @@ It is used by the server to notify all users belonging to the classroom of the c
 
 ```json
 {
-    'classroom': "classroomId",
-    'panicNumber': number
+    "classroom": "classroomId",
+    "panicNumber": 12
 }
 ```
 
-### panic\_state\_change    [Server]
+### panic\_state\_change
 
-The `panic_state_change` event is used by the server to notify the client that their panic state has been changed. This can be a result of the user having emitted a `panic` event containing a `true` state or by the classrooms timeout feature. **This is the suggested method of handling client-side state variables**. The body of the event contains:
+**[Server]** The `panic_state_change` event is used by the server to notify the client that their panic state has been changed. This can be a result of the user having emitted a `panic` event containing a `true` state or by the classrooms timeout feature. **This is the suggested method of handling client-side state variables**. The body of the event contains:
 
 ```json
 {
-    'classroom': "classroomId",
-    'state': true
+    "classroom": "classroomId",
+    "state": true
 }
 ```
 
-### topic_change    [Client/Server]
+### topic_change
 
-The `topic_change` event is used by both the client and server. However, the only clients that can successfully perform the topic change are users who are teachers of the classroom. The client would emit an event with body like:
+**[Client/Server]** The `topic_change` event is used by both the client and server. However, the only clients that can successfully perform the topic change are users who are teachers of the classroom. The client would emit an event with body like:
 
 ```json
 {
-    'classroom': "classroomId",
-    'next': false,
-    'previous': true
+    "classroom": "classroomId",
+    "next": false,
+    "previous": true
 }
 ```
 
@@ -88,49 +88,49 @@ The server sends `topic_change` events to notify clients of the current topic in
 
 ```json
 {
-    'classroom': "classroomId",
-    'topic': "Second Class Topic",
-    'first': false,
-    'last': false
+    "classroom": "classroomId",
+    "topic": "Second Class Topic",
+    "first": false,
+    "last": false
 }
 ```
 
-### new_question    [Server]
+### new_question
 
-The `new_question` event is used by the server to notify clients in the classroom of an update to the question listing. The returned body will also contain the total number of questions in the database, so in the case of the client containing the incorrect number of question in their list, the client can initiate a request to get the full list by requesting `GET /api/v1/classrooms/:classroomId`, which will contain the `questions` array which can be used to update their full list. An example body of the response would be:
+**[Server]** The `new_question` event is used by the server to notify clients in the classroom of an update to the question listing. The returned body will also contain the total number of questions in the database, so in the case of the client containing the incorrect number of question in their list, the client can initiate a request to get the full list by requesting `GET /api/v1/classrooms/:classroomId`, which will contain the `questions` array which can be used to update their full list. An example body of the response would be:
 
 ```json
 {
-    'classroom': "classroomId",
-    'questionId': "questionId",
-    'questionStr': "How do you put your pants on in the morning?",
-    'numberOfQuestions': 4
+    "classroom": "classroomId",
+    "questionId": "questionId",
+    "questionStr": "How do you put your pants on in the morning?",
+    "numberOfQuestions": 4
 }
 ```
 
-### new_answer  [Server]
+### new_answer
 
-The `new_answer` event is used by the server to notify clients in the classroom of an update to the answer listing. The returned body will also contain the total number of answers in the database, so in the case of the client containing the incorrect number of answer in their list, the client can initiate a request to get the full list by requesting `GET /api/v1/classrooms/:classroomId`, which will contain the `questions` array which can be used to update their full list. An example body of the response would be:
+**[Server]** The `new_answer` event is used by the server to notify clients in the classroom of an update to the answer listing. The returned body will also contain the total number of answers in the database, so in the case of the client containing the incorrect number of answer in their list, the client can initiate a request to get the full list by requesting `GET /api/v1/classrooms/:classroomId`, which will contain the `questions` array which can be used to update their full list. An example body of the response would be:
 
 ```json
 {
-    'classroom': "classroomId",
-    'questionId': "questionId",
-    'answerId': "answerId",
-    'answerStr': "One leg at a time, boys",
-    'numberOfQuestions': 4
+    "classroom": "classroomId",
+    "questionId": "questionId",
+    "answerId": "answerId",
+    "answerStr": "One leg at a time, boys",
+    "numberOfQuestions": 4
 }
 ```
 
-### question_vote   [Client/Server]
+### question_vote
 
-The `question_vote` event is used by the client to tell the server to vote a specific way towards a question. The body of the event should contain an `up` property that says whether the user agrees with the question. This is used as a mean of determining what areas students are struggling in and also how many. **There is not a downvote system in place, users can simply agree on an area of confusion or not**. An example of the client-side body would be:
+**[Client/Server]** The `question_vote` event is used by the client to tell the server to vote a specific way towards a question. The body of the event should contain an `up` property that says whether the user agrees with the question. This is used as a mean of determining what areas students are struggling in and also how many. **There is not a downvote system in place, users can simply agree on an area of confusion or not**. An example of the client-side body would be:
 
 ```json
 {
-    'classroom': "classroomId",
-    'question': "questionId",
-    'up': true
+    "classroom": "classroomId",
+    "question": "questionId",
+    "up": true
 }
 ```
 
@@ -138,34 +138,34 @@ On the server-side, the `question_vote` event is used to notify all users of the
 
 ```json
 {
-    'classroom': "classroomId",
-    question: "questionId",
-    votes: 12
+    "classroom": "classroomId",
+    "question": "questionId",
+    "votes": 12
 }
 ```
 
-### question\_vote\_change  [Server]
+### question\_vote\_change
 
-The server will also emit a `question_vote_change` event back to a user after they update their vote state on a question. The body of this event would contain:
+**[Server]** The server will also emit a `question_vote_change` event back to a user after they update their vote state on a question. The body of this event would contain:
 
 ```json
 {
-    'classroom': "classroomId",
-    'question': "questionId",
-    'state': true
+    "classroom": "classroomId",
+    "question": "questionId",
+    "state": true
 }
 ```
 
-### answer_vote   [Client/Server]
+### answer_vote
 
-The `answer_vote` event is used by the client to tell the server to vote a specific way towards a question. The body of the event should contain an `up` property that says whether the user agrees with the question. This is used as a mean of determining what areas students are struggling in and also how many. **There is not a downvote system in place, users can simply agree on an area of confusion or not**. An example of the client-side body would be:
+**[Client/Server]** The `answer_vote` event is used by the client to tell the server to vote a specific way towards a question. The body of the event should contain an `up` property that says whether the user agrees with the question. This is used as a mean of determining what areas students are struggling in and also how many. **There is not a downvote system in place, users can simply agree on an area of confusion or not**. An example of the client-side body would be:
 
 ```json
 {
-    'classroom': "classroomId",
-    'question': "questionId",
-    'answer': "answerId",
-    'up': false
+    "classroom": "classroomId",
+    "question": "questionId",
+    "answer": "answerId",
+    "up": false
 }
 ```
 
@@ -173,22 +173,22 @@ On the server-side, the `answer_vote` event is used to notify all users of the c
 
 ```json
 {
-    'classroom': "classroomId",
-    'question': "questionId",
-    'answer': "answerId",
-    'votes': 0
+    "classroom": "classroomId",
+    "question": "questionId",
+    "answer": "answerId",
+    "votes": 0
 }
 ```
 
-### answer\_vote\_change  [Server]
+### answer\_vote\_change
 
-The server will also emit a `answer_vote_change` event back to a user after they update their vote state on a answer. The body of this event would contain:
+**[Server]** The server will also emit a `answer_vote_change` event back to a user after they update their vote state on a answer. The body of this event would contain:
 
 ```json
 {
-    'classroom': "classroomId",
-    'question': "questionId",
-    'answer': "answerId",
-    'state': false
+    "classroom": "classroomId",
+    "question": "questionId",
+    "answer": "answerId",
+    "state": false
 }
 ```
