@@ -3,6 +3,9 @@
 const path = require("path");
 const fs = require("fs");
 const EventEmitter = require('events');
+const hbs = require("express-hbs");
+const flash = require("connect-flash");
+const login = require("connect-ensure-login");
 
 const express = require("express");
 
@@ -11,6 +14,16 @@ const app = express();
 app.ee = new EventEmitter();
 
 app.ee.on("logout", console.log);
+
+app.engine("hbs", hbs.express4({
+  // partialsDir: path.join(__dirname, "views/partials"),
+  layoutsDir: path.join(__dirname, "views/layouts/"),
+  defaultLayout: path.join(__dirname, "views/layouts/default.hbs"),
+  extname: ".hbs",
+}));
+app.set("view engine", "hbs")
+app.set("views", path.join(__dirname, "views"));
+app.use(flash());
 
 // connect to database
 const mongoose = require("mongoose");
@@ -98,7 +111,17 @@ mongoose.connect(mongoURI, {
   // set up routes
   app.use("/", routes);
 
+  app.get("/", (req, res, next) => {
+    if (req.isAuthenticated()) {
+      return res.redirect("/user-console");
+    }
+    return res.render("index");
+  });
+
   app.use(express.static(path.join(__dirname, "../client/dist")));
+
+  app.use("/", login.ensureLoggedIn("/login"));
+
   app.use((req, res, next) => {
     fs.exists(path.join(__dirname, "../client/dist/index.html"), (exists) => {
       if (exists) {
