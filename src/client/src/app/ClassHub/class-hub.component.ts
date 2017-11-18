@@ -15,20 +15,25 @@ export class ClassHubComponent {
   numberPanic: number;
   token: any;
   currentClassroom: string;
-  panicStates: {
-    [classroom:string]: boolean,
-  };
-  panicNumbers: {
-    [classroomId: string]: number,
-  };
+  panicStates: {[classroom:string]: boolean,};
+  panicNumbers: {[classroomId: string]: number,};
   isPanic: boolean;
+  classroomObject: any;
+
 
   constructor(private http: HttpClient){
+    this.HTTP = http;
     this.panicStates = {};
     this.panicNumbers = {};
     this.currentClassroom = "59ff6909a2bc9d1b4cd10493";
     const url = '/api/v1/authenticate'
     this.isPanic = false;
+
+    http.get(`/api/v1/classrooms/${this.currentClassroom}`)
+    .subscribe((data) => {
+      this.classroomObject=data
+        console.log(this.classroomObject);
+     });
 
     http.post(url, {})
       .subscribe((data) => {
@@ -38,9 +43,11 @@ export class ClassHubComponent {
           this.socket.emit('login', this.token);
         });
 
+        //login
         this.socket.on('login_success', function(sucess:boolean){
           console.log('connected', sucess);
         })
+        //Panic Events
           .on('panic', (event) => {
             console.log(event);
             console.log("panic event")
