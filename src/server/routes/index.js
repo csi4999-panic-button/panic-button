@@ -40,7 +40,10 @@ router.post("/register", async (req, res) => {
       res.redirect("/");
     });
   } catch (err) {
-    console.error(err);
+    if (err.name === 'MongoError' && err.code === 11000) {
+      req.flash("error", "That email is already registered to an account");
+      return res.redirect("/register");
+    }
     return res.status(400).json({ success: false, message: err });
   }
 });
