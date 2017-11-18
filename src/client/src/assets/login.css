@@ -112,6 +112,10 @@ body {
     margin-bottom: 10px
 }
 
+.access-form form .flash.info {
+    color: #0fab30;
+}
+
 .login form button, .register form button {
     width: 100%
 }

@@ -3,6 +3,9 @@
         {{#if messages.error}}
             <p class="flash">{{messages.error.[0]}}</p>
         {{/if}}
+        {{#if messages.info}}
+            <p class="flash info">{{messages.info.[0]}}</p>
+        {{/if}}
         <input name="email" type="email" placeholder="Email">
         <input name="password" type="password" placeholder="Password">
         <button type="submit">LOGIN</button>

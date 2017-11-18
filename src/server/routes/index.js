@@ -51,7 +51,15 @@ router.get("/logout", (req, res) => {
 });
 
 // adds user to the listing for a classroom based on a given invite code
-router.get("/join/:inviteCode([0-9A-Za-z+/=]+)", login.ensureLoggedIn("/login"), async (req, res) => {
+router.get("/join/:inviteCode([0-9A-Za-z+/=]+)",
+    (req, res, next) => {
+      if (!req.isAuthenticated()) {
+        req.flash("info", "Please log in to join the class");
+        console.log("Not logged in");
+      }
+      next();
+    },
+    login.ensureLoggedIn("/login"), async (req, res) => {
   const ret = await util.joinClassroomByInviteCode(req.params.inviteCode,req.user._id);
   return (ret.success) ? res.redirect("/") : res.status(400).json(ret);
 });
