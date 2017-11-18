@@ -46,6 +46,8 @@ describe("Classrooms", () => {
                 password: thisUser.password,
             },
             jar: j,
+            resolveWithFullResponse: true,
+            simple: false,
         };
         const loginOpts = {
             method: 'POST',
@@ -56,6 +58,7 @@ describe("Classrooms", () => {
                 password: thisUser.password
             },
             jar: j,
+            simple: false,
         };
         const classOpts = {
             method: "POST",
@@ -67,11 +70,9 @@ describe("Classrooms", () => {
 
         // register new user account
         const register = await request(userOpts);
-        expect(register.firstName).to.equal(thisUser.firstName);
         
         // login to the new user account
         const login = await request(loginOpts);
-        expect(login.success).to.equal(true);
     
         // create classroom as new user account
         const newClass = await request(classOpts);
@@ -94,6 +95,7 @@ describe("Classrooms", () => {
                 password: thisUser.password
             },
             jar: j,
+            simple: false,
         };
         const classOpts = {
             method: "POST",
@@ -105,7 +107,6 @@ describe("Classrooms", () => {
         
         // login to the new user account
         const login = await request(loginOpts);
-        expect(login.success).to.equal(true);
 
         // create classroom under user account
         classOpts.schoolId = "0123457123841230408";
@@ -131,6 +132,7 @@ describe("Classrooms", () => {
                 password: thisUser.password
             },
             jar: j,
+            simple: false,
         };
         const schoolOpts = {
             method: "POST",
@@ -149,7 +151,6 @@ describe("Classrooms", () => {
         
         // login to the new user account
         const login = await request(loginOpts);
-        expect(login.success).to.equal(true);
     
         // create school under user account
         const newSchool = await request(schoolOpts);
@@ -176,6 +177,7 @@ describe("Classrooms", () => {
                 password: teacher.password
             },
             jar: teaJar,
+            simple: false,
         };
         const classOpts = {
             method: "POST",
@@ -193,10 +195,8 @@ describe("Classrooms", () => {
         let codes = null;
         // login to the new user account
         return request(teacherOpts)
-        .then( (teaLoggedIn) => {
-            expect(teaLoggedIn.success).to.equal(true);
-            return request(classOpts);
-        }).then( (newClass) => {
+        .then( (teaLoggedIn) => request(classOpts))
+        .then( (newClass) => {
             codes = [newClass.studentCode, newClass.taCode, newClass.teacherCode];
             expect(newClass.courseTitle).to.equal(thisClassroom.courseTitle);
             return Promise.all(users.slice(3,6).map((student)=> {
@@ -212,6 +212,8 @@ describe("Classrooms", () => {
                         password: student.password,
                     },
                     jar: stuJar,
+                    resolveWithFullResponse: true,
+                    simple: false,
                 };
                 const stuLogOpts = {
                     method: 'POST',
@@ -222,15 +224,14 @@ describe("Classrooms", () => {
                         password: student.password
                     },
                     jar: stuJar,
+                    simple: false,
                 };
     
                 // register new user account
                 return request(studentOpts)
                 .then( (stuRegister) => {
-                    expect(stuRegister.firstName).to.equal(student.firstName);
                     return request(stuLogOpts);
                 }).then( (stuLoggedIn) => {
-                    expect(stuLoggedIn.success).to.equal(true);
                     testMembers[student.codeIndex] = student;
                     const stuInviteOpts = {
                         method: 'POST',
@@ -263,6 +264,7 @@ describe("Classrooms", () => {
                 password: thisUser.password
             },
             jar: j,
+            simple: false,
         };
         const classListOpts = {
             method: 'GET',
@@ -272,7 +274,6 @@ describe("Classrooms", () => {
         }
 
         const login = await request(loginOpts);
-        expect(login.success).to.equal(true);
 
         const classList = await request(classListOpts);
         expect(classList.length).to.equal(1);
@@ -296,6 +297,7 @@ describe("Classrooms", () => {
                 password: thisUser.password
             },
             jar: j,
+            simple: false,
         };
         const classListOpts = {
             method: 'GET',
@@ -305,7 +307,6 @@ describe("Classrooms", () => {
         }
 
         const login = await request(loginOpts);
-        expect(login.success).to.equal(true);
 
         const classList = await request(classListOpts);
         expect(classList.length).to.equal(1);
@@ -329,6 +330,7 @@ describe("Classrooms", () => {
                 password: thisUser.password
             },
             jar: j,
+            simple: false,
         };
         const classListOpts = {
             method: 'GET',
@@ -338,7 +340,6 @@ describe("Classrooms", () => {
         }
 
         const login = await request(loginOpts);
-        expect(login.success).to.equal(true);
 
         const classList = await request(classListOpts);
         expect(classList.length).to.equal(1);
@@ -358,6 +359,7 @@ describe("Classrooms", () => {
                 password: thisUser.password
             },
             jar: j,
+            simple: false,
         };
         const currentTopicOpts = {
             method: 'GET',
@@ -368,7 +370,6 @@ describe("Classrooms", () => {
         }
 
         const login = await request(loginOpts);
-        expect(login.success).to.equal(true);
 
         const topicUpdate = await request(currentTopicOpts);
         expect(topicUpdate.topic).to.equal("General");
@@ -387,6 +388,7 @@ describe("Classrooms", () => {
                 password: thisUser.password
             },
             jar: j,
+            simple: false,
         };
         const topicUpdateOpts = {
             method: 'POST',
@@ -404,7 +406,6 @@ describe("Classrooms", () => {
         };
 
         const login = await request(loginOpts);
-        expect(login.success).to.equal(true);
 
         const topicUpdate = await request(topicUpdateOpts);
         expect(topicUpdate.success).to.equal(true);
@@ -428,6 +429,7 @@ describe("Classrooms", () => {
                 password: thisUser.password
             },
             jar: j,
+            simple: false,
         };
         const currentTopicOpts = {
             method: 'GET',
@@ -450,7 +452,6 @@ describe("Classrooms", () => {
         };
 
         const login = await request(loginOpts);
-        expect(login.success).to.equal(true);
 
         const currentTopic = await request(currentTopicOpts);
         expect(currentTopic.topic).to.equal(classTopics[0]);

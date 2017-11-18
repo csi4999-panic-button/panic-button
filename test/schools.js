@@ -38,6 +38,8 @@ describe("Schools", () => {
                 password: thisUser.password
             },
             jar: j,
+            resolveWithFullResponse: true,
+            simple: false,
         };
         const thisSchool = schools[0];
         const schoolOpts = {
@@ -49,7 +51,6 @@ describe("Schools", () => {
         };
 
         const login = await request(loginOpts);
-        expect(login.success).to.equal(true);
 
         const createdSchool = await request(schoolOpts);
         expect(createdSchool.name).to.equal(thisSchool.name);
@@ -73,6 +74,8 @@ describe("Schools", () => {
                 password: thisUser.password
             },
             jar: j,
+            resolveWithFullResponse: true,
+            simple: false,
         };
         const thisSchool = schools[0];
         const schoolOpts = {
@@ -83,7 +86,6 @@ describe("Schools", () => {
         };
 
         const login = await request(loginOpts);
-        expect(login.success).to.equal(true);
 
         const schoolList = await request(schoolOpts);
         expect(schoolList.length).to.equal(2);
