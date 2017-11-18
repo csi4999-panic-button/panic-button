@@ -38,6 +38,8 @@ describe("Questions", () => {
             },
             json: true,
             jar: stuJar,
+            resolveWithFullResponse: true,
+            simple: false,
         };
         const classesOpts = {
             method: 'GET',
@@ -47,7 +49,6 @@ describe("Questions", () => {
         };
 
         const loggedIn = await request(loginOpts);
-        expect(loggedIn.success).to.equal(true);
         
         const testRooms = await request(classesOpts);
         testId = testRooms.filter((c)=> c.courseTitle === classrooms[0][0].courseTitle )[0]._id;
@@ -89,10 +90,11 @@ describe("Questions", () => {
             },
             json: true,
             jar: teaJar,
+            resolveWithFullResponse: true,
+            simple: false,
         };
 
         const loggedIn = await request(loginOpts);
-        expect(loggedIn.success).to.equal(true);
 
         const questionOpts = {
             method: 'POST',

@@ -32,16 +32,8 @@ describe("API v1", () => {
             json: true,
             body: thisUser,
             jar: j,
-        };
-        const loginOpts = {
-            method: 'POST',
-            uri: baseUrl + "/login",
-            json: true,
-            body: {
-                email: thisUser.email,
-                password: thisUser.password
-            },
-            jar: j,
+            resolveWithFullResponse: true,
+            simple: false,
         };
         const tokenOpts = {
             method: 'POST',
@@ -52,15 +44,10 @@ describe("API v1", () => {
 
         // register the new user account
         const register = await request(userOpts);
-        expect(register.firstName).to.equal(thisUser.firstName);
-
-        // login to the new user account
-        const login = await request(loginOpts);
-        expect(login.success).to.equal(true);
 
         // request apiToken with cookie set
         const userToken = await request(tokenOpts);
-        expect(userToken.token).to.equal(register.apiToken);
+        expect(userToken.token).to.be.a('string');
     });
 
     it("should list all users in the database", async () => {
@@ -75,6 +62,7 @@ describe("API v1", () => {
                 password: thisUser.password
             },
             jar: j,
+            simple: false,
         };
         const reqOpts = {
             method: 'GET',
@@ -85,7 +73,6 @@ describe("API v1", () => {
 
         // login to the new user account
         const login = await request(loginOpts);
-        expect(login.success).to.equal(true);
         
         const panicUsers = await request(reqOpts);
         expect(panicUsers[0].firstName).to.equal(thisUser.firstName);
