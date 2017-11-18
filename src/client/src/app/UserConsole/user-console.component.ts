@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgIf } from '@angular/common';
-import {DataSource} from '@angular/cdk/collections';
+import { DataSource } from '@angular/cdk/collections';
 import {Observable} from 'rxjs/Observable';
+import { Router } from '@angular/router';
 import 'rxjs/add/observable/of';
 
 @Component({
@@ -14,53 +15,57 @@ export class UserConsoleComponent {
 
   private HTTP: HttpClient; 
   classData: any;
-  displayedColumns = ['position', 'name', 'weight', 'symbol'];
-  dataSource = new ExampleDataSource();
-
-  constructor(private http: HttpClient){
+  displayedColumns = ['courseNumber', 'courseTitle', 'role', 'sectionNumber', 'goIcon'];
+  data: Element[] = new Array();
+  dataSource: ExampleDataSource;
+  
+  constructor(private http: HttpClient, private router: Router){
     this.HTTP = http;
      this.HTTP.get('/api/v1/classrooms')
           .subscribe((data) => {
             this.classData=data
-              console.log(this.classData);     
+              console.log(this.classData);
+              this.getList(this.classData);
+              this.dataSource = new ExampleDataSource(this.data);
            });
+           
+  }
+  getList(data: any)
+  {
+    var temp: Element;
+    for(let i in data)
+    {
+      temp = {courseNumber: data[i].courseNumber, courseTitle: data[i].courseTitle, 
+      role: data[i].role, sectionNumber: data[i].sectionNumber};
+      this.data.push(temp);
+    }
+    console.log(this.data);
+    
+  }
+  navigateTo(link: any){
+    this.router.navigate([link]);
   }
 }
 
-export interface Element {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
+
+export interface Element{
+  courseNumber: string;
+  courseTitle: string;
+  role: string;
+  sectionNumber: string;
 }
 
-const data: Element[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-  {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-  {position: 11, name: 'Sodium', weight: 22.9897, symbol: 'Na'},
-  {position: 12, name: 'Magnesium', weight: 24.305, symbol: 'Mg'},
-  {position: 13, name: 'Aluminum', weight: 26.9815, symbol: 'Al'},
-  {position: 14, name: 'Silicon', weight: 28.0855, symbol: 'Si'},
-  {position: 15, name: 'Phosphorus', weight: 30.9738, symbol: 'P'},
-  {position: 16, name: 'Sulfur', weight: 32.065, symbol: 'S'},
-  {position: 17, name: 'Chlorine', weight: 35.453, symbol: 'Cl'},
-  {position: 18, name: 'Argon', weight: 39.948, symbol: 'Ar'},
-  {position: 19, name: 'Potassium', weight: 39.0983, symbol: 'K'},
-  {position: 20, name: 'Calcium', weight: 40.078, symbol: 'Ca'},
-];
-
 export class ExampleDataSource extends DataSource<any> {
+  data: Element[]
+  constructor(data: Element[]){
+    super();
+    this.data = data;
+    console.log("data source hit");
+    console.log(this.data)
+   }
   /** Connect function called by the table to retrieve one stream containing the data to render. */
   connect(): Observable<Element[]> {
-    return Observable.of(data);
+    return Observable.of(this.data);
   }
 
   disconnect() {}

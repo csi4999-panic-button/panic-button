@@ -1,7 +1,7 @@
 <body class="background-image">
         <md-card class="card-style" >
             <div *ngIf="isCreated">
-                 <button md-button class="button-style" md-raised-button routerLink="/user-console" routerLinkActive="active">
+                 <button mat-button class="button-style" mat-raised-button routerLink="/user-console" routerLinkActive="active">
                      Class Created - Go To User Controls</button>
             </div>
             <div *ngIf="!isCreated">
@@ -10,14 +10,14 @@
                  </md-card-title>
                  <div>
                  <md-card-content>
-                         <md-form-field class="input-style">
-                             <input type="text" [(ngModel)]="inviteCode" mdInput placeholder="Invitation Code" />
-                         </md-form-field>
+                         <mat-form-field class="input-style">
+                             <input type="text" [(ngModel)]="inviteCode" matInput placeholder="Invitation Code" />
+                         </mat-form-field>
                  </md-card-content>
              </div>
                  <md-card-actions>
-                     <button md-button class="button-style" (click)=Join() md-raised-button>Join</button>
-                     <button md-button class="button-style" md-raised-button routerLink="/user-console" routerLinkActive="active">Back</button>
+                     <button mat-button class="button-style" (click)=Join() mat-raised-button>Join</button>
+                     <button mat-button class="button-style" mat-raised-button routerLink="/user-console" routerLinkActive="active">Back</button>
                  </md-card-actions>
              </div>
              </md-card>
