@@ -1,1 +1,12 @@
-<button md-button class="button-style" (click)=Panic() md-raised-button>Panic</button>
+<md-toolbar class="mat-elevation-z10" style="background-color: #303F9F; color: #FFFFFF;font-size: 50px; text-align:center">
+        Class Code - Class Name</md-toolbar>
+<mat-tab-group>
+        <mat-tab label="Class Information">Class Information</mat-tab>
+        <mat-tab label="Panic">
+                <button mat-button *ngIf="!isPanic" (click)=Panic()><i class="material-icons icon-size">radio_button_unchecked</i></button>
+                <button mat-button *ngIf="isPanic"(click)=Panic()><i class="material-icons red-color icon-size">radio_button_checked</i></button>
+                {{numberPanic}}
+        </mat-tab>
+        <mat-tab label="Questions">Questions</mat-tab>
+        <mat-tab label="Instructor Tools"></mat-tab>
+</mat-tab-group>

@@ -17,17 +17,18 @@ export class JoinClassComponent {
       this.HTTP = http;
     }
     Join(){
-        const url = '/api/v1/classrooms';
+        const url = '/api/v1/classrooms/join';
         if(this.inviteCode != null){
          this.HTTP.post(url, {inviteCode: this.inviteCode})
          .subscribe((data) => {
-             console.log(data["api hit"]);    
+             console.log(data);
+             this.isCreated = true;     
           });
-          this.isCreated = true; 
-          this.HTTP.get(url)
-          .subscribe((data) => {
-              console.log(data);     
-           });
-        }
+          
+        //   this.HTTP.get(url)
+        //   .subscribe((data) => {
+        //       console.log(data);     
+        //    });
+         }
     }
 }

@@ -1,7 +1,7 @@
 <body class="background-image">
         <md-card class="card-style" >
             <div *ngIf="isCreated">
-                 <button md-button class="button-style" md-raised-button routerLink="/user-console" routerLinkActive="active">
+                 <button mmat-button class="button-style" mat-raised-button routerLink="/user-console" routerLinkActive="active">
                      Class Created - Go To User Controls</button>
             </div>
             <div *ngIf="!isCreated">
@@ -10,26 +10,26 @@
                  </md-card-title>
                  <div>
                  <md-card-content>
-                         <md-form-field class="input-style">
-                             <input type="text" [(ngModel)]="schoolId" mdInput placeholder="School Id" />
-                         </md-form-field>
-                         <md-form-field class="input-style">
-                             <input type="text" [(ngModel)]="courseType" mdInput placeholder="Course Type" />
-                         </md-form-field>
-                         <md-form-field class="input-style">
-                             <input type="text" [(ngModel)]="courseNumber" mdInput placeholder="Course Number" />
-                         </md-form-field>
-                         <md-form-field class="input-style">
-                             <input type="text" [(ngModel)]="sectionNumber" mdInput placeholder="Section Number" />
-                         </md-form-field>
-                          <md-form-field class="input-style">
-                             <input type="text" [(ngModel)]="courseTitle" mdInput placeholder="Course Title" />
-                         </md-form-field>
+                         <mat-form-field class="input-style">
+                             <input type="text" [(ngModel)]="schoolId" matInput placeholder="School Id" />
+                         </mat-form-field>
+                         <mat-form-field class="input-style">
+                             <input type="text" [(ngModel)]="courseType" matInput placeholder="Course Type" />
+                         </mat-form-field>
+                         <mat-form-field class="input-style">
+                             <input type="text" [(ngModel)]="courseNumber" matInput placeholder="Course Number" />
+                         </mat-form-field>
+                         <mat-form-field class="input-style">
+                             <input type="text" [(ngModel)]="sectionNumber" matInput placeholder="Section Number" />
+                         </mat-form-field>
+                          <mat-form-field class="input-style">
+                             <input type="text" [(ngModel)]="courseTitle" matInput placeholder="Course Title" />
+                         </mat-form-field>
                  </md-card-content>
              </div>
                  <md-card-actions>
-                     <button md-button class="button-style" (click)=Create() md-raised-button>Register</button>
-                     <button md-button class="button-style" md-raised-button routerLink="/user-console" routerLinkActive="active">Back</button>
+                     <button mat-button class="button-style" (click)=Create() mat-raised-button>Register</button>
+                     <button mat-button class="button-style" mat-raised-button routerLink="/user-console" routerLinkActive="active">Back</button>
                  </md-card-actions>
              </div>
              </md-card>
