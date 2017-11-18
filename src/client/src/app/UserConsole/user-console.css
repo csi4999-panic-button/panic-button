@@ -1,18 +1,18 @@
 .column {
     float: left;
     padding: 15px;
-  
+
 }
 
 .cards {
-    height: 500px;
+    max-height: 80vh;
 }
 
 .secondary-toolbar
 {
     background: #607D8B;
     color: #FFFFFF;
-    font-size: 50px; 
+    font-size: 50px;
     text-align:center
 }
 
@@ -27,12 +27,10 @@
 .example-container {
     display: flex;
     flex-direction: column;
-    max-height: 500px;
     min-width: 300px;
   }
-  
+
   .mat-table {
     overflow: auto;
-    max-height: 500px;
   }
-  
+
