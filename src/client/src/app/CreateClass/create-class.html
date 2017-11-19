@@ -10,27 +10,40 @@
                  </md-card-title>
                  <div>
                  <md-card-content>
-                         <mat-form-field class="input-style">
-                             <input type="text" [(ngModel)]="schoolId" matInput placeholder="School Id" />
-                         </mat-form-field>
-                         <mat-form-field class="input-style">
-                             <input type="text" [(ngModel)]="courseType" matInput placeholder="Course Type" />
-                         </mat-form-field>
-                         <mat-form-field class="input-style">
-                             <input type="text" [(ngModel)]="courseNumber" matInput placeholder="Course Number" />
-                         </mat-form-field>
-                         <mat-form-field class="input-style">
-                             <input type="text" [(ngModel)]="sectionNumber" matInput placeholder="Section Number" />
-                         </mat-form-field>
-                          <mat-form-field class="input-style">
-                             <input type="text" [(ngModel)]="courseTitle" matInput placeholder="Course Title" />
-                         </mat-form-field>
+                        <mat-form-field class="input-style">
+                            <input type="text" [(ngModel)]="courseTitle" matInput placeholder="Course Title *" />
+                        </mat-form-field>
+                        <mat-form-field class="input-style">
+                            <input type="text" [(ngModel)]="courseType" matInput placeholder="Course Type" />
+                        </mat-form-field>
+                        <mat-form-field class="input-style">
+                            <input type="text" [(ngModel)]="courseNumber" matInput placeholder="Course Number" />
+                        </mat-form-field>
+                        <mat-form-field class="input-style">
+                            <input type="text" [(ngModel)]="sectionNumber" matInput placeholder="Section Number" />
+                        </mat-form-field>
+                        <mat-form-field class="input-style">
+                            <input type="text" matInput placeholder="School (type to search)" [(ngModel)]="schoolName" #searchBox id="search-box" (keyup)="search(searchBox.value)" />
+                            <!-- Following section is the search results -->
+                            <div [hidden]="!searching">
+                                <mat-list>
+                                    <mat-list-item class="search-result" *ngFor="let school of schools$ | async" >
+                                        <a (click)="setSchoolAndHide(school)">
+                                        {{school.name}}
+                                        </a>
+                                    </mat-list-item>
+                                </mat-list>
+                            </div>
+                        </mat-form-field>
                  </md-card-content>
              </div>
                  <md-card-actions>
                      <button mat-button class="button-style" (click)=Create() mat-raised-button>Register</button>
                      <button mat-button class="button-style" mat-raised-button routerLink="/user-console" routerLinkActive="active">Back</button>
                  </md-card-actions>
+             </div>
+             <div>
+                <p class="hint">*: Required field</p>
              </div>
              </md-card>
      </body>

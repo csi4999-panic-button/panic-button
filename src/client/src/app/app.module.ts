@@ -23,6 +23,8 @@ import { ClassHubComponent } from './ClassHub/class-hub.component';
 import { CreateClassComponent } from './CreateClass/create-class.component';
 import { JoinClassComponent } from './JoinClass/join-class.component';
 
+import { SchoolSearchService } from './School/school-search.service';
+
 
 const appRoutes: Routes = [
   { path: 'home', component: HomePageComponent },
@@ -35,7 +37,6 @@ const appRoutes: Routes = [
   { path: 'join-class', component: JoinClassComponent},
   { path: '',   redirectTo: '/home', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent },
-  
 ];
 
 @NgModule({
@@ -64,8 +65,9 @@ const appRoutes: Routes = [
     ClassHubComponent,
     CreateClassComponent,
     JoinClassComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
   ],
+  providers: [ SchoolSearchService ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
