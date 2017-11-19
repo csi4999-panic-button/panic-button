@@ -28,6 +28,8 @@ router.post("/", async (req, res) => {
         return res.status(401).send();
     }
     
+    if (typeof req.body.zip === 'number') req.body.zip = `${req.body.zip}`;
+
     return Schools.create({
         name: req.body.name,
         address: req.body.address,
