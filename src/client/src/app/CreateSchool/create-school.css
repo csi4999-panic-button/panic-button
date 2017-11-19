@@ -74,3 +74,11 @@
 {
     font-weight:bolder;   
 }
+
+.scroll-card-80
+{
+    top: 10%;
+    bottom: 10%;
+    max-height: 80%;
+    overflow-y: auto;
+}

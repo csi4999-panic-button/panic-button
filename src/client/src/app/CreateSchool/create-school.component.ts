@@ -144,6 +144,7 @@ export class CreateSchoolComponent {
   }
 
   ngOnInit(): void {
+    this.updating = false;
     this.schools$ = this.searchTerms.pipe(
       // wait 300ms after each keystroke before considering the term
       debounceTime(300),
