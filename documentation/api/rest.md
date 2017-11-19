@@ -9,7 +9,6 @@ Table of Contents
 * [/api/v1](#api-v1)
 * [/api/v1/classrooms](#api-v1-classrooms)
 * [/api/v1/schools](#api-v1-schools)
-* [/api/v1/invite-codes](#api-v1-invite-codes)
 
 # <a name="return-structure">Default Return Structure</a>
 
@@ -115,7 +114,9 @@ The return type is `[Classroom]`, where the Classroom model contains the followi
 }
 ```
 
+### `GET /api/v1/classrooms/:classroomId`
 
+This route is used to retrieve a specific classroom by it's `_id`. Useful for getting updates to questions/answers or singular updates. `classroomId` is the `_id` of the classroom. 
 
 ### `POST /api/v1/classrooms`
 
@@ -177,6 +178,10 @@ This route is used to remove a user of a specific type from the classroom. The `
 | `/api/v1/classrooms/:classroomId/:type/:userId` | PUT          | classroomId | String | *            |
 |                                          |              | type        | String | *            |
 |                                          |              | userId      | String | *            |
+
+### `POST /api/v1/classrooms/:classroomId/leave`
+
+This route is used to have the user of this session leave the classroom identified by `classroomId`. Classes **can** be orphaned by this method if the user is the last teacher of the classroom and no invite codes are retained. 
 
 ### `POST /api/v1/classrooms/:classroomId/questions`
 
@@ -359,33 +364,4 @@ This modifies an existing school in the database matching the given `$id`.
 |                   |              | zip       | String |              |
 |                   |              | domain    | String |              |
 
-
-
-# <a name="api-v1-classrooms"> /api/v1/invite-codes</a>
-
-### `GET /api/v1/invite-codes`
-
-This lists all invite codes that belong to the user
-
-| Route                  | Request Type | Variables | Type | Required(*) |
-| ---------------------- | ------------ | --------- | ---- | ----------- |
-| `/api/v1/invite-codes` | GET          |           |      |             |
-
-
-
-### `PUT /api/v1/invite-codes`
-
-This internally rotates the invite code provided in the request
-
-| Route                             | Request Type | Variables | Type   | Required(*) |
-| --------------------------------- | ------------ | --------- | ------ | ----------- |
-| `/api/v1/invite-codes/code/$code` | PUT          | code      | String | *           |
-
-
-
-###`DELETE /api/v1/invite-codes/code/$code`
-
-| Route                             | Request Type | Variables | Type   | Required(*) |
-| --------------------------------- | ------------ | --------- | ------ | ----------- |
-| `/api/v1/invite-codes/code/$code` | DELETE       | code      | String | *           |
 
