@@ -184,7 +184,7 @@ router.put("/:classroomId/code/:type(student|teacherAssistant|teacher)", async (
 });
 
 // remove a specified user from the classroom 
-router.delete("/:classroomId/:type(student|teacherAssistant|teacher)(student|teacherAssistant|teacher)/:userId", async (req, res) => {
+router.delete("/:classroomId/:type(student|teacherAssistant|teacher)/:userId", async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).send();
   }
@@ -266,7 +266,6 @@ router.post("/:classroomId/questions", async (req, res) => {
 
   return res.status(status).json(body);
 });
-
 
 // answers a specific question in a classroom
 router.post("/:classroomId/questions/:questionId/answers", async (req, res) => {  
