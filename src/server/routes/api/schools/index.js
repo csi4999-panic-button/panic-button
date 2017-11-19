@@ -6,32 +6,43 @@ const Schools = require("../../../models/schools");
 // returns a list of all schools
 router.get("/", async (req, res) => {
     const schools = await Schools.find(req.query);
-    res.json(schools);
+    return res.status(200).json(schools);
 });
+
+router.get("/search/:query", async (req, res) => {
+    const caseInsQuery = new RegExp(`${req.params.query}`,"i");
+    const schools = await Schools.find({ 
+        $or: [
+            { name: caseInsQuery },
+            { city: caseInsQuery },
+            { domain: caseInsQuery },
+        ]
+    });
+    return res.status(200).json(schools);
+});
+
 
 // create a school
 router.post("/", async (req, res) => {
-    if(req.isAuthenticated()){
-        Schools.create({
-            name: req.body.name,
-            address: req.body.address,
-            city: req.body.city,
-            state: req.body.state,
-            country: req.body.country,
-            zip: req.body.zip,
-            domain: req.body.domain
-        }).then( school => {
-            res.json(school);
-        }).catch( err => {
-            res.json({ sucess: false, message: err });
-        });
-    } else {
-        res.status(401).send();
+    if(!req.isAuthenticated()){
+        return res.status(401).send();
     }
+    
+    return Schools.create({
+        name: req.body.name,
+        address: req.body.address,
+        city: req.body.city,
+        state: req.body.state,
+        country: req.body.country,
+        zip: req.body.zip,
+        domain: req.body.domain
+    })
+    .then( school => res.json(school))
+    .catch( err => res.json({ sucess: false, message: err }));
 });
 
 // update a school by schoolId
-router.put("/id/:schoolId", (req, res) => {
+router.put("/:schoolId", (req, res) => {
     if(!req.isAuthenticated()){
         return res.status(401).send();
     }
