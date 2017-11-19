@@ -1,0 +1,61 @@
+<body class="background-image">
+        <md-card class="card-style" >
+            <div *ngIf="isCreated">
+                 <button mmat-button class="button-style" mat-raised-button routerLink="/user-console" routerLinkActive="active">
+                     School Created - Go To User Controls</button>
+            </div>
+            <div *ngIf="!isCreated">
+                <md-card-title class="input-style">
+                    <h2>Create a School</h2>
+                </md-card-title>
+                <div>
+                <md-card-content>
+                    <!-- Search an existing school to load and modify it -->
+                    <mat-form-field class="input-style">
+                        <input type="text" matInput placeholder="Search existing schools" [(ngModel)]="schoolName" #searchBox id="search-box" (keyup)="search(searchBox.value)"/>
+                        <!-- Following section is the search results -->
+                        <div [hidden]="!searching">
+                            <mat-list>
+                                <mat-list-item class="search-result" *ngFor="let school of schools$ | async">
+                                    <a (click)="setSchoolAndModifier(school)">
+                                    {{school.name}}
+                                    </a>
+                                </mat-list-item>
+                            </mat-list>
+                        </div>
+                    </mat-form-field>
+                    <!-- School form fill area -->
+                    <mat-form-field class="input-style">
+                        <input type="text" [(ngModel)]="name" matInput placeholder="Name *" />
+                    </mat-form-field>
+                    <mat-form-field class="input-style">
+                        <input type="text" [(ngModel)]="address" matInput placeholder="Address" />
+                    </mat-form-field>
+                    <mat-form-field class="input-style">
+                        <input type="text" [(ngModel)]="city" matInput placeholder="City *" />
+                    </mat-form-field>
+                    <mat-form-field class="input-style">
+                        <input type="text" [(ngModel)]="state" matInput placeholder="State *" />
+                    </mat-form-field>
+                    <mat-form-field class="input-style">
+                        <input type="text" [(ngModel)]="country" matInput placeholder="Country *" />
+                    </mat-form-field>
+                    <mat-form-field class="input-style">
+                        <input type="text" [(ngModel)]="zip" matInput placeholder="ZIP Code" />
+                    </mat-form-field>
+                    <mat-form-field class="input-style">
+                        <input type="text" [(ngModel)]="domain" matInput placeholder="Email Domain" />
+                    </mat-form-field>
+                 </md-card-content>
+             </div>
+                <md-card-actions>
+                    <button [hidden]="updating" mat-button class="button-style" (click)=UpdateSchool() mat-raised-button>Update</button>
+                    <button mat-button class="button-style" (click)=CreateSchool() mat-raised-button>Create</button>
+                    <button mat-button class="button-style" mat-raised-button routerLink="/user-console" routerLinkActive="active">Back</button>
+                </md-card-actions>
+             </div>
+             <div>
+                <p class="hint">*: Required field</p>
+             </div>
+             </md-card>
+     </body>

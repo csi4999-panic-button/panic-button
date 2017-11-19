@@ -5,6 +5,6 @@ export class School {
     city: string;
     state: string;
     country: string;
-    zip: number;
+    zip: string;
     domain: string;
 }
