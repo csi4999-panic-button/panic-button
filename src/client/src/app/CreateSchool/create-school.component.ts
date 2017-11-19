@@ -131,6 +131,7 @@ export class CreateSchoolComponent {
     this.state = searchSchool.state;
     this.country = searchSchool.country;
     this.zip = searchSchool.zip;
+    this.domain = searchSchool.domain;
 
     console.log('school set to', this.name);
   }
