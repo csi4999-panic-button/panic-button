@@ -59,11 +59,6 @@
     background-size: 100%;
 }
 
-.search-result
-{
-    margin: 2px auto;
-}
-
 .search-result:hover
 {
     cursor: pointer;
