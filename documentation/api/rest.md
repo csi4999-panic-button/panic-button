@@ -320,20 +320,24 @@ The returned JSON object is an array of schools with the following structure:
 ```js
 [
     {
-        _id: String,
-        name: String,
-        address: String,
-        city: String,
-        state: String,
-        country: String,
-        zip: Number,
-        domain: String
+        "_id": "schoolId",
+        "name": "Oakland University",
+        "address": "University Dr",
+        "city": "Auburn Hills",
+        "state": "MI",
+        "country": "USA",
+        "zip": 48309,
+        "domain": "oakland.edu"
     },
     {
-        ...
+        // ...
     }
 ]
 ```
+
+### `GET /api/v1/schools/search/:query`
+
+This route is being added so that schools can be searched and used to create classrooms for. The `query` contains the string to search for in the database, returning any school that matches on a wildcarded search of this string. 
 
 ### `POST /api/v1/schools`
 
