@@ -59,7 +59,18 @@
     background-size: 100%;
 }
 
-.hint
+.search-result
 {
-    color: #888;
+    margin: 2px auto;
+}
+
+.search-result:hover
+{
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.search-result:active
+{
+    font-weight:bolder;   
 }

@@ -23,7 +23,17 @@
                             <input type="text" [(ngModel)]="sectionNumber" matInput placeholder="Section Number" />
                         </mat-form-field>
                         <mat-form-field class="input-style">
-                            <input type="text" [(ngModel)]="schoolId" matInput placeholder="School Id" />
+                            <input type="text" matInput placeholder="School (type to search)" [(ngModel)]="schoolName" #searchBox id="search-box" (keyup)="search(searchBox.value)" />
+                            <!-- Following section is the search results -->
+                            <div [hidden]="!searching">
+                                <mat-list>
+                                    <mat-list-item class="search-result" *ngFor="let school of schools$ | async" >
+                                        <a (click)="setSchoolAndHide(school)">
+                                        {{school.name}}
+                                        </a>
+                                    </mat-list-item>
+                                </mat-list>
+                            </div>
                         </mat-form-field>
                  </md-card-content>
              </div>
