@@ -10,7 +10,14 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/search/:query", async (req, res) => {
-    const schools = await Schools.find({ name: /req.params.query/ });
+    const caseInsQuery = new RegExp(`${req.params.query}`,"i");
+    const schools = await Schools.find({ 
+        $or: [
+            { name: caseInsQuery },
+            { city: caseInsQuery },
+            { domain: caseInsQuery },
+        ]
+    });
     return res.status(200).json(schools);
 });
 
