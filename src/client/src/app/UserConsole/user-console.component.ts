@@ -22,7 +22,7 @@ export class UserConsoleComponent {
     this.HTTP = http;
      this.HTTP.get<Classroom[]>('/api/v1/classrooms')
           .subscribe((data) => {
-            this.data = data;
+            this.data = data.map(d => { d.role = d.role.charAt(0).toUpperCase() + d.role.slice(1); return d; });
             this.dataSource = new ClassroomDataSource(this.data);
           });
   }
