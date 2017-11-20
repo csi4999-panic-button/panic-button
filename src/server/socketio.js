@@ -221,7 +221,7 @@ module.exports = (app, io) => {
     console.log("new_answer event contains", event);
     
     // send new answer to all users in classroom
-    io.in(event.classroom).emit("new_question", {
+    io.in(event.classroom).emit("new_answer", {
       classroom: event.classroom,
       questionId: event.questionId,
       answerId: event.answerId,

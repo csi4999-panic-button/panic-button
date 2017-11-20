@@ -15,7 +15,7 @@ export class UserConsoleComponent {
 
   private HTTP: HttpClient; 
   classData: any;
-  displayedColumns = ['courseNumber', 'courseTitle', 'role', 'sectionNumber', 'goIcon'];
+  displayedColumns = ['courseNumber', 'courseTitle', 'role', 'sectionNumber'];
   data: Element[] = new Array();
   dataSource: ExampleDataSource;
   

@@ -14,27 +14,44 @@ export class ClassHubComponent {
   private HTTP: HttpClient;
   numberPanic: number;
   token: any;
-  currentClassroom: string;
+  currentClassroomId: string;
   panicStates: {[classroom:string]: boolean,};
   panicNumbers: {[classroomId: string]: number,};
   isPanic: boolean;
   classroomObject: any;
-
+  courseTitle: string;
+  courseNumber: string;
+  studentCount: number;
+  percentPanicked: number;
+  studentCode: string;
+  teacherCode: string;
+  questions: any;
+  role: string;
+  newQuestion: string;
+  isQuestionAsked: boolean;
+  replyMode: boolean;
+  replyQuestionId: string;
+  replyQuestion: string;
+  questionAnswer:string;
 
   constructor(private http: HttpClient){
     this.HTTP = http;
     this.panicStates = {};
     this.panicNumbers = {};
-    this.currentClassroom = "59ff6909a2bc9d1b4cd10493";
+    this.currentClassroomId = "5a107ed21201b52acc54482e";
     const url = '/api/v1/authenticate'
     this.isPanic = false;
+    this.courseTitle = "";
+    this.courseNumber = "";
+    this.numberPanic = 0;
+    this.percentPanicked = 0;
+    this.isQuestionAsked = false;
+    this.newQuestion= ""
+    this.replyMode = false;
+    this.questionAnswer="";
 
-    http.get(`/api/v1/classrooms/${this.currentClassroom}`)
-    .subscribe((data) => {
-      this.classroomObject=data
-        console.log(this.classroomObject);
-     });
-
+    this.GetClassroomObject();
+    
     http.post(url, {})
       .subscribe((data) => {
         this.token = data["token"];
@@ -52,40 +69,123 @@ export class ClassHubComponent {
             console.log(event);
             console.log("panic event")
             this.panicNumbers[event.classroom] = event.panicNumber;
-            this.UpdateView();
+            this.UpdatePanicView();
           })
           .on('panic_state_change', (event) => {
             this.panicStates[event.classroom] = event.state;
              console.log("state change");
             // console.log("panicked", this.panicStates);
-            this.UpdateView();
+            this.UpdatePanicView();
           })
           .on('refresh', (event) => {
             // set values
-            this.UpdateView();
-          });
+            this.UpdatePanicView();
+          })
+          .on('new_question', (event) => {
+            if(this.classroomObject.length != event.numberOfQuestions)
+            {
+              this.GetClassroomObject();
+            }    
+          })
+          .on('new_answer', (event) => {
+            console.log(event)
+            this.GetClassroomObject();
+          })
       });
   }
 
   Panic(){
-    this.isPanic = !this.isPanic;
-    this.socket.emit("panic", { classroom: this.currentClassroom, state: !this.panicStates[this.currentClassroom] });
+    this.socket.emit("panic", { classroom: this.currentClassroomId, state: !this.panicStates[this.currentClassroomId] });
     console.log("button hit");
-   
   }
 
-  UpdateView(){
-    const panicState = this.panicStates[this.currentClassroom];
-    this.numberPanic = this.panicNumbers[this.currentClassroom];
-    console.log(this.numberPanic);
+  NewQuestion(){
+    const url = '/api/v1/classrooms/' + this.currentClassroomId + '/questions'
+    if(!this.isQuestionAsked && this.newQuestion != "")
+    {
+      this.HTTP.post(url, {question: this.newQuestion})
+      .subscribe((data) => {});
+      this.isQuestionAsked = !this.isQuestionAsked;
+    }
+    else
+    {
+      this.isQuestionAsked = !this.isQuestionAsked;
+      this.newQuestion = "";
+    }
+    
+  }
 
-    // set current number in textbox
-    //
-    // if panicState true
-    //    turn panic number red
-    //    panic button text set to "unpanic"
-    // else
-    //    turn panic number black
-    //    panic button text set to "panic"
+  UpdatePanicView(){
+    this.isPanic = this.panicStates[this.currentClassroomId];
+    this.numberPanic = this.panicNumbers[this.currentClassroomId];
+    this.percentPanicked = Math.round(this.numberPanic * 100/this.studentCount);
+  }
+
+  GetClassroomObject(){
+    this.HTTP.get(`/api/v1/classrooms/${this.currentClassroomId}`)
+    .subscribe((data) => {
+      this.classroomObject=data
+        console.log(this.classroomObject);
+        this.courseNumber = this.classroomObject.courseNumber;
+        this.courseTitle = this.classroomObject.courseTitle;
+        this.role = this.classroomObject.role;
+        if(this.classroomObject.students)
+        {
+          this.studentCount = this.classroomObject.students.length;
+        }
+        if(this.classroomObject.studentCode)
+        {
+          this.studentCode = this.classroomObject.studentCode;
+        }
+
+        if(this.classroomObject.teacherCode)
+        {
+          this.teacherCode = this.classroomObject.teacherCode;
+        }
+
+        if(this.classroomObject.questions)
+        {
+          this.questions = this.classroomObject.questions;
+        }
+        console.log(this.questions);
+     });
+  }
+
+  UpdateQuestionsView(numberOfQuestions: number){
+    if(this.classroomObject.length != numberOfQuestions)
+    {
+      this.GetClassroomObject();
+    }    
+  }
+
+  ReplyToQuestion(questionId: string, question: string){
+    this.replyMode = true;
+    this.replyQuestion = question;
+    this.replyQuestionId = questionId;
+  }
+
+  SubmitReply(){
+    const url = '/api/v1/classrooms/' + this.currentClassroomId + '/questions/' + this.replyQuestionId + '/answers'  
+    this.replyMode = false;
+    if(this.questionAnswer != ""){
+      this.HTTP.post(url, {answer: this.questionAnswer})
+      .subscribe((data) => {});
+    }
+  }
+
+  getCSS(){
+    var percentPanicked = this.numberPanic/this.studentCount;
+    if(percentPanicked < 0.33)
+    {
+      return "green"
+    }
+    if(percentPanicked > 0.33 && percentPanicked < 0.66)
+    {
+      return "yellow"
+    }
+    if(percentPanicked > 0.66)
+    {
+      return "red"
+    }
   }
 }

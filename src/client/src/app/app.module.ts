@@ -7,6 +7,8 @@ import { MatButtonModule } from '@angular/material';
 import { MatInputModule } from '@angular/material';
 import { MatTableModule } from '@angular/material';
 import { MatTabsModule} from '@angular/material';
+import { MatListModule} from '@angular/material';
+import { MatExpansionModule } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { CdkTableModule } from '@angular/cdk/table';
@@ -47,6 +49,8 @@ const appRoutes: Routes = [
     MatInputModule,
     MatTableModule,
     MatTabsModule,
+    MatListModule,
+    MatExpansionModule,
     RouterModule.forRoot(
       appRoutes,
       // { enableTracing: true } // <-- debugging purposes only
