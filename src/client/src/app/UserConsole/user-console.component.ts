@@ -11,62 +11,78 @@ import 'rxjs/add/observable/of';
   templateUrl: './user-console.html',
   styleUrls: ['./user-console.css']
 })
-export class UserConsoleComponent { 
+export class UserConsoleComponent {
 
-  private HTTP: HttpClient; 
-  classData: any;
-  displayedColumns = ['courseNumber', 'courseTitle', 'role', 'sectionNumber', 'goIcon'];
-  data: Element[] = new Array();
-  dataSource: ExampleDataSource;
-  
-  constructor(private http: HttpClient, private router: Router){
+  private HTTP: HttpClient;
+  displayedColumns = ['courseTitle', 'courseNumber', 'sectionNumber', 'role', 'schoolName'];
+  data: Classroom[];
+  dataSource: ClassroomDataSource;
+
+  constructor(private http: HttpClient, private router: Router) {
     this.HTTP = http;
-     this.HTTP.get('/api/v1/classrooms')
+     this.HTTP.get<Classroom[]>('/api/v1/classrooms')
           .subscribe((data) => {
-            this.classData=data
-              console.log(this.classData);
-              this.getList(this.classData);
-              this.dataSource = new ExampleDataSource(this.data);
-           });
-           
+            this.data = data.map(d => { d.role = d.role.charAt(0).toUpperCase() + d.role.slice(1); return d; });
+            this.dataSource = new ClassroomDataSource(this.data);
+          });
   }
-  getList(data: any)
-  {
-    var temp: Element;
-    for(let i in data)
-    {
-      temp = {courseNumber: data[i].courseNumber, courseTitle: data[i].courseTitle, 
-      role: data[i].role, sectionNumber: data[i].sectionNumber};
-      this.data.push(temp);
-    }
-    console.log(this.data);
-    
-  }
-  navigateTo(link: any){
+
+  navigateTo(link: any) {
     this.router.navigate([link]);
+  }
+
+  // consider moving this logic to class-hub under Classroom Information
+  leaveClassroom(classroom: Classroom, index: number): void {
+    const url = `/api/v1/classrooms/${classroom._id}/leave`;
+    this.HTTP.post<SuccessResponse>(url, '').subscribe((data) => {
+      console.log(data);
+      if (data.success) {
+        console.log('Successfully left classroom. Removing class from list');
+      }
+    });
   }
 }
 
-
-export interface Element{
+export interface Classroom {
+  _id: string;
   courseNumber: string;
   courseTitle: string;
   role: string;
   sectionNumber: string;
+  schoolId: string;
+  schoolName: string;
 }
 
-export class ExampleDataSource extends DataSource<any> {
-  data: Element[]
-  constructor(data: Element[]){
+export interface SuccessResponse {
+  success: boolean;
+}
+
+export class ClassroomDataSource extends DataSource<Classroom> {
+  data: Classroom[];
+  constructor(data: Classroom[]) {
     super();
     this.data = data;
-    console.log("data source hit");
-    console.log(this.data)
-   }
+    console.log('data source hit');
+    console.log(this.data);
+    if (this.data.length > 0) { console.log(this.data[0]); }
+  }
   /** Connect function called by the table to retrieve one stream containing the data to render. */
-  connect(): Observable<Element[]> {
+  connect(): Observable<Classroom[]> {
     return Observable.of(this.data);
   }
 
   disconnect() {}
+
+  // this still cannot dynamically remove rows from the table (no 2-way binding)
+  remove(classroomId): any {
+    let foundClassroom = false;
+    for (let i = 0; i < this.data.length; i++) {
+      if (this.data[i]._id === classroomId) {
+        console.log('Match:', this.data[i]);
+        this.data.splice(i, 1);
+        foundClassroom = true;
+      }
+    }
+    return foundClassroom;
+  }
 }

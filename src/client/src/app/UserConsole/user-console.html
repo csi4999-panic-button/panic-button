@@ -1,61 +1,60 @@
 <md-toolbar class="mat-elevation-z10" style="background-color: #303F9F; color: #FFFFFF;font-size: 50px; text-align:center">
         User Name - Console</md-toolbar>
 <div class="column" style="width: 20%;">
-        <md-card class="cards mat-elevation-z10">
-                <md-toolbar class="mat-elevation-z10 secondary-toolbar">
-                        Actions</md-toolbar>
-                <button mat-button class="button-style" mat-raised-button routerLink='/create-class'>Create Class</button>  
-                <button mat-button class="button-style" mat-raised-button routerLink='/join-class'>Join Class</button>
-                <button mat-button class="button-style" mat-raised-button routerLink='/create-school'>Create School</button>      
-        </md-card>
+  <md-card class="cards mat-elevation-z10">
+    <md-toolbar class="mat-elevation-z10 secondary-toolbar">
+      Actions
+    </md-toolbar>
+    <button mat-button class="button-style" mat-raised-button routerLink='/create-class'>Create Class</button>  
+    <button mat-button class="button-style" mat-raised-button routerLink='/join-class'>Join Class</button>
+    <button mat-button class="button-style" mat-raised-button routerLink='/create-school'>Create School</button>
+    <a mat-button class="button-style" mat-raised-button href="/logout">Logout <i class="material-icons">exit_to_app</i></a>
+  </md-card>
 </div>
 <div class="column" style="width: 75%;">
-<md-card class="cards mat-elevation-z10">
-        <md-toolbar class="mat-elevation-z10 secondary-toolbar">
-                Class Information</md-toolbar>
-                <div class="example-container mat-elevation-z8">
-                        <mat-table #table [dataSource]="dataSource">
-                      
-                          <!--- Note that these columns can be defined in any order.
-                                The actual rendered columns are set as a property on the row definition" -->
-                      
-                          <!-- Position Column -->
-                          <ng-container matColumnDef="courseNumber">
-                            <mat-header-cell *matHeaderCellDef> Course Number </mat-header-cell>
-                            <mat-cell *matCellDef="let element"> {{element.courseNumber}} </mat-cell>
-                          </ng-container>
-                      
-                          <!-- Name Column -->
-                          <ng-container matColumnDef="courseTitle">
-                            <mat-header-cell *matHeaderCellDef> Course Title </mat-header-cell>
-                            <mat-cell *matCellDef="let element"> {{element.courseTitle}} </mat-cell>
-                          </ng-container>
-                      
-                          <!-- Weight Column -->
-                          <ng-container matColumnDef="role">
-                            <mat-header-cell *matHeaderCellDef> Role </mat-header-cell>
-                            <mat-cell *matCellDef="let element"> {{element.role}} </mat-cell>
-                          </ng-container>
-                      
-                          <!-- Color Column -->
-                          <ng-container matColumnDef="sectionNumber">
-                            <mat-header-cell *matHeaderCellDef> Section Number </mat-header-cell>
-                            <mat-cell *matCellDef="let element"> {{element.sectionNumber}} </mat-cell>
-                          </ng-container>
+  <md-card class="cards mat-elevation-z10">
+    <md-toolbar class="mat-elevation-z10 secondary-toolbar">
+      Class Information
+    </md-toolbar>
+    <div class="example-container mat-elevation-z8">
+      <mat-table #table [dataSource]="dataSource">
+    
+        <!--- Note that these columns can be defined in any order.
+              The actual rendered columns are set as a property on the row definition" -->
 
-                          <ng-container matColumnDef="goIcon">
-                            <mat-header-cell *matHeaderCellDef> Link </mat-header-cell>
-                            <mat-cell *matCellDef="let element"> 
-                              <button mat-button (click)="navigateTo('/class-hub')"><i class="material-icons">keyboard_arrow_right</i></button>
-                            </mat-cell>
-                           
-                            <!-- <mat-cell *matCellDef="let element"> {{element.sectionNumber}} </mat-cell> -->
-                          </ng-container>
-                      
-                          <mat-header-row *matHeaderRowDef="displayedColumns" ></mat-header-row>
-                          <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="navigateTo('/class-hub')"></mat-row>
-                        </mat-table>
-                      </div>
-       
-</md-card>
+        <!-- Course Title Column -->
+        <ng-container matColumnDef="courseTitle">
+          <mat-header-cell *matHeaderCellDef> Course Title </mat-header-cell>
+          <mat-cell *matCellDef="let classroom"> {{classroom.courseTitle}} </mat-cell>
+        </ng-container>  
+
+        <!-- Course Number Column -->
+        <ng-container matColumnDef="courseNumber">
+          <mat-header-cell *matHeaderCellDef> Course Number </mat-header-cell>
+          <mat-cell *matCellDef="let classroom"> {{classroom.courseNumber}} </mat-cell>
+        </ng-container>      
+    
+        <!-- Section Number Column -->
+        <ng-container matColumnDef="sectionNumber">
+          <mat-header-cell *matHeaderCellDef> Section Number </mat-header-cell>
+          <mat-cell *matCellDef="let classroom"> {{classroom.sectionNumber}} </mat-cell>
+        </ng-container>
+
+        <!-- Role Column -->
+        <ng-container matColumnDef="role">
+          <mat-header-cell *matHeaderCellDef> Role </mat-header-cell>
+          <mat-cell *matCellDef="let classroom"> {{classroom.role}} </mat-cell>
+        </ng-container>
+
+        <!-- School Name Column -->
+        <ng-container matColumnDef="schoolName">
+          <mat-header-cell *matHeaderCellDef> School Name </mat-header-cell>
+          <mat-cell *matCellDef="let classroom"> {{classroom.schoolName}} </mat-cell>
+        </ng-container>
+    
+        <mat-header-row *matHeaderRowDef="displayedColumns" ></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="navigateTo('/class-hub')"></mat-row>
+      </mat-table>
+    </div>
+  </md-card>
 </div>
