@@ -14,7 +14,7 @@ import 'rxjs/add/observable/of';
 export class UserConsoleComponent {
 
   private HTTP: HttpClient;
-  displayedColumns = ['courseNumber', 'courseTitle', 'role', 'sectionNumber', 'openClassIcon', 'leaveIcon'];
+  displayedColumns = ['courseTitle', 'courseNumber', 'sectionNumber', 'role', 'schoolName'];
   data: Classroom[];
   dataSource: ClassroomDataSource;
 
@@ -31,6 +31,7 @@ export class UserConsoleComponent {
     this.router.navigate([link]);
   }
 
+  // consider moving this logic to class-hub under Classroom Information
   leaveClassroom(classroom: Classroom, index: number): void {
     const url = `/api/v1/classrooms/${classroom._id}/leave`;
     this.HTTP.post<SuccessResponse>(url, '').subscribe((data) => {
@@ -49,6 +50,7 @@ export interface Classroom {
   role: string;
   sectionNumber: string;
   schoolId: string;
+  schoolName: string;
 }
 
 export interface SuccessResponse {
@@ -70,6 +72,7 @@ export class ClassroomDataSource extends DataSource<Classroom> {
 
   disconnect() {}
 
+  // this still cannot dynamically remove rows from the table (no 2-way binding)
   remove(classroomId): any {
     let foundClassroom = false;
     for (let i = 0; i < this.data.length; i++) {
