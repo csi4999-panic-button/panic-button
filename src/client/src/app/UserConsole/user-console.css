@@ -47,3 +47,7 @@
     cursor: pointer;
     font-weight: bold;
 }
+
+body {
+    background-color: #282b2d;
+}
