@@ -28,9 +28,16 @@
     display: flex;
     flex-direction: column;
     min-width: 300px;
-  }
+}
 
-  .mat-table {
+.mat-table {
     overflow: auto;
-  }
+}
 
+.red-icons {
+    color: rgba(210, 21, 21, 0.54); 
+}
+
+.blue-icons {
+    color: rgba(21, 21, 210, 0.54); 
+}
