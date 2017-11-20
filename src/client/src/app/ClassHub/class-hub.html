@@ -1,12 +1,87 @@
 <md-toolbar class="mat-elevation-z10" style="background-color: #303F9F; color: #FFFFFF;font-size: 50px; text-align:center">
-        Class Code - Class Name</md-toolbar>
-<mat-tab-group>
-        <mat-tab label="Class Information">Class Information</mat-tab>
-        <mat-tab label="Panic">
-                <button mat-button *ngIf="!isPanic" (click)=Panic()><i class="material-icons icon-size">radio_button_unchecked</i></button>
-                <button mat-button *ngIf="isPanic"(click)=Panic()><i class="material-icons red-color icon-size">radio_button_checked</i></button>
-                {{numberPanic}}
-        </mat-tab>
-        <mat-tab label="Questions">Questions</mat-tab>
-        <mat-tab label="Instructor Tools"></mat-tab>
-</mat-tab-group>
+        {{courseNumber}} - {{courseTitle}}</md-toolbar>
+
+        <div class="row">
+            <div class="column1">
+                <div style="text-align:center">
+                        <button mat-button *ngIf="!isPanic" (click)=Panic() style="text-align:center">
+                            <i class="material-icons icon-size">radio_button_unchecked</i>
+                        </button>
+                        <button mat-button *ngIf="isPanic"(click)=Panic() style="text-align:center">
+                            <i class="material-icons red-color icon-size">radio_button_checked</i>
+                        </button>
+                    </div>
+                        <div class="green"> {{numberPanic}} Panicked</div>
+                        <div class="green"> {{percentPanicked}} Percent Panicked</div> 
+            </div>
+            <div class="column2">
+                    <mat-tab-group>
+                            <mat-tab label="Class Information">
+                                <div class="row">
+                                    <div class="column">
+                                        Student Join Code: {{studentCode}}
+                                        <br>
+                                        Teacher Join Code: {{teacherCode}}
+                                    </div>
+                                </div>
+                            </mat-tab>
+                            <mat-tab label="Charts">
+                                    Charts
+                                    <br>
+                                    Charts
+                                    <br>
+                                    Charts
+                                    <br>
+                                    Charts
+                                    <br>
+                                    Charts
+                                    <br>Charts
+                                    <br>
+                                    Charts
+                                    <br>
+                                    Charts
+                                    <br>
+                            </mat-tab>
+                            <mat-tab label="Questions">
+                                <!-- <div *ngIf="!replyMode"> -->
+                                <div *ngIf="!replyMode">
+                                    <mat-form-field required class="input-style" *ngIf="!isQuestionAsked">
+                                            <input type="text" [(ngModel)]="newQuestion" matInput placeholder="Ask a Question" />
+                                        </mat-form-field>
+                                    <button mat-button *ngIf="!isQuestionAsked && newQuestion!=''" (click)=NewQuestion()>Ask Question</button>
+                                    <button mat-button *ngIf="isQuestionAsked" (click)=NewQuestion()>Question Posted - Ask Another Question</button>
+                                    <mat-list>
+                                            <mat-list-item *ngFor="let question of questions">
+                                                    {{question.question}}
+                                                    <button mat-button (click)=ReplyToQuestion(question._id,question.question)>Reply</button> 
+                                            
+                                                    <mat-list *ngFor="let answer of question.answers">
+                                                        <mat-list-item>{{answer.answer}}</mat-list-item>
+                                                    </mat-list>
+                                                
+                                            </mat-list-item>
+                                          </mat-list>
+                                        </div>
+                                        <div *ngIf="replyMode">
+                                            {{replyQuestion}} <br>
+                                            <mat-form-field class="input-style">
+                                                    <input matInput placeholder="Reply" [(ngModel)]=questionAnswer>
+                                                </mat-form-field>
+                                            <button mat-button class="column" *ngIf="questionAnswer!=''" (click)=SubmitReply()>Submit Answer</button>
+                                            <button mat-button class="column" (click)=SubmitReply()>Cancel</button>
+                                        </div>
+                            </mat-tab>
+                            <mat-tab label="Instructor Tools" *ngIf="role=='teacher'">
+                            </mat-tab>
+                    </mat-tab-group>
+                    
+            </div>
+
+        </div>
+
+        <!-- <div class="row">
+        <div class="column1"><md-card> where does this card go</md-card></div>
+
+        <div class="column2">
+</div>
+</div> -->

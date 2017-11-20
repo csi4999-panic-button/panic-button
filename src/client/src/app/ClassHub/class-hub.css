@@ -3,5 +3,60 @@
 }
 
 .icon-size{
-    font-size: 98px;
+    margin:auto;
+    font-size: 200px;
+    text-align: center;
+}
+
+.font-size{
+    font-size: 30px;
+}
+
+.green{
+    color:green;
+    font-size: 30px;
+    text-align: center;
+    padding:5px;
+}
+.yellow{
+    color: gold;
+    font-size: 30px;
+}
+.red{
+    color:red;
+    font-size: 30px;
+}
+
+.column1 {
+    float: left;
+    width: 100%;
+    padding: 10px;
+    height: 300px; /* Should be removed. Only for demonstration */
+}
+
+.column1 {
+    float: left;
+    width: 30%;
+    padding: 10px;
+    height: 300px; /* Should be removed. Only for demonstration */
+}
+
+.column2 {
+    float: left;
+    width: 60%;
+    padding: 10px;
+    height: 300px; /* Should be removed. Only for demonstration */
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.input-style
+{
+    display: flex;
+    align-items: center;
+    background-color: #FFFFFF;
 }
