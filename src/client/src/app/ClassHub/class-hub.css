@@ -60,3 +60,13 @@
     align-items: center;
     background-color: #FFFFFF;
 }
+
+.qa-card {
+    width: 50vw;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.answer-card {
+    margin-left: 40px;
+}
