@@ -9,7 +9,6 @@ Table of Contents
 * [/api/v1](#api-v1)
 * [/api/v1/classrooms](#api-v1-classrooms)
 * [/api/v1/schools](#api-v1-schools)
-* [/api/v1/invite-codes](#api-v1-invite-codes)
 
 # <a name="return-structure">Default Return Structure</a>
 
@@ -83,7 +82,41 @@ This retrieves a list of classrooms that the currently authenticated user belong
 | -------------------- | ------------ | --------- | ---- | ------------ |
 | `/api/v1/classrooms` | GET          |           |      |              |
 
+The return type is `[Classroom]`, where the Classroom model contains the following:
 
+```js
+{
+	"_id": "classroomId",
+	"updatedAt": "YYYY-MM-DDThh:mm:ss.msZ",
+	"createdAt": "YYYY-MM-DDThh:mm:ss.msZ",
+	"courseType": "CSI",
+	"courseNumber": "3430",
+	"sectionNumber": "001-44762",
+	"courseTitle": "Theory of Computation",
+	"__v": 2, // not important
+	"topics": [
+		"General"
+	],
+	"currentTopic": 0,	// index of topics array
+	"questions": [Question],
+	"students": [
+		"userId"
+	],
+	"teacherAssistants": [
+		"userId"
+	],
+	"teachers": [
+		"userId",
+		"userId"
+	],
+	// students/teachers/teacherAssistants hidden from users that are not teacher role
+	"role": "student" // or teacher or teacherAssistant
+}
+```
+
+### `GET /api/v1/classrooms/:classroomId`
+
+This route is used to retrieve a specific classroom by it's `_id`. Useful for getting updates to questions/answers or singular updates. `classroomId` is the `_id` of the classroom. 
 
 ### `POST /api/v1/classrooms`
 
@@ -91,19 +124,19 @@ This creates a classroom with the currently authenticated user being the teacher
 
 | Route                | Request Type | Variables     | Type   | Required (*) |
 | -------------------- | ------------ | ------------- | ------ | ------------ |
-| `/api/v1/classrooms` | POST         | schoolId      | String |              |
+| `/api/v1/classrooms` | POST         | courseTitle   | String | *            |
 |                      |              | courseType    | String |              |
 |                      |              | courseNumber  | String |              |
 |                      |              | sectionNumber | String |              |
-|                      |              | courseTitle   | String | *            |
+|                      |              | schoolId      | String |              |
 
 This will also return your invitation codes in the following format:
 
 ```js
 {
-    teachers: String,
-    teacherAssistants: String,
-    students: String
+    "teachers": String,
+    "teacherAssistants": String,
+    "students": String
 }
 ```
 
@@ -113,11 +146,11 @@ This will modify a classroom by the provided `$id` in the request route. An exam
 
 | Route                       | Request Type | Variables     | Type   | Required (*) |
 | --------------------------- | ------------ | ------------- | ------ | ------------ |
-| `/api/v1/classrooms/id/$id` | PUT          | schoolId      | String |              |
+| `/api/v1/classrooms/id/$id` | PUT          | courseTitle   | String | *            |
 |                             |              | courseType    | String |              |
 |                             |              | courseNumber  | String |              |
 |                             |              | sectionNumber | String |              |
-|                             |              | courseTitle   | String | *            |
+|                             |              | schoolId      | String |              |
 
 ### `POST /api/v1/classrooms/join`
 
@@ -127,6 +160,144 @@ This will add the currently active user to the classroom referenced by the given
 | ------------------------- | ------------ | ---------- | ------ | ------------ |
 | `/api/v1/classrooms/join` | POST         | inviteCode | String | *            |
 
+### `PUT /api/v1/classrooms/:classroomId/code/:type`
+
+This route is used to rotate an invite code for a classroom you are a teacher of. The `type` in the route should be either `teacher`, `teacherAssistant`, or `student`. 
+
+| Route                                    | Request Type | Variables   | Type   | Required (*) |
+| ---------------------------------------- | ------------ | ----------- | ------ | ------------ |
+| `/api/v1/classrooms/:classroomId/code/:type` | PUT          | classroomId | String | *            |
+|                                          |              | type        | String | *            |
+
+### `DELETE /api/v1/classrooms/:classroomId/:type/:userId`
+
+This route is used to remove a user of a specific type from the classroom. The `type` in the route should be either `teacher`, `teacherAssistant`, or `student`.
+
+| Route                                    | Request Type | Variables   | Type   | Required (*) |
+| ---------------------------------------- | ------------ | ----------- | ------ | ------------ |
+| `/api/v1/classrooms/:classroomId/:type/:userId` | PUT          | classroomId | String | *            |
+|                                          |              | type        | String | *            |
+|                                          |              | userId      | String | *            |
+
+### `POST /api/v1/classrooms/:classroomId/leave`
+
+This route is used to have the user of this session leave the classroom identified by `classroomId`. Classes **can** be orphaned by this method if the user is the last teacher of the classroom and no invite codes are retained. 
+
+### `POST /api/v1/classrooms/:classroomId/questions`
+
+This route allows you to post questions to a specific classroom. The following JSON body should be provided:
+
+```js
+{
+  "question":"How do I ask questions?"
+}
+```
+
+The schema of an `Question` is described in the following JSON. If you would like to get a listing of answers, you would do so by getting the classroom, or `GET /api/v1/classrooms/:classroomId`. 
+
+```js
+{
+	"ts": 1511037292522,	// timestamp
+	"question": "How do you ask questions?",
+	"_id": "5a10996c26d846000fbed992",
+	"answers": [Answer],
+	"votes": [UserId],
+	"resolution": -1,	// top-vote / official answer
+	"mine": false,	// were you the user who submitted this question
+	"isTeacher": true	// was the user who submitted this question a teacher
+}
+```
+
+### `POST /api/v1/classrooms/:classroomId/question/:questionId/answers`
+
+This route allows you to post answers to a given question in a classroom. The following table describes the route and the JSON body thereafter describes the template that should be provided in the body of the request. 
+
+| Route | Request Type | Variables   | Type   | Required (*) |
+| ----- | ------------ | ----------- | ------ | ------------ |
+| ^^    | POST         | classroomId | String | *            |
+|       |              | questionId  | String | *            |
+|       |              | answer      | String | *            |
+
+```js
+{
+  "answer":"You POST a question to this route"
+}
+```
+
+The following JSON describes the schema of an `Answer`, which is drastically familiar to the `Question` schema.
+
+```js
+{
+	"ts": 1511060730584,	// timestamp
+	"answer": "Like this you idiot",
+	"_id": "5a10f4fa28932a000f1d11a4",
+	"votes": [UserId],
+	"mine": true,	// whether you submitted this answer
+	"isTeacher": false	// where a teacher submitted this answer
+}
+```
+
+### `PUT /api/v1/classrooms/:classroomId/questions/:questionId`
+
+This route allows you to vote for a question by the given `questionId`. Votes are meant to be used for noting a question as something the user is also hoping for guidance with. The following JSON body should be provided:
+
+```js
+{
+  "up": true
+}
+```
+
+### `PUT /api/v1/classrooms/:classroomId/questions/:questionId/answers/:answerId`
+
+This route allows you to vote for an answer, referenced by `answerId`, that belongs to the question referenced by `questionId`.  Votes for answers are meant to note it as being a helpful response. The following JSON body should be provided:
+
+```js
+{
+  "up": false
+}
+```
+
+### `GET /api/v1/classrooms/:classroomId/topics`
+
+This route allows you to get the current list of topics for a classroom. It will return a JSON body containing the following:
+
+```js
+{
+  "success": true,
+  "topics": [String],
+  "index": 0
+}
+```
+
+### `GET /api/v1/classrooms/:classroomId/topics/current`
+
+This route returns only the current topic for a classroom, which will be in a JSON body such as the following:
+
+```js
+{
+  "success": true,
+  "topic": "The current classroom topic"
+}
+```
+
+### `PUT /api/v1/classrooms/:classroomId/topics/:direction`
+
+This route is used for moving the next or previous topic in the classroom. This is meant for use by the teacher only and will have no effect if done by a student or teacher assistant. `direction` is a variable that should be either `next` or `previous`. 
+
+| Route | Request Type | Variable    | Type   | Required (*) |
+| ----- | ------------ | ----------- | ------ | ------------ |
+| ^^    | PUT          | classroomId | String | *            |
+|       |              | direction   | String | *            |
+
+### `POST /api/v1/classrooms/:classroomId/topics`
+
+This route is used to update the topics in a classroom. This is for teachers use only. This will update the topics in the classroom with the array provided in the body property `topics`. If no `topics` is provided, the classroom topics will be emptied and set to the default `["General"]`. The following JSON body is an example of a topics update:
+
+```js
+{
+  "topics": ["Introduction", "Syllabus", "Exam Details", "Grading"]
+}
+```
 
 # <a name="api-v1-schools"> /api/v1/schools </a>
 
@@ -149,20 +320,24 @@ The returned JSON object is an array of schools with the following structure:
 ```js
 [
     {
-        _id: String,
-        name: String,
-        address: String,
-        city: String,
-        state: String,
-        country: String,
-        zip: Number,
-        domain: String
+        "_id": "schoolId",
+        "name": "Oakland University",
+        "address": "University Dr",
+        "city": "Auburn Hills",
+        "state": "MI",
+        "country": "USA",
+        "zip": 48309,
+        "domain": "oakland.edu"
     },
     {
-        ...
+        // ...
     }
 ]
 ```
+
+### `GET /api/v1/schools/search/:query`
+
+This route is being added so that schools can be searched and used to create classrooms for. The `query` contains the string to search for in the database, returning any school that matches on a wildcarded search of this string. 
 
 ### `POST /api/v1/schools`
 
@@ -193,33 +368,4 @@ This modifies an existing school in the database matching the given `$id`.
 |                   |              | zip       | String |              |
 |                   |              | domain    | String |              |
 
-
-
-# <a name="api-v1-classrooms"> /api/v1/invite-codes</a>
-
-### `GET /api/v1/invite-codes`
-
-This lists all invite codes that belong to the user
-
-| Route                  | Request Type | Variables | Type | Required(*) |
-| ---------------------- | ------------ | --------- | ---- | ----------- |
-| `/api/v1/invite-codes` | GET          |           |      |             |
-
-
-
-### `PUT /api/v1/invite-codes`
-
-This internally rotates the invite code provided in the request
-
-| Route                             | Request Type | Variables | Type   | Required(*) |
-| --------------------------------- | ------------ | --------- | ------ | ----------- |
-| `/api/v1/invite-codes/code/$code` | PUT          | code      | String | *           |
-
-
-
-###`DELETE /api/v1/invite-codes/code/$code`
-
-| Route                             | Request Type | Variables | Type   | Required(*) |
-| --------------------------------- | ------------ | --------- | ------ | ----------- |
-| `/api/v1/invite-codes/code/$code` | DELETE       | code      | String | *           |
 

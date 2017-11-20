@@ -6,22 +6,26 @@ After first connecting, the client socket must emit an event to login to the ser
 
 After sending this event, the socket should expect a `login_success` event, whose body will be a boolean of whether the user was successfully logged in.
 
-Once the `login_success` event has been received containing `true`, the client is ready to listen for and emit events to the `panicd` server. These events include (and are generally related row-wise):
+Once the `login_success` event has been received containing `true`, the client is ready to listen for and emit events to the `panicd` server. 
 
-| Client emits                         | Server emits                         |
-|--------------------------------------|--------------------------------------|
-|[`login`](#login)                     |[`login_success`](#login_success)     |
-|[`panic`](#panic)                     |[`panic`](#panic)                     |
-|                                      |[`panic_state_change`](#panic_state_change)|
-|[`topic_change`](#topic_change)       |[`topic_change`](#topic_change)       |
-|                                      |[`new_question`](#new_question)       |
-|                                      |[`new_answer`](#new_answer)           |
-|[`question_vote`](#question_vote)     |[`question_vote_change`](#question_vote_change)|
-|                                      |[`question_vote`](#question_vote)     |
-|[`answer_vote`](#answer_vote)         |[`answer_vote_change`](#answer_vote_change)|
-|                                      |[`answer_vote`](#answer_vote)  |
+## Socket.io Event Index
 
-## Socket Specification
+These events include (and are generally related row-wise):
+
+| Client emits                      | Server emits                             |
+| --------------------------------- | ---------------------------------------- |
+| [`login`](#login)                 | [`login_success`](#login_success)        |
+| [`panic`](#panic)                 | [`panic`](#panic)                        |
+|                                   | [`panic_state_change`](#panic_state_change) |
+| [`topic_change`](#topic_change)   | [`topic_change`](#topic_change)          |
+|                                   | [`new_question`](#new_question)          |
+|                                   | [`new_answer`](#new_answer)              |
+| [`question_vote`](#question_vote) | [`question_vote_change`](#question_vote_change) |
+|                                   | [`question_vote`](#question_vote)        |
+| [`answer_vote`](#answer_vote)     | [`answer_vote_change`](#answer_vote_change) |
+|                                   | [`answer_vote`](#answer_vote)            |
+
+## Socket.io Event Specification
 
 The following specifications give detail to what user roles should use emit or listen for which events.
 

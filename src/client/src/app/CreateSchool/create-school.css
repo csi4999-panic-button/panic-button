@@ -43,7 +43,6 @@
     display: flex;
     align-items: center;
     background-color: #FFFFFF;
-    padding: 5px;
 }
 
 .button-style
@@ -59,7 +58,6 @@
     background-image: url("https://images.pexels.com/photos/247839/pexels-photo-247839.jpeg?w=1260&h=750&auto=compress&cs=tinysrgb");
     background-size: 100%;
 }
-
 
 .search-result:hover
 {

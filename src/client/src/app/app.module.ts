@@ -24,6 +24,9 @@ import { UserConsoleComponent} from './UserConsole/user-console.component';
 import { ClassHubComponent } from './ClassHub/class-hub.component';
 import { CreateClassComponent } from './CreateClass/create-class.component';
 import { JoinClassComponent } from './JoinClass/join-class.component';
+import { CreateSchoolComponent } from './CreateSchool/create-school.component';
+
+import { SchoolSearchService } from './School/school-search.service';
 
 
 const appRoutes: Routes = [
@@ -35,9 +38,9 @@ const appRoutes: Routes = [
   { path: 'class-hub', component: ClassHubComponent },
   { path: 'create-class', component: CreateClassComponent},
   { path: 'join-class', component: JoinClassComponent},
+  { path: 'create-school', component: CreateSchoolComponent },
   { path: '',   redirectTo: '/home', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent },
-  
 ];
 
 @NgModule({
@@ -68,8 +71,10 @@ const appRoutes: Routes = [
     ClassHubComponent,
     CreateClassComponent,
     JoinClassComponent,
-    PageNotFoundComponent
+    CreateSchoolComponent,
+    PageNotFoundComponent,
   ],
+  providers: [ SchoolSearchService ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

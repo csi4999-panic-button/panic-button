@@ -17,14 +17,14 @@ router.get("/", (req, res) => {
 
 router.post("/authenticate", (req, res, next) => {
   if (req.isAuthenticated()) {
-    return res.json({ token: req.user.apiToken });
+    return res.json({ success: true, firstName: req.user.firstName, lastName: req.user.lastname, token: req.user.apiToken });
   }
   passport.authenticate("local", (authErr, user, info) => {
     if (authErr) { return next(authErr); }
     if (!user) { return res.status(401).json({ success: false }); }
     req.logIn(user, (loginErr) => {
       if (loginErr) { return next(loginErr); }
-      return res.json({ success: true, firstName: user.firstName, lastName: user.lastName });
+      return res.json({ success: true, firstName: user.firstName, lastName: user.lastName, token: user.apiToken });
     });
   })(req, res, next);
 })

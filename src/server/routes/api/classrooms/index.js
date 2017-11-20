@@ -11,24 +11,20 @@ router.get("/", async (req, res) => {
     return res.status(401).send();
   }
 
-  try{
-    // get all classrooms with current user
-    // (prepoulated)
-    const classrooms = await Classrooms.find({ $or: [
-      { teachers: req.user._id },
-      { teacherAssistants: req.user._id },
-      { students: req.user._id }
-    ]});
 
-    // remove codes from non-teacher rooms
-    // and cast to object
-    const sanitizedClassrooms = classrooms.map(room => room.sanitize(req.user));
+  // get all classrooms with current user
+  // (prepoulated)
+  // remove codes from non-teacher rooms
+  // and cast to object
 
-    // send to user
-    return res.json(sanitizedClassrooms);
-  } catch (err) {
-    return res.json({ status: false, message: err.message });
-  }
+  return Classrooms.find({ $or: [
+    { teachers: req.user._id },
+    { teacherAssistants: req.user._id },
+    { students: req.user._id }]
+  }).then(classrooms => Promise.all(classrooms.map(room => room.sanitize(req.user))))
+    .then(sanitizedClassrooms => res.json(sanitizedClassrooms))
+    .catch( err => res.json({ status: false, message: err.message }));
+
 });
 
 // returns a specific classroom this user belongs to
@@ -37,45 +33,36 @@ router.get("/:classroomId", async (req, res) => {
     return res.status(401).send();
   }
 
-  try {
-    // get all classrooms with current user
-    // (prepoulated)
-    const classrooms = await Classrooms.findOne({ 
-      _id: req.params.classroomId,
-      $or: [
-        { teachers: req.user._id },
-        { teacherAssistants: req.user._id },
-        { students: req.user._id }
-      ],
-    });
-
-    // remove codes from non-teacher rooms
-    // and cast to object
-    const sanitizedClassroom = classrooms.sanitize(req.user);
-
-    // send to user
-    return res.json(sanitizedClassroom);
-  } catch (err) {
-    return res.json({ status: false, message: err });
-  }
+  // get all classrooms with current user
+  // (prepoulated)
+  // then remove codes from non-teacher rooms
+  // and cast to object
+  return Classrooms.findOne({ 
+    _id: req.params.classroomId,
+    $or: [
+      { teachers: req.user._id },
+      { teacherAssistants: req.user._id },
+      { students: req.user._id }
+    ],
+  }).then( classrooms => classrooms.sanitize(req.user))
+    .then( sanitizedClassroom => res.json(sanitizedClassroom))
+    .catch( err => res.json({ status: false, message: err }));
 });
 
 // creates a classroom and returns invite codes for teachers, TAs, and students
 router.post("/", async (req, res) => {
-  try {
     if (!req.isAuthenticated()) {
       return res.status(401).send();
     }
 
     // create codes first
-    const codes = await Promise.all([
-        InviteCodes.create({}),
-        InviteCodes.create({}),
-        InviteCodes.create({}),
-    ]);
-
-    // create classroom with codes
-    const classroom = await Classrooms.create({
+    // then create classroom with codes
+    return Promise.all([
+      InviteCodes.create({}),
+      InviteCodes.create({}),
+      InviteCodes.create({}),
+    ])
+    .then( codes => Classrooms.create({
       schoolId: req.body.schoolId,
       courseType: req.body.courseType,
       courseNumber: req.body.courseNumber,
@@ -87,12 +74,10 @@ router.post("/", async (req, res) => {
       teacherCode: codes[0].code,
       taCode: codes[1].code,
       studentCode: codes[2].code,
-    });
-
-    return res.json(classroom.sanitize(req.user));
-  } catch (err) {
-    return res.json({ status: false, message: err });
-  }
+    }))
+      .then( classroom => classroom.sanitize(req.user))
+      .then( sanitizedRoom => res.json(sanitizedRoom))
+      .catch( err => res.json({ status: false, message: err.message }));
 });
 
 // updates a classroom document by classroomId
@@ -101,7 +86,6 @@ router.put("/id/:classroomId", async (req, res) => {
     return res.status(401).send();
   }
 
-  try {
     // sanitize all the things we don't want changed by users
     var sanitizedClassroom = req.body;
     delete sanitizedClassroom._id;
@@ -112,26 +96,23 @@ router.put("/id/:classroomId", async (req, res) => {
     delete sanitizedClassroom.teacherAssistants;
     delete sanitizedClassroom.students;
 
-    const update = await Classrooms.findOneAndUpdate(
+    return Classrooms.findOneAndUpdate(
       { _id: req.params.classroomId, teachers: req.user._id },
       { $set: sanitizedClassroom }
-    );
-
-    if (!update) {
-      throw new Error("Cannot find/modify class" );
-    }
-
-      // get updated document now that we've confirmed change
-    const classroom = await Classrooms.findOne({ _id: req.params.classroomId, teachers: req.user._id });
-
-    return res.json({
+    )
+    .then( (update) => {
+      if (!update) {
+        throw new Error("Cannot find/modify class" );
+      }
+      return Classrooms.findOne({ _id: req.params.classroomId, teachers: req.user._id })
+    })
+    .then( classroom => classroom.sanitize(req.user))
+    .then( sanitizedRoom => res.json({
       status: true,
       message: "Class was successfully updated",
-      classroom: classroom.sanitize(req.user),
-    });
-  } catch (err) {
-    return res.json({ status: false, message: err.message });
-  }
+      classroom: sanitizedRoom,
+    }))
+    .catch( err => res.status(404).json({success: false, message: err.message}));      
 });
 
 // adds user to the listing for a classroom based on a given invite code
@@ -184,7 +165,7 @@ router.put("/:classroomId/code/:type(student|teacherAssistant|teacher)", async (
 });
 
 // remove a specified user from the classroom 
-router.delete("/:classroomId/:type(student|teacherAssistant|teacher)(student|teacherAssistant|teacher)/:userId", async (req, res) => {
+router.delete("/:classroomId/:type(student|teacherAssistant|teacher)/:userId", async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).send();
   }
@@ -266,7 +247,6 @@ router.post("/:classroomId/questions", async (req, res) => {
 
   return res.status(status).json(body);
 });
-
 
 // answers a specific question in a classroom
 router.post("/:classroomId/questions/:questionId/answers", async (req, res) => {  

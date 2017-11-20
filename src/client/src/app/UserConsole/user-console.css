@@ -1,18 +1,18 @@
 .column {
     float: left;
     padding: 15px;
-  
+
 }
 
 .cards {
-    height: 500px;
+    max-height: 80vh;
 }
 
 .secondary-toolbar
 {
     background: #607D8B;
     color: #FFFFFF;
-    font-size: 50px; 
+    font-size: 50px;
     text-align:center
 }
 
@@ -27,12 +27,27 @@
 .example-container {
     display: flex;
     flex-direction: column;
-    max-height: 500px;
     min-width: 300px;
-  }
-  
-  .mat-table {
+}
+
+.mat-table {
     overflow: auto;
-    max-height: 500px;
-  }
-  
+}
+
+.red-icons {
+    color: rgba(210, 21, 21, 0.54); 
+}
+
+.blue-icons {
+    color: rgba(21, 21, 210, 0.54); 
+}
+
+.mat-row:hover
+{
+    cursor: pointer;
+    font-weight: bold;
+}
+
+body {
+    background-color: #282b2d;
+}
