@@ -1,6 +1,7 @@
 "use strict";
 
 const mongoose = require("mongoose");
+const Schools = require("./schools");
 
 const classroomSchema = new mongoose.Schema({
     schoolId: { type: "ObjectId", ref: "School" },
@@ -88,6 +89,8 @@ classroomSchema.methods.sanitize = function (user) {
     });
     return question;
   });
+
+  if(out.schoolId) out.schoolName = Schools.findById(out.schoolId);
 
   if (!this.isTeacher(user)) {
     // remove codes from classrooms where user
