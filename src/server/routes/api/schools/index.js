@@ -9,6 +9,12 @@ router.get("/", async (req, res) => {
     return res.status(200).json(schools);
 });
 
+router.get("/:schoolId", async (req, res) => {
+    const school = await Schools.findById(req.params.schoolId);
+    if (!school) return res.status(404).json({success: false, message: 'No school found under that ID'});
+    return res.status(200).json(school);
+});
+
 router.get("/search/:query", async (req, res) => {
     const caseInsQuery = new RegExp(`${req.params.query}`,"i");
     const schools = await Schools.find({ 

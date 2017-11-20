@@ -64,6 +64,7 @@ export class ClassroomDataSource extends DataSource<Classroom> {
     this.data = data;
     console.log('data source hit');
     console.log(this.data);
+    if (this.data.length > 0) { console.log(this.data[0]); }
   }
   /** Connect function called by the table to retrieve one stream containing the data to render. */
   connect(): Observable<Classroom[]> {

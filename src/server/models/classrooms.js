@@ -76,7 +76,7 @@ classroomSchema.methods.isStudent = function (user) {
   return this.students.map(t => t.toString()).includes(user.id);
 }
 
-classroomSchema.methods.sanitize = function (user) {
+classroomSchema.methods.sanitize = async function (user) {
   const out = this.toObject();
 
   out.questions = out.questions.map((question) => {
@@ -90,7 +90,10 @@ classroomSchema.methods.sanitize = function (user) {
     return question;
   });
 
-  if(out.schoolId) out.schoolName = Schools.findById(out.schoolId);
+  if (out.schoolId) {
+    const thisClassSchool = await Schools.findById(out.schoolId);
+    out.schoolName = thisClassSchool.name;
+  }
 
   if (!this.isTeacher(user)) {
     // remove codes from classrooms where user
