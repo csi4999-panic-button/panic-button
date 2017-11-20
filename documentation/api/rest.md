@@ -84,7 +84,7 @@ This retrieves a list of classrooms that the currently authenticated user belong
 
 The return type is `[Classroom]`, where the Classroom model contains the following:
 
-```json
+```js
 {
 	"_id": "classroomId",
 	"updatedAt": "YYYY-MM-DDThh:mm:ss.msZ",
@@ -132,7 +132,7 @@ This creates a classroom with the currently authenticated user being the teacher
 
 This will also return your invitation codes in the following format:
 
-```json
+```js
 {
     "teachers": String,
     "teacherAssistants": String,
@@ -187,7 +187,7 @@ This route is used to have the user of this session leave the classroom identifi
 
 This route allows you to post questions to a specific classroom. The following JSON body should be provided:
 
-```json
+```js
 {
   "question":"How do I ask questions?"
 }
@@ -195,7 +195,7 @@ This route allows you to post questions to a specific classroom. The following J
 
 The schema of an `Question` is described in the following JSON. If you would like to get a listing of answers, you would do so by getting the classroom, or `GET /api/v1/classrooms/:classroomId`. 
 
-```json
+```js
 {
 	"ts": 1511037292522,	// timestamp
 	"question": "How do you ask questions?",
@@ -218,7 +218,7 @@ This route allows you to post answers to a given question in a classroom. The fo
 |       |              | questionId  | String | *            |
 |       |              | answer      | String | *            |
 
-```json
+```js
 {
   "answer":"You POST a question to this route"
 }
@@ -226,7 +226,7 @@ This route allows you to post answers to a given question in a classroom. The fo
 
 The following JSON describes the schema of an `Answer`, which is drastically familiar to the `Question` schema.
 
-```json
+```js
 {
 	"ts": 1511060730584,	// timestamp
 	"answer": "Like this you idiot",
@@ -241,7 +241,7 @@ The following JSON describes the schema of an `Answer`, which is drastically fam
 
 This route allows you to vote for a question by the given `questionId`. Votes are meant to be used for noting a question as something the user is also hoping for guidance with. The following JSON body should be provided:
 
-```json
+```js
 {
   "up": true
 }
@@ -251,7 +251,7 @@ This route allows you to vote for a question by the given `questionId`. Votes ar
 
 This route allows you to vote for an answer, referenced by `answerId`, that belongs to the question referenced by `questionId`.  Votes for answers are meant to note it as being a helpful response. The following JSON body should be provided:
 
-```json
+```js
 {
   "up": false
 }
@@ -261,10 +261,10 @@ This route allows you to vote for an answer, referenced by `answerId`, that belo
 
 This route allows you to get the current list of topics for a classroom. It will return a JSON body containing the following:
 
-```json
+```js
 {
   "success": true,
-  "topics: [String],
+  "topics": [String],
   "index": 0
 }
 ```
@@ -273,7 +273,7 @@ This route allows you to get the current list of topics for a classroom. It will
 
 This route returns only the current topic for a classroom, which will be in a JSON body such as the following:
 
-```json
+```js
 {
   "success": true,
   "topic": "The current classroom topic"
@@ -293,7 +293,7 @@ This route is used for moving the next or previous topic in the classroom. This 
 
 This route is used to update the topics in a classroom. This is for teachers use only. This will update the topics in the classroom with the array provided in the body property `topics`. If no `topics` is provided, the classroom topics will be emptied and set to the default `["General"]`. The following JSON body is an example of a topics update:
 
-```json
+```js
 {
   "topics": ["Introduction", "Syllabus", "Exam Details", "Grading"]
 }
