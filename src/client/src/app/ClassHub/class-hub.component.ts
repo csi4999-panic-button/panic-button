@@ -59,6 +59,10 @@ export class ClassHubComponent {
       currentTopic: 0
     };
 
+    this.route.queryParams.subscribe(params => {
+      this.currentClassroomId = params['id'];
+   });
+
     this.GetClassroomObject();
 
     http.post(url, {})
@@ -105,10 +109,6 @@ export class ClassHubComponent {
   }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
-      this.currentClassroomId = params['id'];
-      console.log("current classroom id", this.currentClassroomId)
-   });
   }
 
   Panic() {
