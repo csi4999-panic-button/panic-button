@@ -75,14 +75,14 @@
                                 <button class="button-style" mat-button mat-button-raised (click)=NewQuestion()>Ask Question</button>
                             </mat-card-actions>
                         </mat-card>
-                       
+
                         <div *ngFor="let question of classroom.questions">
                             <mat-card class="qa-card">
                                 <mat-card-content>
                                     {{question.question}}
                                     <br/>
                                     <mat-form-field class="input-style">
-                                        <input type="text" [(ngModel)]="questionAnswer" matInput placeholder="Answer..." />
+                                        <input type="text" [(ngModel)]="questionAnswers[question._id]" matInput placeholder="Answer..." />
                                     </mat-form-field>
                                 </mat-card-content>
                                 <mat-card-actions>
@@ -97,7 +97,7 @@
                                 <mat-card-actions>
                                     <button class="button-style" mat-button mat-button-raised (click)="VoteAnswer(question,answer)">Vote</button>
                                 </mat-card-actions>
-                            </mat-card> 
+                            </mat-card>
                         </div>
                     </div>
                 </mat-tab>

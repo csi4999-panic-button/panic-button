@@ -28,7 +28,7 @@ export class ClassHubComponent {
   replyMode: boolean;
   replyQuestionId: string;
   replyQuestion: string;
-  questionAnswers: QuestionAnswers;
+  questionAnswers: QuestionAnswers = {};
   questionAnswer: string;
 
   constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
@@ -154,10 +154,10 @@ export class ClassHubComponent {
   ReplyToQuestion(questionId: string){
     const url = '/api/v1/classrooms/' + this.currentClassroomId + '/questions/' + questionId +'/answers';
     console.log(url);
-    console.log(this.questionAnswer)
-    if (this.questionAnswer !== '') {
-      this.HTTP.post(url, {answer:this. questionAnswer})
-      .subscribe((data) => { this.questionAnswer = ''; });
+    console.log(this.questionAnswers)
+    if (this.questionAnswers[questionId] !== '') {
+      this.HTTP.post(url, {answer:this. questionAnswers[questionId]})
+      .subscribe((data) => { this.questionAnswers[questionId] = ''; });
     }
   }
 
