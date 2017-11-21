@@ -1,101 +1,111 @@
-<md-toolbar class="mat-elevation-z10" style="background-color: #303F9F; color: #FFFFFF;font-size: 50px; text-align:center">
+<body>
+    <md-toolbar class="mat-elevation-z10" style="background-color: #303F9F; color: #FFFFFF;font-size: 50px; text-align:center">
         {{classroom.courseNumber}} - {{classroom.courseTitle}}</md-toolbar>
-
-        <div class="row">
-            <div class="column1">
-                <div style="text-align:center">
-                    <button mat-button *ngIf="!isPanic" (click)=Panic() style="text-align:center">
-                        <i class="material-icons icon-size">radio_button_unchecked</i>
-                    </button>
-                    <button mat-button *ngIf="isPanic"(click)=Panic() style="text-align:center">
-                        <i class="material-icons red-color icon-size">radio_button_checked</i>
-                    </button>
-                </div>
-                <div class="green"> {{numberPanic}} Panicked</div>
-                <div class="green"> {{percentPanicked}} Percent Panicked</div> 
+    <div class="row">
+        <div class="column1">
+            <div style="text-align:center">
+                <button mat-button *ngIf="!isPanic" (click)=Panic() style="text-align:center">
+                    <i class="material-icons icon-size">radio_button_unchecked</i>
+                </button>
+                <button mat-button *ngIf="isPanic" (click)=Panic() style="text-align:center">
+                    <i class="material-icons red-color icon-size">radio_button_checked</i>
+                </button>
             </div>
-            <div class="column2">
-                <mat-tab-group>
-                    <mat-tab label="Class Information">
-                        <div class="row">
-                            <div class="column">
-                                Student Join Code: {{classroom.studentCode}}
-                                <br>
-                                Teacher Join Code: {{classroom.teacherCode}}
-                            </div>
-                        </div>
-                    </mat-tab>
-                    <mat-tab label="Charts">
-                            Charts
-                            <br>
-                            Charts
-                            <br>
-                            Charts
-                            <br>
-                            Charts
-                            <br>
-                            Charts
-                            <br>Charts
-                            <br>
-                            Charts
-                            <br>
-                            Charts
-                            <br>
-                    </mat-tab>
-                    <mat-tab label="Questions">
-                        <!-- <div *ngIf="!replyMode"> -->
-                        <div>
+            <div class="green"> {{numberPanic}} Panicked</div>
+            <div class="green"> {{percentPanicked}} Percent Panicked</div>
+        </div>
+        <!-- Tabs -->
+        <div class="column2">
+            <mat-tab-group>
+                <mat-tab style="background-color:#282b2d" label="Class Information">
+                    <table>
+                        <tr>
+                            <td>
+                                <b>Course Number</b>
+                            </td>
+                            <td>{{classroom.courseNumber}}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>Course Title</b>
+                            </td>
+                            <td>{{classroom.courseTitle}}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>Course Type</b>
+                            </td>
+                            <td>{{classroom.courseType}}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>Section Number</b>
+                            </td>
+                            <td>{{classroom.sectionNumber}}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>Role</b>
+                            </td>
+                            <td>{{classroom.role}}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>Student Count</b>
+                            </td>
+                            <td>{{classroom.studentCount}}</td>
+                        </tr>
+                    </table>
+                </mat-tab>
+                 <!-- QUESTIONS -->
+                <mat-tab label="Questions">
+                    <div>
+                        <mat-card class="qa-card">
+                            <mat-card-header>
+                                <mat-card-title>Welcome to {{classroom.courseTitle}}!</mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                If you have any questions please submit them here
+                                <br/>
+                                <mat-form-field required class="input-style" *ngIf="!isQuestionAsked">
+                                    <input type="text" [(ngModel)]="newQuestion" matInput placeholder="Ask a Question" />
+                                </mat-form-field>
+                            </mat-card-content>
+                            <mat-card-actions>
+                                <button class="button-style" mat-button mat-button-raised (click)=NewQuestion()>Ask Question</button>
+                            </mat-card-actions>
+                        </mat-card>
+                       
+                        <div *ngFor="let question of classroom.questions">
                             <mat-card class="qa-card">
-                                <mat-card-header>
-                                    <mat-card-title>Welcome to {{classroom.courseTitle}}!</mat-card-title>
-                                </mat-card-header>
                                 <mat-card-content>
-                                    If you have any questions please submit them here<br/>
-                                    <mat-form-field required class="input-style" *ngIf="!isQuestionAsked">
-                                        <input type="text" [(ngModel)]="newQuestion" matInput placeholder="Ask a Question" />
+                                    {{question.question}}
+                                    <br/>
+                                    <mat-form-field class="input-style">
+                                        <input type="text" [(ngModel)]="questionAnswer" matInput placeholder="Answer..." />
                                     </mat-form-field>
                                 </mat-card-content>
                                 <mat-card-actions>
-                                    <button mat-button-raised (click)=NewQuestion()>Ask Question</button>
+                                    <button class="button-style" mat-button mat-button-raised (click)="VoteAnswer(question,answer)">Vote</button>
+                                    <button class="button-style" mat-button mat-button-raised (click)=ReplyToQuestion(question._id)>Reply</button>
                                 </mat-card-actions>
                             </mat-card>
-                            
-                            
-                            <div *ngFor="let question of classroom.questions">  
-                                <mat-card class="qa-card">
-                                    <mat-card-content>
-                                        {{question.question}}<br/>
-                                        <mat-form-field class="input-style">
-                                            <input type="text" matInput placeholder="Answer..." />
-                                        </mat-form-field> 
-                                    </mat-card-content>
-                                    <mat-card-actions>
-                                        <button mat-button-raised class="column" (click)="VoteAnswer(question,answer)">Vote</button>
-                                        <button mat-button-raised (click)=ReplyToQuestion(question._id,question.question)>Reply</button>
-                                    </mat-card-actions>
-                                </mat-card>
-                                <mat-card *ngFor="let answer of question.answers" class="qa-card answer-card">
-                                    <mat-card-content>
-                                        {{answer.answer}}
-                                    </mat-card-content>
-                                    <mat-card-actions>
-                                        <button mat-button-raised class="column" (click)="VoteAnswer(question,answer)">Vote</button>
-                                    </mat-card-actions>
-                                </mat-card>
-                            </div>
+                            <mat-card *ngFor="let answer of question.answers" class="qa-card answer-card">
+                                <mat-card-content>
+                                    {{answer.answer}}
+                                </mat-card-content>
+                                <mat-card-actions>
+                                    <button class="button-style" mat-button mat-button-raised (click)="VoteAnswer(question,answer)">Vote</button>
+                                </mat-card-actions>
+                            </mat-card> 
                         </div>
-                    </mat-tab>
-                    <mat-tab label="Instructor Tools" *ngIf="classroom.role=='teacher'">
-                    </mat-tab>
-                </mat-tab-group>
-                    
-            </div>
+                    </div>
+                </mat-tab>
+                <mat-tab label="Instructor Tools" *ngIf="classroom.role=='teacher'">
+                </mat-tab>
+            </mat-tab-group>
 
         </div>
 
-        <!-- <div class="row">
-        <div class="column1"><md-card> where does this card go</md-card></div>
-
-        <div class="column2">
-</div>
-</div> -->
+    </div>
+</body>

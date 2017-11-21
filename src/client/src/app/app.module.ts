@@ -35,7 +35,7 @@ const appRoutes: Routes = [
   { path: 'login-page', component: LoginPageComponent },
   { path: 'about-us', component: AboutUsComponent },
   { path: 'sign-up', component: SignUpComponent },
-  { path: 'user-console/:id', component: UserConsoleComponent },
+  { path: 'user-console', component: UserConsoleComponent },
   { path: 'class-hub', component: ClassHubComponent },
   { path: 'create-class', component: CreateClassComponent},
   { path: 'join-class', component: JoinClassComponent},

@@ -28,6 +28,7 @@ export class ClassHubComponent {
   replyMode: boolean;
   replyQuestionId: string;
   replyQuestion: string;
+  questionAnswers: QuestionAnswers;
   questionAnswer: string;
 
   constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
@@ -42,13 +43,14 @@ export class ClassHubComponent {
     this.isQuestionAsked = false;
     this.newQuestion = '';
     this.replyMode = false;
-    this.questionAnswer = '';
     this.classroom = {
       _id: '',
       courseNumber: '',
       courseTitle: '',
       role: '',
-      studentCount: '',
+      courseType: '',
+      sectionNumber:'',
+      studentCount: -1,
       studentCode: '',
       teacherCode: '',
       questions: [] as [Question],
@@ -108,9 +110,6 @@ export class ClassHubComponent {
       });
   }
 
-  ngOnInit() {
-  }
-
   Panic() {
     this.socket.emit('panic', { classroom: this.currentClassroomId, state: !this.panicStates[this.currentClassroomId] });
     console.log('button hit');
@@ -139,7 +138,8 @@ export class ClassHubComponent {
     this.HTTP.get<Classroom>(`/api/v1/classrooms/${this.currentClassroomId}`)
     .subscribe((classroom) => {
         this.classroom = classroom;
-        console.log(this.classroom);
+        console.log("classroom",this.classroom);
+        this.classroom.studentCount = this.classroom.students.length;
         this.studentCount = this.classroom.students.length;
         console.log(this.classroom.questions);
      });
@@ -151,10 +151,14 @@ export class ClassHubComponent {
     }
   }
 
-  ReplyToQuestion(questionId: string, question: string){
-    this.replyMode = true;
-    this.replyQuestion = question;
-    this.replyQuestionId = questionId;
+  ReplyToQuestion(questionId: string){
+    const url = '/api/v1/classrooms/' + this.currentClassroomId + '/questions/' + questionId +'/answers';
+    console.log(url);
+    console.log(this.questionAnswer)
+    if (this.questionAnswer !== '') {
+      this.HTTP.post(url, {answer:this. questionAnswer})
+      .subscribe((data) => { this.questionAnswer = ''; });
+    }
   }
 
   ReplyToAnswer(): void {
@@ -199,7 +203,9 @@ export interface Classroom {
   courseNumber: string;
   courseTitle: string;
   role: string;
-  studentCount: string;
+  courseType: string;
+  sectionNumber:string;
+  studentCount: number;
   studentCode: string;
   teacherCode: string;
   questions: [Question];
@@ -208,6 +214,10 @@ export interface Classroom {
   teacherAssistants: [string];
   topics: [string];
   currentTopic: number;
+}
+
+export interface QuestionAnswers{
+  [_id: string]: string;
 }
 
 export interface Question {
