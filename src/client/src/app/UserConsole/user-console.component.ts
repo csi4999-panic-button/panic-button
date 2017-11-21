@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgIf } from '@angular/common';
 import { DataSource } from '@angular/cdk/collections';
-import {Observable} from 'rxjs/Observable';
-import { Router } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import 'rxjs/add/observable/of';
 
 @Component({
@@ -27,8 +27,8 @@ export class UserConsoleComponent {
           });
   }
 
-  navigateTo(link: any) {
-    this.router.navigate([link]);
+  navigateTo(ID: any) {
+    this.router.navigate(['/class-hub'], {queryParams: {id: ID}});;
   }
 
   // consider moving this logic to class-hub under Classroom Information

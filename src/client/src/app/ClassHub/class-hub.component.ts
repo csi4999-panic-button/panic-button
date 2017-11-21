@@ -1,7 +1,9 @@
 import * as io from 'socket.io-client';
-import { Component } from '@angular/core';
+import { Component, OnInit, HostBinding } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgIf } from '@angular/common';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
 
 
 @Component({
@@ -28,11 +30,11 @@ export class ClassHubComponent {
   replyQuestion: string;
   questionAnswer: string;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
     this.HTTP = http;
     this.panicStates = {};
     this.panicNumbers = {};
-    this.currentClassroomId = '5a11f25012ee17579bbcb402';
+    this.currentClassroomId = '';
     const url = '/api/v1/authenticate';
     this.isPanic = false;
     this.numberPanic = 0;
@@ -100,6 +102,13 @@ export class ClassHubComponent {
             this.GetClassroomObject();
           });
       });
+  }
+
+  ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.currentClassroomId = params['id'];
+      console.log("current classroom id", this.currentClassroomId)
+   });
   }
 
   Panic() {
