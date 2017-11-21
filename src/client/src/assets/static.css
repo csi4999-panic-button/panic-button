@@ -1,0 +1,275 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-family: 'Open Sans', sans-serif;
+    outline: 0
+}
+
+body, html {
+    background: #282b2d;
+    overflow-x: hidden;
+    font-family: 'Roboto Slab', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Open Sans', sans-serif
+    height: 100%;
+}
+
+header {
+    display: flex;
+    padding-top: .5em;
+    padding-left: .5em;
+    padding-right: .5em;
+    height: 100vh;
+    justify-content: center;
+    background: url("https://images.pexels.com/photos/247839/pexels-photo-247839.jpeg");
+    background-size: cover;
+    color: white;
+}
+
+header h1,a {
+    display block;
+}
+
+header a {
+    text-decoration: none;
+    line-height: 2em;
+    color: white;
+}
+
+.about .author.left {
+    height: 50px;
+    margin-right: auto;
+    background-color: #f00;
+}
+
+.about .author.right {
+    height: 50px;
+    margin-left: auto;
+    background-color: #0f0;
+}
+
+.clear {
+    clear: both;
+}
+
+.access-form {
+    text-align: center;
+    padding-top: 5%
+}
+
+.access-form img {
+    margin: auto;
+    height: 200px
+}
+
+.access-form form {
+    display: block;
+    padding-top: 50px;
+    text-align: left;
+    width: 400px;
+    margin: auto;
+}
+
+.access-form form h2 {
+    color: silver;
+    margin: 0;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    font-size: 12px
+}
+
+.access-form form input, .access-form form textarea {
+    width: 100%;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    border-radius: 4px;
+    border: 0 solid #f2f2f2;
+    background-color: #f8f8f8;
+    color: #767676;
+    font-size: 14px;
+    line-height: 19px;
+    box-shadow: none;
+    transition: all .6s cubic-bezier(.165, .84, .44, 1);
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, .24)
+}
+
+.access-form form button {
+    text-decoration: none;
+    margin-top: 10px;
+    display: inline-block;
+    margin-right: 5px;
+    text-align: center;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    white-space: nowrap;
+    padding: 14px 20px;
+    line-height: 16px;
+    transition: all .6s cubic-bezier(.165, .84, .44, 1);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    width: 48%;
+    margin-right: -4px;
+    background-color: #303F9F;
+    color: silver;
+    font-size: 12px;
+    font-weight: 700;
+    transition: all .2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, .24)
+}
+
+.access-form form button:hover {
+    background: #4150b0;
+}
+
+.access-form form .message {
+    font-size: 10px;
+    text-decoration: none;
+    color: silver;
+    text-align: left;
+    margin-top: 10px;
+    display: block;
+    opacity: .8
+}
+
+.access-form form .message:hover {
+    opacity: 1
+}
+
+.access-form form .flash {
+    font-size: 12px;
+    color: #f33b3b;
+    margin-bottom: 10px
+}
+
+.access-form form .flash.info {
+    color: #0fab30;
+}
+
+.login form button, .register form button {
+    width: 100%
+}
+
+
+p {
+  line-height: 1.75; }
+
+a {
+  color: #fed136; }
+  a:hover {
+    color: #fec503; }
+
+.text-primary {
+  color: #fed136 !important; }
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+
+section {
+  padding: 100px 0; }
+  section h2.section-heading {
+    font-size: 40px;
+    margin-top: 0;
+    margin-bottom: 15px; }
+  section h3.section-subheading {
+    font-size: 16px;
+    font-weight: 400;
+    font-style: italic;
+    margin-bottom: 75px;
+    text-transform: none;
+    font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+
+@media (min-width: 768px) {
+  section {
+    padding: 150px 0; } }
+
+.btn {
+  font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 700; }
+
+.btn-xl {
+  font-size: 18px;
+  padding: 20px 40px; }
+
+.btn-primary {
+  background-color: #303F9F;
+  border-color: #4150b0; }
+  .btn-primary:active, .btn-primary:focus, .btn-primary:hover {
+    background-color: #4150b0 !important;
+    border-color: #4150b0 !important;
+    color: white; }
+  .btn-primary:active, .btn-primary:focus {
+    box-shadow: 0 0 0 0.2rem rgba(254, 209, 55, 0.5) !important; }
+
+::-moz-selection {
+  background: #4150b0;
+  text-shadow: none; }
+
+::selection {
+  background: #4150b0;
+  text-shadow: none; }
+
+img::selection {
+  background: transparent; }
+
+img::-moz-selection {
+  background: transparent; }
+
+
+header.masthead {
+  text-align: center;
+  color: white;
+  background-image: linear-gradient( rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7) ), url("https://images.pexels.com/photos/247839/pexels-photo-247839.jpeg");
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-position: center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover; }
+  header.masthead .intro-text {
+    padding-top: 150px;
+    padding-bottom: 100px; }
+    header.masthead .intro-text .intro-lead-in {
+      font-size: 22px;
+      line-height: 22px;
+      margin-bottom: 25px;
+      font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    header.masthead .intro-text .intro-heading {
+      font-size: 50px;
+      font-weight: 700;
+      line-height: 50px;
+      margin-bottom: 25px;
+      font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+
+.team-member {
+  margin-bottom: 50px;
+  text-align: center; }
+  .team-member img {
+    object-fit: cover;
+    width: 225px;
+    height: 225px;
+    border: 7px solid #fff; }
+  .team-member h4 {
+    margin-top: 25px;
+    margin-bottom: 0;
+    text-transform: none; }
+  .team-member p {
+    margin-top: 0; }
