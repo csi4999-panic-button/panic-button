@@ -11,28 +11,39 @@
                 </div>
                 <div class="title-section">
                     <div *ngIf="classroom.role=='teacher'">
-                        <a (click)="PreviousTopic()">
+                        <button class="button-style" *ngIf="!firstTopic" mat-button mat-button-raised (click)="PreviousTopic()">
                             <i class="material-icons">keyboard_arrow_left</i>
-                        </a>
+                        </button>
+                        <button class="inactive-button-style" *ngIf="firstTopic" mat-button mat-button-raised disabled (click)="PreviousTopic()">
+                            <i class="material-icons">keyboard_arrow_left</i>
+                        </button>
                     </div>
                 </div>
-                <div class="title-section">
+                <div class="title-section" id="topic-section">
                     <div>
-                        <h1>{{classroom.topics[classroom.currentTopic]}}</h1>
+                        <h1>{{currentTopic}}</h1>
                     </div>
                 </div>
                 <div class="title-section">
                     <div *ngIf="classroom.role=='teacher'">
-                        <a (click)="NextTopic()">
+                        <button class="button-style" *ngIf="!lastTopic" mat-button mat-button-raised (click)="NextTopic()">
                             <i class="material-icons">keyboard_arrow_right</i>
-                        </a>
+                        </button>
+                        <button class="inactive-button-style" *ngIf="lastTopic" mat-button mat-button-raised disabled (click)="NextTopic()">
+                            <i class="material-icons">keyboard_arrow_right</i>
+                        </button>
                     </div>
                 </div>
                 <div class="title-section">
                     <div *ngIf="classroom.role=='teacher'">
-                        <a>
-                            Teacher Tools
-                        </a>
+                        <button class="button-style" mat-button mat-button-raised [matMenuTriggerFor]="menu">Teacher Tools</button>
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item>Invite Student</button>
+                            <button mat-menu-item>Invite TA</button>
+                            <button mat-menu-item>Invite Teacher</button>
+                            <button mat-menu-item>Manage Members</button>
+                            <button mat-menu-item>New Invite Codes</button>
+                        </mat-menu>                            
                     </div>
                 </div>
             </mat-card-content>
@@ -56,54 +67,27 @@
             </mat-card>
         </div>
         <div class="column2">
-            <mat-card class="qa-card">
+            <!-- <mat-card class="qa-card">
                 <mat-card-content>
                     <table>
                         <tr>
-                            <td>
-                                <b>Course Number</b>
-                            </td>
-                            <td>{{classroom.courseNumber}}</td>
+                            <td><b>Course Number</b></td><td>{{classroom.courseNumber}}</td>
                         </tr>
-                        <tr>
-                            <td>
-                                <b>Course Title</b>
-                            </td>
-                            <td>{{classroom.courseTitle}}</td>
+                            <tr><td><b>Course Title</b></td><td>{{classroom.courseTitle}}</td>
                         </tr>
-                        <tr>
-                            <td>
-                                <b>Course Type</b>
-                            </td>
-                            <td>{{classroom.courseType}}</td>
+                            <tr><td><b>Course Type</b></td><td>{{classroom.courseType}}</td>
                         </tr>
-                        <tr>
-                            <td>
-                                <b>Section Number</b>
-                            </td>
-                            <td>{{classroom.sectionNumber}}</td>
+                            <tr><td><b>Section Number</b></td><td>{{classroom.sectionNumber}}</td>
                         </tr>
-                        <tr>
-                            <td>
-                                <b>Role</b>
-                            </td>
-                            <td>{{classroom.role}}</td>
+                            <tr><td><b>Role</b></td><td>{{classroom.role}}</td>
                         </tr>
-                        <tr>
-                            <td>
-                                <b>Student Count</b>
-                            </td>
-                            <td>{{classroom.studentCount}}</td>
+                            <tr><td><b>Student Count</b></td><td>{{classroom.studentCount}}</td>
                         </tr>
-                        <tr *ngIf="classroom.role==='teacher'">
-                            <td>
-                                <b>Student Join Code</b>
-                            </td>
-                            <td>{{classroom.studentCode}}</td>
+                            <tr *ngIf="classroom.role==='teacher'"><td><b>Student Join Code</b></td><td>{{classroom.studentCode}}</td>
                         </tr>
                     </table>
                 </mat-card-content>
-            </mat-card>
+            </mat-card> -->
             <div>
                 <mat-card class="qa-card">
                     <mat-card-header>
@@ -131,7 +115,7 @@
                             </mat-form-field>
                         </mat-card-content>
                         <mat-card-actions>
-                            <button class="button-style" mat-button mat-button-raised (click)="VoteAnswer(question,answer)">Vote</button>
+                            <button class="button-style" mat-button mat-button-raised (click)="VoteForQuestion(question._id)">Vote</button>
                             <button class="button-style" mat-button mat-button-raised (click)=ReplyToQuestion(question._id)>Reply</button>
                         </mat-card-actions>
                     </mat-card>
@@ -140,7 +124,7 @@
                             {{answer.answer}}
                         </mat-card-content>
                         <mat-card-actions>
-                            <button class="button-style" mat-button mat-button-raised (click)="VoteAnswer(question,answer)">Vote</button>
+                            <button class="button-style" mat-button mat-button-raised (click)="VoteForAnswer(question._id,answer._id)">Vote</button>
                         </mat-card-actions>
                     </mat-card>
                 </div>

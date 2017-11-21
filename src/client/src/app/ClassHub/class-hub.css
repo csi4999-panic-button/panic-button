@@ -72,12 +72,26 @@
     margin-right: 1%;
     margin-top: 10px;
     margin-bottom: 10px;
+    position: relative;
+}
+
+.title-card-content {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .title-section {
     display: block;
     float: left;
-    width: 20vw;
+    /* width: 20vw; */
+}
+
+#topic-section {
+    width: 40%;
+    text-align: center;
 }
 
 .inline-list.li {
@@ -117,4 +131,9 @@ body {
 .button-style{
     color: white;
     background-color:#303F9F
+}
+
+.inactive-button-style {
+    color: white;
+    background-color:rgb(170, 170, 170)
 }

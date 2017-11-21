@@ -31,6 +31,9 @@ export class ClassHubComponent {
   questionAnswers: QuestionAnswers = {};
   questionAnswer: string;
   courseInfo: string;
+  currentTopic: string;
+  firstTopic: boolean;
+  lastTopic: boolean;
 
   constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
     this.HTTP = http;
@@ -61,6 +64,7 @@ export class ClassHubComponent {
       topics: [] as [string],
       currentTopic: 0
     };
+    this.setTopicInfo('General', true, true);
     this.setClassInfo();
 
     this.route.queryParams.subscribe(params => {
@@ -85,29 +89,46 @@ export class ClassHubComponent {
           .on('panic', (event) => {
             console.log(event);
             console.log('panic event');
-            this.panicNumbers[event.classroom] = event.panicNumber;
-            this.UpdatePanicView();
+            if (event.classroom === this.currentClassroomId) {
+              this.panicNumbers[event.classroom] = event.panicNumber;
+              this.UpdatePanicView();
+            }
           })
           .on('panic_state_change', (event) => {
             this.panicStates[event.classroom] = event.state;
             console.log('state change');
-            // console.log("panicked", this.panicStates);
-            this.UpdatePanicView();
+            if (event.classroom === this.currentClassroomId) {
+              this.UpdatePanicView();
+            }
           })
           .on('refresh', (event) => {
             // set values
             console.log('refresh:', event);
-            this.UpdatePanicView();
+            if (event.classroom === this.currentClassroomId) {
+              this.UpdatePanicView();
+            }
           })
           .on('new_question', (event) => {
             console.log('new_question:', event);
-            if (this.classroom.questions.length !== event.numberOfQuestions) {
+            console.log('Local number of questions:', this.classroom.questions.length);
+            console.log('Event number of questions:', event.numberOfQuestions);
+            if ((event.classroom === this.currentClassroomId) &&
+                (this.classroom.questions.length !== event.numberOfQuestions)) {
               this.GetClassroomObject();
             }
           })
           .on('new_answer', (event) => {
             console.log('new_answer', event);
-            this.GetClassroomObject();
+            if (event.classroom === this.currentClassroomId) {
+              this.GetClassroomObject();
+            }
+          })
+          .on('topic_change', (event) => {
+            console.log('topic_change', event);
+            if (event.classroom === this.currentClassroomId) {
+              console.log('Changing topic to', event.topic);
+              this.setTopicInfo(event.topic, event.first, event.last);
+            }
           });
       });
   }
@@ -145,6 +166,9 @@ export class ClassHubComponent {
         this.studentCount = this.classroom.students.length;
         console.log(this.classroom.questions);
         this.setClassInfo();
+        this.setTopicInfo(this.classroom.topics[this.classroom.currentTopic],
+          this.classroom.currentTopic === 0,
+          this.classroom.currentTopic === (this.classroom.topics.length - 1));
      });
   }
 
@@ -154,12 +178,12 @@ export class ClassHubComponent {
     }
   }
 
-  ReplyToQuestion(questionId: string){
+  ReplyToQuestion(questionId: string) {
     const url = '/api/v1/classrooms/' + this.currentClassroomId + '/questions/' + questionId +'/answers';
     console.log(url);
-    console.log(this.questionAnswers)
+    console.log(this.questionAnswers);
     if (this.questionAnswers[questionId] !== '') {
-      this.HTTP.post(url, {answer:this. questionAnswers[questionId]})
+      this.HTTP.post(url, {answer: this.questionAnswers[questionId]})
       .subscribe((data) => { this.questionAnswers[questionId] = ''; });
     }
   }
@@ -188,6 +212,22 @@ export class ClassHubComponent {
       .subscribe((response) => { console.log('Voted'); });
   }
 
+  NextTopic(): void {
+    this.socket.emit('topic_change', {
+      classroom: this.currentClassroomId,
+      next: true,
+      previous: false,
+    });
+  }
+
+  PreviousTopic(): void {
+    this.socket.emit('topic_change', {
+      classroom: this.currentClassroomId,
+      next: false,
+      previous: true,
+    });
+  }
+
   getCSS() {
     const percentPanicked = this.numberPanic / this.classroom.students.length;
     if (percentPanicked < 0.33) {
@@ -208,6 +248,16 @@ export class ClassHubComponent {
     }
   }
 
+  setTopicInfo(topic: string, first: boolean, last: boolean): void {
+    if (topic.length > 48) {
+      this.currentTopic = `${topic.slice(0, 44)}...`;
+    } else {
+      this.currentTopic = topic;
+    }
+    this.firstTopic = first;
+    this.lastTopic = last;
+  }
+
 }
 
 export interface Classroom {
@@ -216,7 +266,7 @@ export interface Classroom {
   courseTitle: string;
   role: string;
   courseType: string;
-  sectionNumber:string;
+  sectionNumber: string;
   studentCount: number;
   studentCode: string;
   teacherCode: string;
@@ -228,7 +278,7 @@ export interface Classroom {
   currentTopic: number;
 }
 
-export interface QuestionAnswers{
+export interface QuestionAnswers {
   [_id: string]: string;
 }
 
