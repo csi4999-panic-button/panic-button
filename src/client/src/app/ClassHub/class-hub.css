@@ -25,17 +25,17 @@
 
 .column1 {
     float: left;
-    width: 30%;
-    padding: 10px;
+    width: 28%;
+    margin: 1%;
     height: 300px; /* Should be removed. Only for demonstration */
 }
 
 .column2 {
     float: left;
     width: 68%;
-    height: 90vh; /* Should be removed. Only for demonstration */
     background-color: #282b2d;
     overflow-y: auto;
+    margin: 1%;
 }
 
 .row:after {
@@ -52,16 +52,43 @@
 }
 
 .qa-card {
-    width: 50vw;
-    margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.question-card {
+    margin-left: 20px;
 }
 
 .answer-card {
     margin-left: 40px;
 }
 
-table {
+.main-card {
+    height: 40vh;
+}
+
+.title-card {
+    margin-left: 1%;
+    margin-right: 1%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.title-section {
+    display: block;
+    float: left;
+    width: 20vw;
+}
+
+.inline-list.li {
+    float: left;
+}
+
+/* .info-card {
+    margin: 20px;
+} */
+
+/* table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
     width: 100%;
@@ -79,11 +106,13 @@ tr:nth-child(even) {
 
 tr:nth-child(odd) {
     background-color: #8a8989;
-}
+} */
 
 body {
     background-color: #282b2d;
-    height: 100vh;
+    height: auto;
+    margin: 0;
+    padding: 15px;
 }
 .button-style{
     color: white;

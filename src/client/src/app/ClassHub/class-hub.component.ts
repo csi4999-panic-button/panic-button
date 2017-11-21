@@ -30,6 +30,7 @@ export class ClassHubComponent {
   replyQuestion: string;
   questionAnswers: QuestionAnswers = {};
   questionAnswer: string;
+  courseInfo: string;
 
   constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
     this.HTTP = http;
@@ -49,7 +50,7 @@ export class ClassHubComponent {
       courseTitle: '',
       role: '',
       courseType: '',
-      sectionNumber:'',
+      sectionNumber: '',
       studentCount: -1,
       studentCode: '',
       teacherCode: '',
@@ -60,6 +61,7 @@ export class ClassHubComponent {
       topics: [] as [string],
       currentTopic: 0
     };
+    this.setClassInfo();
 
     this.route.queryParams.subscribe(params => {
       this.currentClassroomId = params['id'];
@@ -138,10 +140,11 @@ export class ClassHubComponent {
     this.HTTP.get<Classroom>(`/api/v1/classrooms/${this.currentClassroomId}`)
     .subscribe((classroom) => {
         this.classroom = classroom;
-        console.log("classroom",this.classroom);
+        console.log('classroom', this.classroom);
         this.classroom.studentCount = this.classroom.students.length;
         this.studentCount = this.classroom.students.length;
         console.log(this.classroom.questions);
+        this.setClassInfo();
      });
   }
 
@@ -193,6 +196,15 @@ export class ClassHubComponent {
       return 'yellow';
     } else if (percentPanicked > 0.66) {
       return 'red';
+    }
+  }
+
+  setClassInfo(): void {
+    // based on {{classroom.courseNumber}} - {{classroom.courseTitle}}
+    if (this.classroom.courseType && this.classroom.courseNumber) {
+        this.courseInfo = `${this.classroom.courseType} ${this.classroom.courseNumber}`;
+    } else {
+      this.courseInfo = '';
     }
   }
 
