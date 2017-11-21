@@ -1,7 +1,9 @@
 import * as io from 'socket.io-client';
-import { Component } from '@angular/core';
+import { Component, OnInit, HostBinding } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgIf } from '@angular/common';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
 
 
 @Component({
@@ -26,13 +28,14 @@ export class ClassHubComponent {
   replyMode: boolean;
   replyQuestionId: string;
   replyQuestion: string;
+  questionAnswers: QuestionAnswers = {};
   questionAnswer: string;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
     this.HTTP = http;
     this.panicStates = {};
     this.panicNumbers = {};
-    this.currentClassroomId = '5a11f25012ee17579bbcb402';
+    this.currentClassroomId = '';
     const url = '/api/v1/authenticate';
     this.isPanic = false;
     this.numberPanic = 0;
@@ -40,13 +43,14 @@ export class ClassHubComponent {
     this.isQuestionAsked = false;
     this.newQuestion = '';
     this.replyMode = false;
-    this.questionAnswer = '';
     this.classroom = {
       _id: '',
       courseNumber: '',
       courseTitle: '',
       role: '',
-      studentCount: '',
+      courseType: '',
+      sectionNumber:'',
+      studentCount: -1,
       studentCode: '',
       teacherCode: '',
       questions: [] as [Question],
@@ -56,6 +60,10 @@ export class ClassHubComponent {
       topics: [] as [string],
       currentTopic: 0
     };
+
+    this.route.queryParams.subscribe(params => {
+      this.currentClassroomId = params['id'];
+   });
 
     this.GetClassroomObject();
 
@@ -130,7 +138,8 @@ export class ClassHubComponent {
     this.HTTP.get<Classroom>(`/api/v1/classrooms/${this.currentClassroomId}`)
     .subscribe((classroom) => {
         this.classroom = classroom;
-        console.log(this.classroom);
+        console.log("classroom",this.classroom);
+        this.classroom.studentCount = this.classroom.students.length;
         this.studentCount = this.classroom.students.length;
         console.log(this.classroom.questions);
      });
@@ -142,10 +151,14 @@ export class ClassHubComponent {
     }
   }
 
-  ReplyToQuestion(questionId: string, question: string){
-    this.replyMode = true;
-    this.replyQuestion = question;
-    this.replyQuestionId = questionId;
+  ReplyToQuestion(questionId: string){
+    const url = '/api/v1/classrooms/' + this.currentClassroomId + '/questions/' + questionId +'/answers';
+    console.log(url);
+    console.log(this.questionAnswers)
+    if (this.questionAnswers[questionId] !== '') {
+      this.HTTP.post(url, {answer:this. questionAnswers[questionId]})
+      .subscribe((data) => { this.questionAnswers[questionId] = ''; });
+    }
   }
 
   ReplyToAnswer(): void {
@@ -190,7 +203,9 @@ export interface Classroom {
   courseNumber: string;
   courseTitle: string;
   role: string;
-  studentCount: string;
+  courseType: string;
+  sectionNumber:string;
+  studentCount: number;
   studentCode: string;
   teacherCode: string;
   questions: [Question];
@@ -199,6 +214,10 @@ export interface Classroom {
   teacherAssistants: [string];
   topics: [string];
   currentTopic: number;
+}
+
+export interface QuestionAnswers{
+  [_id: string]: string;
 }
 
 export interface Question {

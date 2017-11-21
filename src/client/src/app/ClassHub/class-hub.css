@@ -1,5 +1,5 @@
-.red-color{
-    color: red;
+.white-color{
+    color: white;
 }
 
 .icon-size{
@@ -13,25 +13,14 @@
 }
 
 .green{
-    color:green;
+    color: green;
     font-size: 30px;
     text-align: center;
-    padding:5px;
-}
-.yellow{
-    color: gold;
-    font-size: 30px;
-}
-.red{
-    color:red;
-    font-size: 30px;
 }
 
-.column1 {
-    float: left;
-    width: 100%;
-    padding: 10px;
-    height: 300px; /* Should be removed. Only for demonstration */
+.red-color
+{
+    color: red;
 }
 
 .column1 {
@@ -43,9 +32,10 @@
 
 .column2 {
     float: left;
-    width: 60%;
-    padding: 10px;
-    height: 300px; /* Should be removed. Only for demonstration */
+    width: 68%;
+    height: 90vh; /* Should be removed. Only for demonstration */
+    background-color: #282b2d;
+    overflow-y: auto;
 }
 
 .row:after {
@@ -69,4 +59,33 @@
 
 .answer-card {
     margin-left: 40px;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+tr:nth-child(odd) {
+    background-color: #8a8989;
+}
+
+body {
+    background-color: #282b2d;
+    height: 100vh;
+}
+.button-style{
+    color: white;
+    background-color:#303F9F
 }
