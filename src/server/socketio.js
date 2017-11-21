@@ -27,7 +27,11 @@ module.exports = (app, io) => {
 
       // join to all classrooms
       const classrooms = await Classrooms.find({
-        students: socket.user.id,
+        $or: [
+          { students: socket.user.id },
+          { teachers: socket.user.id },
+          { teacherAssistants: socket.user.id },
+        ],
       });
       classrooms.forEach((classroom) => {
         socket.join(classroom.id);
@@ -59,17 +63,17 @@ module.exports = (app, io) => {
         console.log("emitted state:", event.state);
         app.ee.emit("panic", { user: socket.user.id, classroom: event.classroom, state: event.state });
       });
-      
+
       // handle events for voting questions up/down
       socket.on("question_vote", async (event) => {
         event = (typeof event === "string") ? JSON.parse(event) : event;
         console.log("question_vote event received:", event);
 
         await util.voteQuestion(
-          socket.user, 
-          event.classroom, 
-          event.question, 
-          event.up, 
+          socket.user,
+          event.classroom,
+          event.question,
+          event.up,
           app.ee);
       });
 
@@ -117,9 +121,9 @@ module.exports = (app, io) => {
 
         // set topic and emit to eventemitter with user/classroom/topic
         const newTopic = classroom.topics[newIndex];
-        app.ee.emit("topic_change", { 
-          user: socket.user.id, 
-          classroom: event.classroom, 
+        app.ee.emit("topic_change", {
+          user: socket.user.id,
+          classroom: event.classroom,
           topic: newTopic,
           first: newIndex === 0,
           last: newIndex === classroom.topics.length-1,
@@ -187,7 +191,7 @@ module.exports = (app, io) => {
     });
     // user is not used but maybe there's some use for it coming up
   });
-  
+
   /* Receives:
     {
       classroom: string,
@@ -219,7 +223,7 @@ module.exports = (app, io) => {
   */
   app.ee.on("new_answer", (event) => {
     console.log("new_answer event contains", event);
-    
+
     // send new answer to all users in classroom
     io.in(event.classroom).emit("new_answer", {
       classroom: event.classroom,
@@ -229,7 +233,7 @@ module.exports = (app, io) => {
       numberOfAnswers: event.numberOfAnswers,
     });
   });
-  
+
   /* Receives
     [{
       question: String,
@@ -243,14 +247,14 @@ module.exports = (app, io) => {
   */
   app.ee.on("refresh_questions", (event) => {
     console.log("refresh_questions event contains", event);
-    
+
     // refresh given user of updated questions for classroom
     io.in(event.user).emit("refresh_questions", {
       classroom: event.classroom,
       questions: event.questions,
     });
   })
-  
+
   /*
     {
       user: string,
@@ -278,7 +282,7 @@ module.exports = (app, io) => {
   // general handling for voting an answer up/down
   app.ee.on("answer_vote", (event) => {
     console.log("answer_vote event contains", event);
-    
+
     // update users with current votes on question
     io.in(event.classroom).emit("answer_vote", {
       classroom: event.classroom,
