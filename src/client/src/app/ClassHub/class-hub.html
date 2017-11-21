@@ -3,7 +3,7 @@
         {{classroom.courseNumber}} - {{classroom.courseTitle}}</md-toolbar>
     <div class="row">
         <div class="column1">
-            <div style="text-align:center">
+            <div style="text-align:center" *ngIf="classroom.role==='student'">
                 <button mat-button *ngIf="!isPanic" (click)=Panic() style="text-align:center">
                     <i class="material-icons icon-size">radio_button_unchecked</i>
                 </button>
@@ -54,6 +54,12 @@
                                 <b>Student Count</b>
                             </td>
                             <td>{{classroom.studentCount}}</td>
+                        </tr>
+                        <tr *ngIf="classroom.role==='teacher'">
+                            <td>
+                                <b>Student Join Code</b>
+                            </td>
+                            <td>{{classroom.studentCode}}</td>
                         </tr>
                     </table>
                 </mat-tab>
