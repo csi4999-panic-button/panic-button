@@ -62,7 +62,9 @@ export class ClassHubComponent {
       teachers: [] as [string],
       teacherAssistants: [] as [string],
       topics: [] as [string],
-      currentTopic: 0
+      currentTopic: 0,
+      schoolId: '',
+      schoolName: ''
     };
     this.setTopicInfo('General', true, true);
     this.setClassInfo();
@@ -276,6 +278,8 @@ export interface Classroom {
   teacherAssistants: [string];
   topics: [string];
   currentTopic: number;
+  schoolId: string;
+  schoolName: string;
 }
 
 export interface QuestionAnswers {
