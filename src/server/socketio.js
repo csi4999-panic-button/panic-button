@@ -274,6 +274,7 @@ module.exports = (app, io) => {
       classroom: event.classroom,
       questionId: event.question,
       votes: event.votes,
+      resolution: event.resolution,
     }).in(event.user).emit("question_vote_change", {
       classroom: event.classroom,
       question: event.question,

@@ -116,18 +116,49 @@
                             </mat-form-field>
                         </mat-card-content>
                         <mat-card-actions>
-                            <button class="button-style" mat-button mat-button-raised (click)="VoteForQuestion(question._id)">Vote</button>
+                            <!-- Vote for questions -->
+                            <button *ngIf="classroom.role==='student' && !question.voted" mat-button (click)="VoteForQuestion(question._id,true)">
+                                <i class="material-icons">keyboard_arrow_up</i> {{question.votes.length}} votes
+                            </button>
+                            <button class="button-style" *ngIf="classroom.role==='student' && question.voted" mat-button mat-button-raised (click)="VoteForQuestion(question._id,false)">
+                                <i class="material-icons">keyboard_arrow_down</i> {{question.votes.length}} votes
+                            </button>
+                            <!-- Reply to questions -->
                             <button class="button-style" mat-button mat-button-raised (click)=ReplyToQuestion(question._id)>Reply</button>
+                            <!-- Show/Hide answers to questions -->
+                            <button class="button-style" *ngIf="showAnswers[question._id] && question.answers.length > 0" mat-button mat-button-raised (click)="setAnswersViewableFor(question._id,false)">
+                                Hide Answers
+                            </button>
+                            <button class="button-style" *ngIf="!showAnswers[question._id] && question.answers.length > 0" mat-button mat-button-raised (click)="setAnswersViewableFor(question._id,true)">
+                                Show Answers
+                            </button>
                         </mat-card-actions>
                     </mat-card>
-                    <mat-card *ngFor="let answer of question.answers" class="qa-card answer-card">
-                        <mat-card-content>
-                            {{answer.answer}}
-                        </mat-card-content>
-                        <mat-card-actions>
-                            <button class="button-style" mat-button mat-button-raised (click)="VoteForAnswer(question._id,answer._id)">Vote</button>
-                        </mat-card-actions>
-                    </mat-card>
+                    <div *ngIf="showAnswers[question._id]">
+                        <div *ngFor="let answer of question.answers">
+                            <mat-card class="qa-card answer-card" [ngClass]="{'resolution-card': answer.isResolution}">
+                                <mat-card-content>
+                                    {{answer.answer}}
+                                </mat-card-content>
+                                <mat-card-actions>
+                                    <!-- Vote for answers -->
+                                    <button *ngIf="classroom.role==='student' && !answer.voted" mat-button (click)="VoteForAnswer(question._id,answer._id,true)">
+                                        <i class="material-icons">keyboard_arrow_up</i> {{answer.votes.length}} votes
+                                    </button>
+                                    <button class="button-style" *ngIf="classroom.role==='student' && answer.voted" mat-button mat-button-raised (click)="VoteForAnswer(question._id,answer._id,false)">
+                                        <i class="material-icons">keyboard_arrow_down</i> {{answer.votes.length}} votes
+                                    </button>
+                                    <!-- Mark/Unmark answers as resolved -->
+                                    <button *ngIf="['teacher','teacherAssistant'].indexOf(classroom.role)>-1 && !answer.isResolution" mat-button (click)="VoteForAnswer(question._id,answer._id,true)">
+                                        <i class="material-icons">keyboard_arrow_up</i> Mark Resolution
+                                    </button>
+                                    <button class="button-style" *ngIf="['teacher','teacherAssistant'].indexOf(classroom.role)>-1 && answer.isResolution" mat-button mat-button-raised (click)="VoteForAnswer(question._id,answer._id,false)">
+                                        <i class="material-icons">keyboard_arrow_down</i> Unmark Resolution
+                                    </button>
+                                </mat-card-actions>
+                            </mat-card>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

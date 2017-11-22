@@ -98,6 +98,10 @@
     float: left;
 }
 
+.resolution-card {
+    background-color: rgb(108, 197, 134);
+}
+
 /* .info-card {
     margin: 20px;
 } */
@@ -135,5 +139,5 @@ body {
 
 .inactive-button-style {
     color: white;
-    background-color:rgb(170, 170, 170)
+    background-color:rgb(201, 201, 201)
 }

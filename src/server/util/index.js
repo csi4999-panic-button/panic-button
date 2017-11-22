@@ -241,7 +241,7 @@ module.exports.voteQuestion = async (userId, classId, questId, up, ee) => {
       students: userId,
     });
     // else, stop now
-    if (!classroom) return failObject("Could not confirm user belongs to classroom");
+    if (!classroom) return failObject("Could not confirm user as a student of classroom");
 
     console.log(`${userId} belongs to ${classroom.courseTitle}`);
 
@@ -270,12 +270,14 @@ module.exports.voteQuestion = async (userId, classId, questId, up, ee) => {
     // query latest classroom info and get voteCount
     const updatedClass = await Classrooms.findById(classroom);
     const voteCount = updatedClass.questions.id(questId).votes.length;
+    const qRes = updatedClass.questions.id(questId).resolution;
     const emitDoc = { 
       user: userId, 
       classroom: classId, 
       question: questId,
       votes: voteCount,
       up: up,
+      resolution: qRes,
     };
     console.log("Ready to emit vote:", emitDoc);
 
@@ -293,46 +295,87 @@ module.exports.voteQuestion = async (userId, classId, questId, up, ee) => {
 module.exports.voteAnswer = async (userId, classId, questId, answId, up, ee) => {
   try {
     console.log("Received:",{userId, classId, questId, answId, up});
-    // confirm that a classroom with that question and answer exists
-    const classroom = await Classrooms.findOne({
-      _id: classId,
-      students: userId,
-    });
-    // else, stop now
-    if (!classroom) return failObject("Could not confirm user belongs to classroom");
-
-    console.log(`${userId} belongs to ${classroom.courseTitle}`);
-
-    // if 'up' not included in request, assume false
-    if(up === undefined || up === null) up = false;
-    // if 'up' was included but not a boolean, stop now
-    if(typeof up !== "boolean") return failObject("property 'up' was not a boolean");
-
-    // Use Mongo for user votes Set logic
-    let voteSetDoc = {};
-
-    if(up){
-      classroom.questions.id(questId).answers.id(answId).votes.push(userId);
-    } else {
-      classroom.questions.id(questId).answers.id(answId).votes.pull(userId);
-    }
     
-    console.log("classroom:", classroom);
-    classroom.save();
-    console.log("classroom:", classroom);
-    const voteCount = classroom.questions.id(questId).answers.id(answId).votes.size;
+    // confirm that user belongs to this classroom
+    const [stuRoom, teaRoom] = await Promise.all([
+      Classrooms.findOne({
+        _id: classId,
+        students: userId,
+      }),
+      Classrooms.findOne({
+        _id: classId,
+        $or: [
+          { teachers: userId },
+          { teacherAssistants: userId }
+        ],
+      })
+    ])
+    
+    // confirm student or teacher/TA or fail
+    if (stuRoom) {
 
-    // emit to EventEmitter for general handling
-    ee.emit("answer_vote", { 
-      user: userId, 
-      classroom: classId, 
-      question: questId,
-      answer: answId,
-      votes: voteCount,
-      up: up, 
-    });
+      console.log(`${userId} is a student of ${stuRoom.courseTitle}`);
+      // if 'up' not included in request, assume false
+      if(up === undefined || up === null) up = false;
+      // if 'up' was included but not a boolean, stop now
+      if(typeof up !== "boolean") return failObject("property 'up' was not a boolean");
+  
+      // Use Mongo for user votes Set logic
+      let voteSetDoc = {};
+  
+      if(up){
+        stuRoom.questions.id(questId).answers.id(answId).votes.push(userId);
+      } else {
+        stuRoom.questions.id(questId).answers.id(answId).votes.pull(userId);
+      }
+      
+      console.log("classroom:", classroom);
+      stuRoom.save();
+      console.log("classroom:", classroom);
+      const voteCount = stuRoom.questions.id(questId).answers.id(answId).votes.size;
+  
+      // emit to EventEmitter for general handling
+      ee.emit("answer_vote", { 
+        user: userId, 
+        classroom: classId, 
+        question: questId,
+        answer: answId,
+        votes: voteCount,
+        up: up, 
+      });
+  
+      return { status: 200, body: { success: true, message: "Successfully voted for answer" }};
 
-    return { status: 200, body: { success: true, message: "Successfully voted for answer" }};
+    } else if (teaRoom) {
+      console.log(`${userId} is a teacher/TA of ${teaRoom.courseTitle}`);
+
+      // find new resolution if answerId is legitimate
+      let qRes = teaRoom.questions.id(questId).resolution;
+      if(up){
+        teaRoom.questions.id(questId).answers.forEach((ans, ind) => {
+          if(ans._id.toString() === answId) qRes = ind;          
+        });
+      } else {
+        qRes = -1;
+      }
+      teaRoom.questions.id(questId).resolution = qRes;
+      teaRoom.save();
+
+      // emit to EventEmitter for general handling
+      ee.emit("question_vote", { 
+        user: userId, 
+        classroom: classId, 
+        question: questId,
+        votes: teaRoom.questions.id(questId).votes.length,
+        resolution: qRes,
+        up: up,
+      });
+
+      return { status: 200, body: { success: true, message: "Successfully set question resolution" }};
+
+    } else {
+      return failObject("Could not confirm user belongs to classroom");
+    }
   } catch(err) {
     console.log("Could not vote answer");
     console.log("Error occurred:", err);
