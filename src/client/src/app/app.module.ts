@@ -9,6 +9,7 @@ import { MatTableModule } from '@angular/material';
 import { MatTabsModule} from '@angular/material';
 import { MatListModule} from '@angular/material';
 import { MatCardModule} from '@angular/material';
+import { MatMenuModule} from '@angular/material';
 import { MatExpansionModule } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
@@ -55,6 +56,7 @@ const appRoutes: Routes = [
     MatTabsModule,
     MatListModule,
     MatCardModule,
+    MatMenuModule,
     MatExpansionModule,
     RouterModule.forRoot(
       appRoutes,

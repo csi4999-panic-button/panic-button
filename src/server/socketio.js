@@ -3,7 +3,7 @@
 const Classrooms = require("./models/classrooms");
 const Users = require("./models/users");
 const util = require("./util");
-const invalidBoolean = util.invalidBoolean;
+const invalidTypeOf = util.invalidTypeOf;
 
 const panicked = {};
 const timers = {};
@@ -108,7 +108,7 @@ module.exports = (app, io) => {
         })
 
         if (!classroom) return;
-        console.log(socket.user.id, "is a teacher of", classroom.name);
+        console.log(socket.user.id, "is a teacher of", classroom.courseTitle);
 
         // return if neither next/previous are defined
         if (invalidTypeOf("boolean", event.next) && invalidTypeOf("boolean", event.previous)) return;
@@ -128,6 +128,8 @@ module.exports = (app, io) => {
           first: newIndex === 0,
           last: newIndex === classroom.topics.length-1,
         });
+
+        await Classrooms.findByIdAndUpdate(event.classroom, {currentTopic: newIndex});
       });
 
       // join/leave classrooms after socket connection
@@ -272,6 +274,7 @@ module.exports = (app, io) => {
       classroom: event.classroom,
       questionId: event.question,
       votes: event.votes,
+      resolution: event.resolution,
     }).in(event.user).emit("question_vote_change", {
       classroom: event.classroom,
       question: event.question,

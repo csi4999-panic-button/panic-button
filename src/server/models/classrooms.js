@@ -82,11 +82,15 @@ classroomSchema.methods.sanitize = async function (user) {
   out.questions = out.questions.map((question) => {
     question.mine = question.user.toString() === user.id;
     question.isTeacher = this.isTeacher({ id: question.user.toString() });
+    question.voted = question.votes.filter(vote => vote.toString() === user._id.toString()).length > 0;
     question.answers = question.answers.map((answer) => {
       answer.mine = answer.user.toString() === user.id;
       answer.isTeacher = this.isTeacher({ id: answer.user.toString() });
+      answer.voted = answer.votes.filter(vote => vote.toString() === user._id.toString()).length > 0;
+      answer.isResolution = false;
       return answer;
     });
+    if(question.resolution>-1) question.answers[question.resolution].isResolution = true;
     return question;
   });
 

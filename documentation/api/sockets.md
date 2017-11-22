@@ -144,7 +144,8 @@ On the server-side, the `question_vote` event is used to notify all users of the
 {
     "classroom": "classroomId",
     "question": "questionId",
-    "votes": 12
+    "votes": 12,
+	"resolution": -1
 }
 ```
 

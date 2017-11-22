@@ -162,6 +162,7 @@ describe("Questions", () => {
         // confirm the vote count is 1
         const upvotedQClass = await request(classOpts);
         expect(upvotedQClass.questions[1].votes.length).to.equal(1);
+        expect(upvotedQClass.questions[1].voted).to.equal(true);
         
         // remove vote
         voteQuestOpts.body.up = false;
@@ -171,6 +172,7 @@ describe("Questions", () => {
         // confirm vote count is 0
         const novotedQClass = await request(classOpts);
         expect(novotedQClass.questions[1].votes.length).to.equal(0);
+        expect(novotedQClass.questions[1].voted).to.equal(false);
     });
 
     it("should allow answers to being voted for", async () => {
@@ -195,6 +197,7 @@ describe("Questions", () => {
         // confirm vote count is 1
         const upvotedQClass = await request(classOpts);
         expect(upvotedQClass.questions[1].answers[0].votes.length).to.equal(1);
+        expect(upvotedQClass.questions[1].answers[0].voted).to.equal(true);
         
         // remove vote 
         voteAnswOpts.body.up = false;
@@ -204,5 +207,6 @@ describe("Questions", () => {
         // confirm vote count is 0
         const novotedQClass = await request(classOpts);
         expect(novotedQClass.questions[1].answers[0].votes.length).to.equal(0);
+        expect(novotedQClass.questions[1].answers[0].voted).to.equal(false);
     });
 });

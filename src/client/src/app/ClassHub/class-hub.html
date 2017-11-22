@@ -1,117 +1,166 @@
 <body>
-    <md-toolbar class="mat-elevation-z10" style="background-color: #303F9F; color: #FFFFFF;font-size: 50px; text-align:center">
-        {{classroom.courseNumber}} - {{classroom.courseTitle}}</md-toolbar>
+    <!-- <md-toolbar class="mat-elevation-z10" style="background-color: #303F9F; color: #FFFFFF;font-size: 50px; text-align:center">
+        {{classHubTitle}}</md-toolbar> -->
+    <div class="row">
+        <mat-card class="title-card">
+            <mat-card-content class="title-card-content">
+                <div class="title-section">
+                    {{classroom.courseTitle}}<br/>
+                    {{courseInfo}}<br/>
+                    {{classroom.sectionNumber}}<br/>
+                    {{classroom.schoolName}}
+                </div>
+                <div class="title-section">
+                    <div *ngIf="classroom.role=='teacher'">
+                        <button class="button-style" *ngIf="!firstTopic" mat-button mat-button-raised (click)="PreviousTopic()">
+                            <i class="material-icons">keyboard_arrow_left</i>
+                        </button>
+                        <button class="inactive-button-style" *ngIf="firstTopic" mat-button mat-button-raised disabled (click)="PreviousTopic()">
+                            <i class="material-icons">keyboard_arrow_left</i>
+                        </button>
+                    </div>
+                </div>
+                <div class="title-section" id="topic-section">
+                    <div>
+                        <h1>{{currentTopic}}</h1>
+                    </div>
+                </div>
+                <div class="title-section">
+                    <div *ngIf="classroom.role=='teacher'">
+                        <button class="button-style" *ngIf="!lastTopic" mat-button mat-button-raised (click)="NextTopic()">
+                            <i class="material-icons">keyboard_arrow_right</i>
+                        </button>
+                        <button class="inactive-button-style" *ngIf="lastTopic" mat-button mat-button-raised disabled (click)="NextTopic()">
+                            <i class="material-icons">keyboard_arrow_right</i>
+                        </button>
+                    </div>
+                </div>
+                <div class="title-section">
+                    <div *ngIf="classroom.role=='teacher'">
+                        <button class="button-style" mat-button mat-button-raised [matMenuTriggerFor]="menu">Teacher Tools</button>
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item>Invite Student</button>
+                            <button mat-menu-item>Invite TA</button>
+                            <button mat-menu-item>Invite Teacher</button>
+                            <button mat-menu-item>Manage Members</button>
+                            <button mat-menu-item>New Invite Codes</button>
+                        </mat-menu>                            
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
     <div class="row">
         <div class="column1">
-            <div style="text-align:center" *ngIf="classroom.role==='student'">
-                <button mat-button *ngIf="!isPanic" (click)=Panic() style="text-align:center">
-                    <i class="material-icons icon-size">radio_button_unchecked</i>
-                </button>
-                <button mat-button *ngIf="isPanic" (click)=Panic() style="text-align:center">
-                    <i class="material-icons red-color icon-size">radio_button_checked</i>
-                </button>
-            </div>
-            <div class="green"> {{numberPanic}} Panicked</div>
-            <div class="green"> {{percentPanicked}} Percent Panicked</div>
+            <mat-card class="main-card">
+                <mat-card-content>
+                    <div style="text-align:center" *ngIf="classroom.role==='student'">
+                        <button mat-button *ngIf="!isPanic" (click)=Panic() style="text-align:center">
+                            <i class="material-icons icon-size">radio_button_unchecked</i>
+                        </button>
+                        <button mat-button *ngIf="isPanic" (click)=Panic() style="text-align:center">
+                            <i class="material-icons red-color icon-size">radio_button_checked</i>
+                        </button>
+                    </div>
+                    <div class="green"> {{numberPanic}} Panicked</div>
+                    <div class="green"> {{percentPanicked}} Percent Panicked</div>
+                </mat-card-content>
+            </mat-card>
         </div>
-        <!-- Tabs -->
         <div class="column2">
-            <mat-tab-group>
-                <mat-tab style="background-color:#282b2d" label="Class Information">
+            <!-- <mat-card class="qa-card">
+                <mat-card-content>
                     <table>
                         <tr>
-                            <td>
-                                <b>Course Number</b>
-                            </td>
-                            <td>{{classroom.courseNumber}}</td>
+                            <td><b>Course Number</b></td><td>{{classroom.courseNumber}}</td>
                         </tr>
-                        <tr>
-                            <td>
-                                <b>Course Title</b>
-                            </td>
-                            <td>{{classroom.courseTitle}}</td>
+                            <tr><td><b>Course Title</b></td><td>{{classroom.courseTitle}}</td>
                         </tr>
-                        <tr>
-                            <td>
-                                <b>Course Type</b>
-                            </td>
-                            <td>{{classroom.courseType}}</td>
+                            <tr><td><b>Course Type</b></td><td>{{classroom.courseType}}</td>
                         </tr>
-                        <tr>
-                            <td>
-                                <b>Section Number</b>
-                            </td>
-                            <td>{{classroom.sectionNumber}}</td>
+                            <tr><td><b>Section Number</b></td><td>{{classroom.sectionNumber}}</td>
                         </tr>
-                        <tr>
-                            <td>
-                                <b>Role</b>
-                            </td>
-                            <td>{{classroom.role}}</td>
+                            <tr><td><b>Role</b></td><td>{{classroom.role}}</td>
                         </tr>
-                        <tr>
-                            <td>
-                                <b>Student Count</b>
-                            </td>
-                            <td>{{classroom.studentCount}}</td>
+                            <tr><td><b>Student Count</b></td><td>{{classroom.studentCount}}</td>
                         </tr>
-                        <tr *ngIf="classroom.role==='teacher'">
-                            <td>
-                                <b>Student Join Code</b>
-                            </td>
-                            <td>{{classroom.studentCode}}</td>
+                            <tr *ngIf="classroom.role==='teacher'"><td><b>Student Join Code</b></td><td>{{classroom.studentCode}}</td>
                         </tr>
                     </table>
-                </mat-tab>
-                 <!-- QUESTIONS -->
-                <mat-tab label="Questions">
-                    <div>
-                        <mat-card class="qa-card">
-                            <mat-card-header>
-                                <mat-card-title>Welcome to {{classroom.courseTitle}}!</mat-card-title>
-                            </mat-card-header>
-                            <mat-card-content>
-                                If you have any questions please submit them here
-                                <br/>
-                                <mat-form-field required class="input-style" *ngIf="!isQuestionAsked">
-                                    <input type="text" [(ngModel)]="newQuestion" matInput placeholder="Ask a Question" />
-                                </mat-form-field>
-                            </mat-card-content>
-                            <mat-card-actions>
-                                <button class="button-style" mat-button mat-button-raised (click)=NewQuestion()>Ask Question</button>
-                            </mat-card-actions>
-                        </mat-card>
+                </mat-card-content>
+            </mat-card> -->
+            <div>
+                <mat-card class="qa-card">
+                    <mat-card-header>
+                        <mat-card-title>Welcome to {{classroom.courseTitle}}!</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        If you have any questions please submit them here
+                        <br/>
+                        <mat-form-field required class="input-style" *ngIf="!isQuestionAsked">
+                            <input type="text" [(ngModel)]="newQuestion" matInput placeholder="Ask a Question" />
+                        </mat-form-field>
+                    </mat-card-content>
+                    <mat-card-actions>
+                        <button class="button-style" mat-button mat-button-raised (click)=NewQuestion()>Ask Question</button>
+                    </mat-card-actions>
+                </mat-card>
 
-                        <div *ngFor="let question of classroom.questions">
-                            <mat-card class="qa-card">
-                                <mat-card-content>
-                                    {{question.question}}
-                                    <br/>
-                                    <mat-form-field class="input-style">
-                                        <input type="text" [(ngModel)]="questionAnswers[question._id]" matInput placeholder="Answer..." />
-                                    </mat-form-field>
-                                </mat-card-content>
-                                <mat-card-actions>
-                                    <button class="button-style" mat-button mat-button-raised (click)="VoteAnswer(question,answer)">Vote</button>
-                                    <button class="button-style" mat-button mat-button-raised (click)=ReplyToQuestion(question._id)>Reply</button>
-                                </mat-card-actions>
-                            </mat-card>
-                            <mat-card *ngFor="let answer of question.answers" class="qa-card answer-card">
+                <div *ngFor="let question of classroom.questions">
+                    <mat-card class="qa-card question-card">
+                        <mat-card-content>
+                            {{question.question}}
+                            <br/>
+                            <mat-form-field class="input-style">
+                                <input type="text" [(ngModel)]="questionAnswers[question._id]" matInput placeholder="Answer..." />
+                            </mat-form-field>
+                        </mat-card-content>
+                        <mat-card-actions>
+                            <!-- Vote for questions -->
+                            <button *ngIf="classroom.role==='student' && !question.voted" mat-button (click)="VoteForQuestion(question._id,true)">
+                                <i class="material-icons">keyboard_arrow_up</i> {{question.votes.length}} votes
+                            </button>
+                            <button class="button-style" *ngIf="classroom.role==='student' && question.voted" mat-button mat-button-raised (click)="VoteForQuestion(question._id,false)">
+                                <i class="material-icons">keyboard_arrow_down</i> {{question.votes.length}} votes
+                            </button>
+                            <!-- Reply to questions -->
+                            <button class="button-style" mat-button mat-button-raised (click)=ReplyToQuestion(question._id)>Reply</button>
+                            <!-- Show/Hide answers to questions -->
+                            <button class="button-style" *ngIf="showAnswers[question._id] && question.answers.length > 0" mat-button mat-button-raised (click)="setAnswersViewableFor(question._id,false)">
+                                Hide Answers
+                            </button>
+                            <button class="button-style" *ngIf="!showAnswers[question._id] && question.answers.length > 0" mat-button mat-button-raised (click)="setAnswersViewableFor(question._id,true)">
+                                Show Answers
+                            </button>
+                        </mat-card-actions>
+                    </mat-card>
+                    <div *ngIf="showAnswers[question._id]">
+                        <div *ngFor="let answer of question.answers">
+                            <mat-card class="qa-card answer-card" [ngClass]="{'resolution-card': answer.isResolution}">
                                 <mat-card-content>
                                     {{answer.answer}}
                                 </mat-card-content>
                                 <mat-card-actions>
-                                    <button class="button-style" mat-button mat-button-raised (click)="VoteAnswer(question,answer)">Vote</button>
+                                    <!-- Vote for answers -->
+                                    <button *ngIf="classroom.role==='student' && !answer.voted" mat-button (click)="VoteForAnswer(question._id,answer._id,true)">
+                                        <i class="material-icons">keyboard_arrow_up</i> {{answer.votes.length}} votes
+                                    </button>
+                                    <button class="button-style" *ngIf="classroom.role==='student' && answer.voted" mat-button mat-button-raised (click)="VoteForAnswer(question._id,answer._id,false)">
+                                        <i class="material-icons">keyboard_arrow_down</i> {{answer.votes.length}} votes
+                                    </button>
+                                    <!-- Mark/Unmark answers as resolved -->
+                                    <button *ngIf="['teacher','teacherAssistant'].indexOf(classroom.role)>-1 && !answer.isResolution" mat-button (click)="VoteForAnswer(question._id,answer._id,true)">
+                                        <i class="material-icons">keyboard_arrow_up</i> Mark Resolution
+                                    </button>
+                                    <button class="button-style" *ngIf="['teacher','teacherAssistant'].indexOf(classroom.role)>-1 && answer.isResolution" mat-button mat-button-raised (click)="VoteForAnswer(question._id,answer._id,false)">
+                                        <i class="material-icons">keyboard_arrow_down</i> Unmark Resolution
+                                    </button>
                                 </mat-card-actions>
                             </mat-card>
                         </div>
                     </div>
-                </mat-tab>
-                <mat-tab label="Instructor Tools" *ngIf="classroom.role=='teacher'">
-                </mat-tab>
-            </mat-tab-group>
-
+                </div>
+            </div>
         </div>
-
     </div>
 </body>

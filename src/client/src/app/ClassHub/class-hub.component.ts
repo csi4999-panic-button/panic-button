@@ -30,6 +30,12 @@ export class ClassHubComponent {
   replyQuestion: string;
   questionAnswers: QuestionAnswers = {};
   questionAnswer: string;
+  courseInfo: string;
+  currentTopic: string;
+  firstTopic: boolean;
+  lastTopic: boolean;
+  myUserId: string;
+  showAnswers: ShowAnswerMap;
 
   constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
     this.HTTP = http;
@@ -49,7 +55,7 @@ export class ClassHubComponent {
       courseTitle: '',
       role: '',
       courseType: '',
-      sectionNumber:'',
+      sectionNumber: '',
       studentCount: -1,
       studentCode: '',
       teacherCode: '',
@@ -58,8 +64,13 @@ export class ClassHubComponent {
       teachers: [] as [string],
       teacherAssistants: [] as [string],
       topics: [] as [string],
-      currentTopic: 0
+      currentTopic: 0,
+      schoolId: '',
+      schoolName: ''
     };
+    this.setTopicInfo('General', true, true);
+    this.setClassInfo();
+    this.addNewQuestionsToViewLogic();
 
     this.route.queryParams.subscribe(params => {
       this.currentClassroomId = params['id'];
@@ -83,29 +94,58 @@ export class ClassHubComponent {
           .on('panic', (event) => {
             console.log(event);
             console.log('panic event');
-            this.panicNumbers[event.classroom] = event.panicNumber;
-            this.UpdatePanicView();
+            if (event.classroom === this.currentClassroomId) {
+              this.panicNumbers[event.classroom] = event.panicNumber;
+              this.UpdatePanicView();
+            }
           })
           .on('panic_state_change', (event) => {
             this.panicStates[event.classroom] = event.state;
             console.log('state change');
-            // console.log("panicked", this.panicStates);
-            this.UpdatePanicView();
+            if (event.classroom === this.currentClassroomId) {
+              this.UpdatePanicView();
+            }
           })
           .on('refresh', (event) => {
             // set values
             console.log('refresh:', event);
-            this.UpdatePanicView();
+            if (event.classroom === this.currentClassroomId) {
+              this.UpdatePanicView();
+            }
           })
           .on('new_question', (event) => {
             console.log('new_question:', event);
-            if (this.classroom.questions.length !== event.numberOfQuestions) {
+            console.log('Local number of questions:', this.classroom.questions.length);
+            console.log('Event number of questions:', event.numberOfQuestions);
+            if ((event.classroom === this.currentClassroomId) &&
+                (this.classroom.questions.length !== event.numberOfQuestions)) {
+              this.GetClassroomObject();
+            }
+          })
+          .on('question_vote', (event) => {
+            console.log('question_vote', event);
+            if (event.classroom === this.currentClassroomId) {
+              this.GetClassroomObject();
+            }
+          })
+          .on('answer_vote', (event) => {
+            console.log('answer_vote', event);
+            if (event.classroom === this.currentClassroomId) {
               this.GetClassroomObject();
             }
           })
           .on('new_answer', (event) => {
             console.log('new_answer', event);
-            this.GetClassroomObject();
+            if (event.classroom === this.currentClassroomId) {
+              this.GetClassroomObject();
+            }
+          })
+          .on('topic_change', (event) => {
+            console.log('topic_change', event);
+            if (event.classroom === this.currentClassroomId) {
+              console.log('Changing topic to', event.topic);
+              this.setTopicInfo(event.topic, event.first, event.last);
+            }
           });
       });
   }
@@ -138,10 +178,15 @@ export class ClassHubComponent {
     this.HTTP.get<Classroom>(`/api/v1/classrooms/${this.currentClassroomId}`)
     .subscribe((classroom) => {
         this.classroom = classroom;
-        console.log("classroom",this.classroom);
+        console.log('classroom', this.classroom);
         this.classroom.studentCount = this.classroom.students.length;
         this.studentCount = this.classroom.students.length;
         console.log(this.classroom.questions);
+        this.setClassInfo();
+        this.setTopicInfo(this.classroom.topics[this.classroom.currentTopic],
+          this.classroom.currentTopic === 0,
+          this.classroom.currentTopic === (this.classroom.topics.length - 1));
+        this.addNewQuestionsToViewLogic();
      });
   }
 
@@ -151,13 +196,16 @@ export class ClassHubComponent {
     }
   }
 
-  ReplyToQuestion(questionId: string){
+  ReplyToQuestion(questionId: string) {
     const url = '/api/v1/classrooms/' + this.currentClassroomId + '/questions/' + questionId +'/answers';
     console.log(url);
-    console.log(this.questionAnswers)
+    console.log(this.questionAnswers);
     if (this.questionAnswers[questionId] !== '') {
-      this.HTTP.post(url, {answer:this. questionAnswers[questionId]})
-      .subscribe((data) => { this.questionAnswers[questionId] = ''; });
+      this.HTTP.post(url, {answer: this.questionAnswers[questionId]})
+      .subscribe((data) => {
+        this.questionAnswers[questionId] = '';
+        this.showAnswers[questionId] = true;
+      });
     }
   }
 
@@ -170,19 +218,35 @@ export class ClassHubComponent {
     }
   }
 
-  VoteForQuestion(question: Question) {
-    console.log(question);
-    const url = `/api/v1/classrooms/${this.currentClassroomId}/questions/${question._id}`;
-    this.HTTP.put<SuccessResponse>(url, { up: true })
-      .subscribe((response) => { console.log('Voted'); });
+  VoteForQuestion(qId: string, up: boolean) {
+    console.log(qId);
+    const url = `/api/v1/classrooms/${this.currentClassroomId}/questions/${qId}`;
+    this.HTTP.put<SuccessResponse>(url, { up })
+      .subscribe((response) => { console.log('Voted up:', up); });
   }
 
-  VoteForAnswer(question: Question, answer: Answer) {
-    console.log(question);
-    console.log(answer);
-    const url = `/api/v1/classrooms/${this.currentClassroomId}/questions/${question._id}/answers/${answer._id}`;
-    this.HTTP.put<SuccessResponse>(url, { up: true })
-      .subscribe((response) => { console.log('Voted'); });
+  VoteForAnswer(qId: string, aId: string, up: boolean) {
+    console.log(qId);
+    console.log(aId);
+    const url = `/api/v1/classrooms/${this.currentClassroomId}/questions/${qId}/answers/${aId}`;
+    this.HTTP.put<SuccessResponse>(url, { up })
+      .subscribe((response) => { console.log('Voted up:', up); });
+  }
+
+  NextTopic(): void {
+    this.socket.emit('topic_change', {
+      classroom: this.currentClassroomId,
+      next: true,
+      previous: false,
+    });
+  }
+
+  PreviousTopic(): void {
+    this.socket.emit('topic_change', {
+      classroom: this.currentClassroomId,
+      next: false,
+      previous: true,
+    });
   }
 
   getCSS() {
@@ -196,6 +260,41 @@ export class ClassHubComponent {
     }
   }
 
+  setClassInfo(): void {
+    // based on {{classroom.courseNumber}} - {{classroom.courseTitle}}
+    if (this.classroom.courseType && this.classroom.courseNumber) {
+        this.courseInfo = `${this.classroom.courseType} ${this.classroom.courseNumber}`;
+    } else {
+      this.courseInfo = '';
+    }
+  }
+
+  setTopicInfo(topic: string, first: boolean, last: boolean): void {
+    if (topic.length > 48) {
+      this.currentTopic = `${topic.slice(0, 44)}...`;
+    } else {
+      this.currentTopic = topic;
+    }
+    this.firstTopic = first;
+    this.lastTopic = last;
+  }
+
+  addNewQuestionsToViewLogic(): void {
+    if (this.showAnswers === null || this.showAnswers === undefined) {
+      this.showAnswers = {} as ShowAnswerMap;
+    }
+
+    this.classroom.questions.forEach((q) => {
+      if (!this.showAnswers[q._id]) {
+        this.showAnswers[q._id] = false;
+      }
+    });
+  }
+
+  setAnswersViewableFor(qId: string, viewable: boolean): void {
+    this.showAnswers[qId] = viewable;
+  }
+
 }
 
 export interface Classroom {
@@ -204,7 +303,7 @@ export interface Classroom {
   courseTitle: string;
   role: string;
   courseType: string;
-  sectionNumber:string;
+  sectionNumber: string;
   studentCount: number;
   studentCode: string;
   teacherCode: string;
@@ -214,10 +313,16 @@ export interface Classroom {
   teacherAssistants: [string];
   topics: [string];
   currentTopic: number;
+  schoolId: string;
+  schoolName: string;
 }
 
-export interface QuestionAnswers{
+export interface QuestionAnswers {
   [_id: string]: string;
+}
+
+export interface ShowAnswerMap {
+  [_id: string]: boolean;
 }
 
 export interface Question {
