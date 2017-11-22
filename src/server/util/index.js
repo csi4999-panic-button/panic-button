@@ -329,9 +329,9 @@ module.exports.voteAnswer = async (userId, classId, questId, answId, up, ee) => 
         stuRoom.questions.id(questId).answers.id(answId).votes.pull(userId);
       }
       
-      console.log("classroom:", classroom);
+      console.log("classroom:", stuRoom);
       stuRoom.save();
-      console.log("classroom:", classroom);
+      console.log("classroom:", stuRoom);
       const voteCount = stuRoom.questions.id(questId).answers.id(answId).votes.size;
   
       // emit to EventEmitter for general handling
