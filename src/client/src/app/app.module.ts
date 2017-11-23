@@ -14,7 +14,7 @@ import { MatExpansionModule } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { CdkTableModule } from '@angular/cdk/table';
-
+import { ChartsModule } from 'ng2-charts'
 
 import { AppComponent } from './app.component';
 import { HomePageComponent } from './home-page.component';
@@ -27,7 +27,6 @@ import { ClassHubComponent } from './ClassHub/class-hub.component';
 import { CreateClassComponent } from './CreateClass/create-class.component';
 import { JoinClassComponent } from './JoinClass/join-class.component';
 import { CreateSchoolComponent } from './CreateSchool/create-school.component';
-
 import { SchoolSearchService } from './School/school-search.service';
 
 
@@ -63,7 +62,8 @@ const appRoutes: Routes = [
       // { enableTracing: true } // <-- debugging purposes only
     ),
     HttpClientModule,
-    CdkTableModule
+    CdkTableModule,
+    ChartsModule,
   ],
   declarations: [
     AppComponent,

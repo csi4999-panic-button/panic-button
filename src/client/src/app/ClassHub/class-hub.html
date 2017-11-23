@@ -66,6 +66,19 @@
                     <div class="green"> {{percentPanicked}} Percent Panicked</div>
                 </mat-card-content>
             </mat-card>
+            <mat-card>
+                <div>
+                    <canvas
+                        baseChart
+                        [chartType]="'line'"
+                        [datasets]="chartData"
+                        [labels]="chartLabels"
+                        [options]="chartOptions"
+                        [legend]="true"
+                        (chartClick)="onChartClick($event)">
+                    </canvas>
+                  </div>
+            </mat-card>
         </div>
         <div class="column2">
             <!-- <mat-card class="qa-card">
