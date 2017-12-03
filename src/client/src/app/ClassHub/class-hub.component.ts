@@ -1,5 +1,6 @@
 import * as io from 'socket.io-client';
 import { Component, OnInit, HostBinding } from '@angular/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { HttpClient } from '@angular/common/http';
 import { NgIf } from '@angular/common';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
@@ -35,7 +36,7 @@ export class ClassHubComponent {
   firstTopic: boolean;
   lastTopic: boolean;
   myUserId: string;
-  showAnswers: ShowAnswerMap;
+  showAnswers: Map<string, boolean>;
   showChart: boolean;
 
   constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
@@ -288,18 +289,18 @@ export class ClassHubComponent {
 
   addNewQuestionsToViewLogic(): void {
     if (this.showAnswers === null || this.showAnswers === undefined) {
-      this.showAnswers = {} as ShowAnswerMap;
+      this.showAnswers = new Map<string, boolean>();
     }
 
     this.classroom.questions.forEach((q) => {
-      if (!this.showAnswers[q._id]) {
-        this.showAnswers[q._id] = false;
+      if (!this.showAnswers.get(q._id)) {
+        this.showAnswers.set(q._id, false);
       }
     });
   }
 
   setAnswersViewableFor(qId: string, viewable: boolean): void {
-    this.showAnswers[qId] = viewable;
+    this.showAnswers.set(qId, viewable);
   }
 
   chartData = [
