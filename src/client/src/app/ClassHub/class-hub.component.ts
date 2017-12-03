@@ -37,6 +37,10 @@ export class ClassHubComponent {
   myUserId: string;
   showAnswers: ShowAnswerMap;
   showChart: boolean;
+  testData: [number];
+  chartData: [ChartData];
+  chartLabels: string[];
+  chartOptions: ChartOptions;
 
 
   constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
@@ -72,9 +76,12 @@ export class ClassHubComponent {
       schoolName: ''
     };
     this.chartData = [
-      { data: this.testData, label: 'Account A' }
+      { data: this.testData, label: 'Panics' }
     ];
-  
+    this.chartOptions = {
+      responsive: true
+    };
+
     this.setTopicInfo('General', true, true);
     this.setClassInfo();
     this.addNewQuestionsToViewLogic();
@@ -157,8 +164,9 @@ export class ClassHubComponent {
             }
           });
       });
-      //setInterval(this.ChangeData(), 3000);
-      setInterval(() => {this.ChangeData()}, 3000)   
+
+      // set a continous 3 second run of chart updater
+      setInterval(() => this.ChangeData(), 6 * 1000);
   }
 
   Panic() {
@@ -182,7 +190,7 @@ export class ClassHubComponent {
   UpdatePanicView() {
     this.isPanic = this.panicStates[this.currentClassroomId];
     this.numberPanic = this.panicNumbers[this.currentClassroomId];
-    this.percentPanicked = Math.round(this.numberPanic * 100/ this.studentCount);
+    this.percentPanicked = Math.round(this.numberPanic * 100 / this.studentCount);
   }
 
   ToggleChart() {
@@ -212,7 +220,7 @@ export class ClassHubComponent {
   }
 
   ReplyToQuestion(questionId: string) {
-    const url = '/api/v1/classrooms/' + this.currentClassroomId + '/questions/' + questionId +'/answers';
+    const url = `/api/v1/classrooms/${this.currentClassroomId}/question/${questionId}/answers`;
     console.log(url);
     console.log(this.questionAnswers);
     if (this.questionAnswers[questionId] !== '') {
@@ -270,7 +278,7 @@ export class ClassHubComponent {
       return 'green';
     } else if (percentPanicked > 0.33 && percentPanicked < 0.66) {
       return 'yellow';
-    } else if (percentPanicked > 0.66) {
+    } else {
       return 'red';
     }
   }
@@ -310,33 +318,33 @@ export class ClassHubComponent {
     this.showAnswers[qId] = viewable;
   }
 
-  //Chart Stuff
- ChangeData() {
-   var dataArr = [this.percentPanicked]; 
-    var date = new Date();
-    var time: string = `${date.getHours().toString()}:${date.getMinutes().toString()}:${date.getSeconds().toString()}`; 
-   
-      this.chartData.forEach((dataset, index) => {
-        this.chartData[index] = Object.assign({}, this.chartData[index], {
-          data: [...this.chartData[index].data, dataArr[index]]
-        });
-      });
-    
-      this.chartLabels = [...this.chartLabels, time];
-    
-     
+  // Chart Stuff
+  ChangeData() {
+    const dataArr = [this.percentPanicked];
+    const date = new Date();
+    const time = `${date.getHours().toString()}:${date.getMinutes().toString()}:${date.getSeconds().toString()}`;
 
-      console.log(time);
+    this.chartData.forEach((dataset, index) => {
+      this.chartData[index] = Object.assign({}, this.chartData[index], {
+        data: [...this.chartData[index].data, dataArr[index]]
+      });
+    });
+
+    if (!this.chartLabels) {
+      this.chartLabels = [time];
+    } else if (this.chartLabels.length >= 10) {
+      this.chartLabels = [...this.chartLabels.slice(-9), time];
+    } else {
+      this.chartLabels = [...this.chartLabels, time];
     }
+
+    console.log(time);
+  }
 
 
   onChartClick(event) {
     console.log(event);
   }
-
-  chartOptions = {
-    responsive: true
-  };
 
 }
 
@@ -390,4 +398,13 @@ export interface Answer {
 
 export interface SuccessResponse {
   success: boolean;
+}
+
+export interface ChartData {
+  data: [number];
+  label: string;
+}
+
+export interface ChartOptions {
+  responsive: boolean;
 }
