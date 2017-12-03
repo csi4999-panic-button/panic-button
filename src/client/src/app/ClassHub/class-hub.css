@@ -131,11 +131,18 @@ body {
 .button-style{
     color: white;
     background-color:#303F9F;
+    
 }
 
 .resolution-style{
     color: white;
     background-color: rgb(109, 226, 143);
+    vertical-align: top;
+}
+.vote-count-style{
+    color: white;
+    background-color: rgb(170, 170, 170);
+    vertical-align: top;
 }
 
 .inactive-button-style {
