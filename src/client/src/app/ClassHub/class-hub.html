@@ -70,7 +70,7 @@
                 <div>
                     <canvas
                         baseChart
-                        [chartType]="'line'"
+                        [chartType]="'bar'"
                         [datasets]="chartData"
                         [labels]="chartLabels"
                         [options]="chartOptions"
@@ -78,6 +78,7 @@
                         (chartClick)="onChartClick($event)">
                     </canvas>
                   </div>
+                  <button mat-button (click)="ChangeData()" style="text-align:center">Test Data Change</button>
             </mat-card>
         </div>
         <div class="column2">

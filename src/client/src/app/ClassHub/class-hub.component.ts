@@ -36,6 +36,9 @@ export class ClassHubComponent {
   lastTopic: boolean;
   myUserId: string;
   showAnswers: ShowAnswerMap;
+  testData: number[];
+  chartData: any = {};
+  chartLabels = ['Start'];
 
   constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
     this.HTTP = http;
@@ -49,6 +52,7 @@ export class ClassHubComponent {
     this.isQuestionAsked = false;
     this.newQuestion = '';
     this.replyMode = false;
+    this.testData = [this.percentPanicked];
     this.classroom = {
       _id: '',
       courseNumber: '',
@@ -68,6 +72,10 @@ export class ClassHubComponent {
       schoolId: '',
       schoolName: ''
     };
+    this.chartData = [
+      { data: this.testData, label: 'Account A' }
+    ];
+  
     this.setTopicInfo('General', true, true);
     this.setClassInfo();
     this.addNewQuestionsToViewLogic();
@@ -148,6 +156,8 @@ export class ClassHubComponent {
             }
           });
       });
+      //setInterval(this.ChangeData(), 3000);
+      setInterval(() => {this.ChangeData()}, 3000)   
   }
 
   Panic() {
@@ -295,13 +305,25 @@ export class ClassHubComponent {
     this.showAnswers[qId] = viewable;
   }
 
-  chartData = [
-    { data: [330, 600, 260, 700], label: 'Account A' },
-    { data: [120, 455, 100, 340], label: 'Account B' },
-    { data: [45, 67, 800, 500], label: 'Account C' }
-  ];
+  //Chart Stuff
+ ChangeData() {
+   var dataArr = [this.percentPanicked]; 
+    var date = new Date();
+    var time: string = `${date.getHours().toString()}:${date.getMinutes().toString()}:${date.getSeconds().toString()}`; 
+   
+      this.chartData.forEach((dataset, index) => {
+        this.chartData[index] = Object.assign({}, this.chartData[index], {
+          data: [...this.chartData[index].data, dataArr[index]]
+        });
+      });
+    
+      this.chartLabels = [...this.chartLabels, time];
+    
+     
 
-  chartLabels = ['January', 'February', 'Mars', 'April'];
+      console.log(time);
+    }
+
 
   onChartClick(event) {
     console.log(event);
