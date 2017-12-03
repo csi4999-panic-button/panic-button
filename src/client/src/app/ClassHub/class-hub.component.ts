@@ -36,9 +36,8 @@ export class ClassHubComponent {
   lastTopic: boolean;
   myUserId: string;
   showAnswers: ShowAnswerMap;
-  testData: number[];
-  chartData: any = {};
-  chartLabels = ['Start'];
+  showChart: boolean;
+
 
   constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
     this.HTTP = http;
@@ -79,6 +78,8 @@ export class ClassHubComponent {
     this.setTopicInfo('General', true, true);
     this.setClassInfo();
     this.addNewQuestionsToViewLogic();
+
+    this.showChart = false;
 
     this.route.queryParams.subscribe(params => {
       this.currentClassroomId = params['id'];
@@ -182,6 +183,10 @@ export class ClassHubComponent {
     this.isPanic = this.panicStates[this.currentClassroomId];
     this.numberPanic = this.panicNumbers[this.currentClassroomId];
     this.percentPanicked = Math.round(this.numberPanic * 100/ this.studentCount);
+  }
+
+  ToggleChart() {
+    this.showChart = !this.showChart;
   }
 
   GetClassroomObject() {

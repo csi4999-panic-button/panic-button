@@ -46,6 +46,18 @@ router.get("/users", async (req, res) => {
   }
 });
 
+router.get("/users/me", async (req, res) => {
+  console.log(req.isAuthenticated());
+  if (req.isAuthenticated()) {
+    console.log(req.session);
+    console.log(req.user);
+    const thisUser = await Users.findById(req.user.id);
+    res.json(thisUser);
+  } else {
+    res.status(401).send();
+  }
+});
+
 router.use("/classrooms", require("./classrooms"));
 router.use("/schools", require("./schools"));
 

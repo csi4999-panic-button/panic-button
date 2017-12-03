@@ -51,3 +51,25 @@
 body {
     background-color: #282b2d;
 }
+
+#title-container {
+    width: 100%;
+    vertical-align: middle;
+}
+
+#title-container.div {
+    vertical-align: inherit;
+}
+
+.title-left {
+    float: left;
+    width: 100px;
+}
+
+.title-center {
+    margin: 0 auto;
+}
+
+.sidenav-list-item {
+    padding: 5% 30% !important;
+}

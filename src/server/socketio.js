@@ -8,6 +8,7 @@ const invalidTypeOf = util.invalidTypeOf;
 const panicked = {};
 const timers = {};
 const votes = {};
+const classAttendances = {};
 
 module.exports = (app, io) => {
   io.on("connection", async (socket) => {
@@ -25,20 +26,39 @@ module.exports = (app, io) => {
       console.log("Socket login success", user.email);
       socket.emit("login_success", true);
 
-      // join to all classrooms
-      const classrooms = await Classrooms.find({
+      // join students and maintain attendance for students in the room
+      const roomsWhereStudent = await Classrooms.find({ students: socket.user.id });
+      roomsWhereStudent.forEach((classroom) => {
+        socket.join(classroom.id);
+        // manage classroom attendance by creating a new map maintaining user ids and their sessions
+        if (!classAttendances[classroom.id]) {
+          classAttendances[classroom.id] = new Map();
+          console.log(`Created newly joined classroom [${classroom.id}] attendance`);
+        }
+        // determine that user is in the class yet and initialize to empty set if necessary
+        if (!classAttendances[classroom.id].get(socket.user.id)) {
+          classAttendances[classroom.id].set(socket.user.id, new Set());
+        }
+        classAttendances[classroom.id].get(socket.user.id).add(socket.id);
+        console.log("Joining socket to classroom",classroom.id);
+        console.log(`Set student attendance in classroom ${classroom.id} to ${classAttendances[classroom.id].size}`)
+      });
+
+      // join teachers and TAs to the room, don't consider them for attendance 
+      const roomsWhereTeacher = await Classrooms.find({
         $or: [
-          { students: socket.user.id },
           { teachers: socket.user.id },
           { teacherAssistants: socket.user.id },
         ],
       });
-      classrooms.forEach((classroom) => {
+      roomsWhereTeacher.forEach((classroom) => {
         socket.join(classroom.id);
-        socket.join(socket.user.id);
         console.log("Joining socket to classroom",classroom.id);
-        console.log("Joining socket to user",socket.user.id);
       });
+
+      // finally join to users specific socket
+      socket.join(socket.user.id);
+      console.log("Joining socket to user",socket.user.id);
 
       socket.on("panic", async (event) => {
         // Android app sends strings, Web UI sends objects
@@ -134,7 +154,16 @@ module.exports = (app, io) => {
 
       // join/leave classrooms after socket connection
       app.ee.on(`${socket.user.id}:join`, (classroom) => socket.join(classroom));
-      app.ee.on(`${socket.user.id}:leave`, (classroom) => socket.leave(classroom));
+      app.ee.on(`${socket.user.id}:leave`, (classroom) => {
+        // if classAttendance kept for user, if none ? remove socket.id : remove user from map
+        if (classAttendances[classroom].get(socket.user.id)) {
+          classAttendances[classroom].get(socket.user.id).delete(socket.id);
+          if (classAttendances[classroom].get(socket.user.id).size === 0) {
+            classAttendances[classroom].delete(socket.user.id);
+          }
+        }
+        return socket.leave(classroom);
+      });
     });
   });
 
@@ -164,7 +193,7 @@ module.exports = (app, io) => {
       // after 10 seconds, set panic to false for user in classroom
       timers[event.user][event.classroom] = setTimeout(() => {
         app.ee.emit("panic", { classroom: event.classroom, user: event.user, state: false });
-      }, 1000 * 10);
+      }, 1000 * 15);
     } else {
       // unpanick user
       panicked[event.classroom].delete(event.user);
@@ -174,6 +203,7 @@ module.exports = (app, io) => {
     io.in(event.classroom).emit("panic", {
       classroom: event.classroom,
       panicNumber: panicked[event.classroom].size,
+      attendance: classAttendances[event.classroom].size, // only # of users connected
     })
       .in(event.user).emit("panic_state_change", {
         classroom: event.classroom,
