@@ -98,10 +98,6 @@
     float: left;
 }
 
-.resolution-card {
-    background-color: rgb(108, 197, 134);
-}
-
 /* .info-card {
     margin: 20px;
 } */
@@ -134,10 +130,49 @@ body {
 }
 .button-style{
     color: white;
-    background-color:#303F9F
+    background-color:#303F9F;
+}
+
+.resolution-style{
+    color: white;
+    background-color: rgb(109, 226, 143);
 }
 
 .inactive-button-style {
     color: white;
     background-color:rgb(201, 201, 201)
+}
+
+.qa-flex-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: flex-start;
+}
+
+.qa-flex-box {
+    flex-grow: 1;
+    padding: 0 10px;
+}
+
+.qa-vote-box { 
+    vertical-align: middle;
+}
+
+.round-button-style {
+    border-radius: 50%;
+    padding: 0px;
+    min-width: 56px;
+    height: 56px;
+    vertical-align: middle;
+}
+
+.useful-text-input {
+    width: 100%;
+}
+
+.vote-flex-container {
+    flex: column;
 }
