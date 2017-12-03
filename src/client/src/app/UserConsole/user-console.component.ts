@@ -9,7 +9,7 @@ import 'rxjs/add/observable/of';
 @Component({
   selector: 'user-console',
   templateUrl: './user-console.html',
-  styleUrls: ['./user-console.css']
+  styleUrls: ['./user-console.css'],
 })
 export class UserConsoleComponent {
 
@@ -17,18 +17,24 @@ export class UserConsoleComponent {
   displayedColumns = ['courseTitle', 'courseNumber', 'sectionNumber', 'role', 'schoolName'];
   data: Classroom[];
   dataSource: ClassroomDataSource;
+  whoAmI: string;
 
   constructor(private http: HttpClient, private router: Router) {
+    console.log('Entered constructor');
     this.HTTP = http;
-     this.HTTP.get<Classroom[]>('/api/v1/classrooms')
-          .subscribe((data) => {
-            this.data = data.map(d => { d.role = d.role.charAt(0).toUpperCase() + d.role.slice(1); return d; });
-            this.dataSource = new ClassroomDataSource(this.data);
-          });
+    this.HTTP.get<Classroom[]>('/api/v1/classrooms')
+        .subscribe((data) => {
+          this.data = data.map(d => { d.role = d.role.charAt(0).toUpperCase() + d.role.slice(1); return d; });
+          this.dataSource = new ClassroomDataSource(this.data);
+        });
+    this.HTTP.get<UserInfo>('/api/v1/users/me')
+        .subscribe((data) => {
+          this.whoAmI = `${data['firstName']} ${data['lastName']}`;
+        });
   }
 
-  navigateTo(ID: any) {
-    this.router.navigate(['/class-hub'], {queryParams: {id: ID}});;
+  navigateTo(ID: string) {
+    this.router.navigate(['/class-hub'], {queryParams: {id: ID}});
   }
 
   // consider moving this logic to class-hub under Classroom Information
@@ -43,6 +49,8 @@ export class UserConsoleComponent {
   }
 }
 
+
+
 export interface Classroom {
   _id: string;
   courseNumber: string;
@@ -51,6 +59,12 @@ export interface Classroom {
   sectionNumber: string;
   schoolId: string;
   schoolName: string;
+}
+
+export interface UserInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
 }
 
 export interface SuccessResponse {
