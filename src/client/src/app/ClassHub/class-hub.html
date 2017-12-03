@@ -66,19 +66,6 @@
                     <div class="green"> {{percentPanicked}} Percent Panicked</div>
                 </mat-card-content>
             </mat-card>
-            <mat-card>
-                <div>
-                    <canvas
-                        baseChart
-                        [chartType]="'line'"
-                        [datasets]="chartData"
-                        [labels]="chartLabels"
-                        [options]="chartOptions"
-                        [legend]="true"
-                        (chartClick)="onChartClick($event)">
-                    </canvas>
-                  </div>
-            </mat-card>
         </div>
         <div class="column2">
             <!-- <mat-card class="qa-card">
@@ -103,6 +90,20 @@
                 </mat-card-content>
             </mat-card> -->
             <div>
+                <mat-card class="qa-card" *ngIf="showChart">
+                    <button class="button-style" *ngIf="showChart" mat-button mat-button-raised (click)=ToggleChart()>Hide Chart</button>
+                    <div>
+                        <canvas
+                            baseChart
+                            [chartType]="'line'"
+                            [datasets]="chartData"
+                            [labels]="chartLabels"
+                            [options]="chartOptions"
+                            [legend]="true"
+                            (chartClick)="onChartClick($event)">
+                        </canvas>
+                    </div>
+                </mat-card>
                 <mat-card class="qa-card">
                     <mat-card-header>
                         <mat-card-title>Welcome to {{classroom.courseTitle}}!</mat-card-title>
@@ -116,6 +117,8 @@
                     </mat-card-content>
                     <mat-card-actions>
                         <button class="button-style" mat-button mat-button-raised (click)=NewQuestion()>Ask Question</button>
+                        <button class="button-style" *ngIf="!showChart" mat-button mat-button-raised (click)=ToggleChart()>Show Chart</button>
+                        <button class="button-style" *ngIf="showChart" mat-button mat-button-raised (click)=ToggleChart()>Hide Chart</button>
                     </mat-card-actions>
                 </mat-card>
 
