@@ -204,7 +204,7 @@ module.exports.answerQuestion = async (user, classId, questId, answer, ee) => {
   }, {
     $push: { 'questions.$.answers': answerDoc, }
   });
-  
+  console.log("found and updated");
   // now get the answer info
   const updatedC = await Classrooms.findById(classId);
   const updatedQ = updatedC.questions.id(questId);
@@ -217,14 +217,21 @@ module.exports.answerQuestion = async (user, classId, questId, answer, ee) => {
   
   const newAnswerDoc = myAnswers[myAnswers.length-1]; // assume last matching answer is ours
   
-
+  console.log(`new_answer event contains {
+    user: ${user._id.toString()},
+    classroom: ${classId},
+    questionId: ${updatedQ._id.toString()},
+    answerId: ${newAnswerDoc._id.toString()},
+    answerStr: ${answer},
+    numberOfAnswers: ${updatedQ.answers.length},
+  }`);
   // update users with new answer over sockets
   ee.emit("new_answer", {
     user: user._id.toString(),
     classroom: classId,
     questionId: updatedQ._id.toString(),
     answerId: newAnswerDoc._id.toString(),
-    answer: answer,
+    answerStr: answer,
     numberOfAnswers: updatedQ.answers.length,
   });
 
