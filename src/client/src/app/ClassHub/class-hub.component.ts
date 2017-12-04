@@ -205,7 +205,7 @@ export class ClassHubComponent {
   }
 
   ReplyToQuestion(questionId: string) {
-    const url = '/api/v1/classrooms/' + this.currentClassroomId + '/questions/' + questionId +'/answers';
+    const url = '/api/v1/classrooms/' + this.currentClassroomId + '/questions/' + questionId + '/answers';
     console.log(url);
     console.log(this.questionAnswers);
     if (this.questionAnswers[questionId] !== '') {
@@ -214,15 +214,6 @@ export class ClassHubComponent {
         this.questionAnswers[questionId] = '';
         this.showAnswers[questionId] = true;
       });
-    }
-  }
-
-  ReplyToAnswer(): void {
-    const url = `/api/v1/classrooms/${this.currentClassroomId}/questions/${this.replyQuestionId}/answers`;
-    this.replyMode = false;
-    if (this.questionAnswer !== '') {
-      this.HTTP.post(url, {answer: this.questionAnswer})
-      .subscribe((data) => { this.questionAnswer = ''; });
     }
   }
 
