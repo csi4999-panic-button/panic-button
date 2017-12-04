@@ -1,9 +1,10 @@
 import * as io from 'socket.io-client';
-import { Component, OnInit, HostBinding } from '@angular/core';
+import { Component, OnInit, HostBinding, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgIf } from '@angular/common';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
+import { BaseChartDirective } from 'ng2-charts/ng2-charts';
 
 
 @Component({
@@ -38,9 +39,17 @@ export class ClassHubComponent {
   showAnswers: ShowAnswerMap;
   showChart: boolean;
   testData: [number];
-  chartData: [ChartData];
+  chartData: [LineChartData];
   chartLabels: string[];
-  chartOptions: ChartOptions;
+  chartOptions: LineChartOptions;
+  showPanicChart: boolean;
+  panicChartDatasets: [DonutChartData];
+  panicChartLabels: [string];
+  panicChartOptions: DonutChartOptions;
+  panicChartColors: [string];
+
+  @ViewChild('panicButton')
+  panicButton: BaseChartDirective;
 
 
   constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
@@ -81,16 +90,32 @@ export class ClassHubComponent {
     this.chartOptions = {
       responsive: true
     };
+    this.showChart = false;
+    this.showPanicChart = false;
+    this.panicChartColors = [
+      'rgba(255,0,0,0)',
+      'rgba(0,0,255,0)',
+    ];
+    this.panicChartLabels = [] as [string]; // ['Panicked', 'Okay'];
+    this.panicChartDatasets = [{
+      data: [this.percentPanicked, 100 - this.percentPanicked],
+      labels: this.panicChartLabels,
+      // backgroundColor: this.panicChartColors,
+      // borderColor: this.panicChartColors,
+      // hoverBackgroundColor: this.panicChartColors,
+      // hoverBorderColor: this.panicChartColors,
+    }];
+    this.panicChartOptions = {
+      cutoutPercentage: 70
+    };
 
     this.setTopicInfo('General', true, true);
     this.setClassInfo();
     this.addNewQuestionsToViewLogic();
 
-    this.showChart = false;
-
     this.route.queryParams.subscribe(params => {
       this.currentClassroomId = params['id'];
-   });
+    });
 
     this.GetClassroomObject();
 
@@ -112,7 +137,9 @@ export class ClassHubComponent {
             console.log('panic event');
             if (event.classroom === this.currentClassroomId) {
               this.panicNumbers[event.classroom] = event.panicNumber;
+              this.studentCount = event.attendance;
               this.UpdatePanicView();
+              this.UpdatePanicDonut();
             }
           })
           .on('panic_state_change', (event) => {
@@ -174,6 +201,22 @@ export class ClassHubComponent {
     console.log('button hit');
   }
 
+  UpdatePanicDonut(): void {
+    this.UpdatePanicView();
+    // this.panicButton.chart.datasets = [this.percentPanicked, 100 - this.percentPanicked];
+    console.log(`Current % of students panicked: ${this.percentPanicked}`);
+    this.panicChartDatasets = Object.assign(
+      {},
+      this.panicChartDatasets,
+      [{ data: [this.percentPanicked, 100 - this.percentPanicked] }]
+    );
+    console.log(`Current state of panicChartDatasets: ${this.panicChartDatasets[0].data}`);
+    // const canvas = <HTMLCanvasElement> document.getElementById('panic-button');
+    // const ctx = canvas.getContext('2d');
+    // ctx.font = '72px';
+    // ctx.fillText(`${this.percentPanicked}%`, 240, 160);
+  }
+
   NewQuestion() {
     const url = `/api/v1/classrooms/${this.currentClassroomId}/questions`;
     if (!this.isQuestionAsked && this.newQuestion !== '') {
@@ -193,6 +236,29 @@ export class ClassHubComponent {
     this.percentPanicked = Math.round(this.numberPanic * 100 / this.studentCount);
   }
 
+  // Chart Stuff
+  ChangePanicData() {
+    const dataArr = [this.percentPanicked];
+    const date = new Date();
+    const time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+
+    this.panicChartDatasets.forEach((dataset, index) => {
+      this.panicChartDatasets[index] = Object.assign({}, this.panicChartDatasets[index], {
+        data: [...this.panicChartDatasets[index].data, dataArr[index]]
+      });
+    });
+
+    if (!this.chartLabels) {
+      this.chartLabels = [time];
+    } else if (this.chartLabels.length >= 10) {
+      this.chartLabels = [...this.chartLabels.slice(-9), time];
+    } else {
+      this.chartLabels = [...this.chartLabels, time];
+    }
+
+    console.log(time);
+  }
+
   ToggleChart() {
     this.showChart = !this.showChart;
   }
@@ -202,8 +268,10 @@ export class ClassHubComponent {
     .subscribe((classroom) => {
         this.classroom = classroom;
         console.log('classroom', this.classroom);
-        this.classroom.studentCount = this.classroom.students.length;
-        this.studentCount = this.classroom.students.length;
+        if (!this.studentCount) {
+          this.classroom.studentCount = this.classroom.students.length;
+          this.studentCount = this.classroom.students.length;
+        }
         console.log(this.classroom.questions);
         this.setClassInfo();
         this.setTopicInfo(this.classroom.topics[this.classroom.currentTopic],
@@ -322,7 +390,7 @@ export class ClassHubComponent {
   ChangeData() {
     const dataArr = [this.percentPanicked];
     const date = new Date();
-    const time = `${date.getHours().toString()}:${date.getMinutes().toString()}:${date.getSeconds().toString()}`;
+    const time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
 
     this.chartData.forEach((dataset, index) => {
       this.chartData[index] = Object.assign({}, this.chartData[index], {
@@ -400,11 +468,29 @@ export interface SuccessResponse {
   success: boolean;
 }
 
-export interface ChartData {
+export interface LineChartData {
   data: [number];
   label: string;
 }
 
-export interface ChartOptions {
+export interface DonutChartData {
+  data: [number];
+  labels: [string];
+  // backgroundColor: [string];
+  // borderColor: [string];
+  // hoverBackgroundColor: [string];
+  // hoverBorderColor: [string];
+}
+
+export interface LineChartOptions {
   responsive: boolean;
 }
+
+export interface DonutChartOptions {
+  cutoutPercentage: number;
+}
+
+export interface DonutDataType {
+  data: [number];
+}
+

@@ -141,3 +141,7 @@ body {
     color: white;
     background-color:rgb(201, 201, 201)
 }
+
+.centered-div {
+    margin: auto;
+}

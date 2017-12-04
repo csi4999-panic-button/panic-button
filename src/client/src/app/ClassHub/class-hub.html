@@ -54,7 +54,7 @@
         <div class="column1">
             <mat-card class="main-card">
                 <mat-card-content>
-                    <div style="text-align:center" *ngIf="classroom.role==='student'">
+                    <!-- <div style="text-align:center" *ngIf="classroom.role==='student'">
                         <button mat-button *ngIf="!isPanic" (click)=Panic() style="text-align:center">
                             <i class="material-icons icon-size">radio_button_unchecked</i>
                         </button>
@@ -63,7 +63,18 @@
                         </button>
                     </div>
                     <div class="green"> {{numberPanic}} Panicked</div>
-                    <div class="green"> {{percentPanicked}} Percent Panicked</div>
+                    <div class="green"> {{percentPanicked}} Percent Panicked</div> -->
+                    <div class="centered-div" >
+                        <canvas #panicButton id="panic-button"
+                            baseChart
+                            [chartType]="'doughnut'"
+                            [datasets]="panicChartDatasets"
+                            [labels]="panicChartLabels"
+                            [options]="panicChartOptions"
+                            [legend]="true"
+                            (chartClick)="Panic()">
+                        </canvas>
+                    </div>
                 </mat-card-content>
             </mat-card>
         </div>
