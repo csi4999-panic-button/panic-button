@@ -1,10 +1,11 @@
 import * as io from 'socket.io-client';
-import { Component, OnInit, HostBinding } from '@angular/core';
+import { Component, OnInit, HostBinding, ViewChild } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { HttpClient } from '@angular/common/http';
 import { NgIf } from '@angular/common';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
+import { BaseChartDirective } from 'ng2-charts/ng2-charts';
 
 
 @Component({
@@ -38,6 +39,21 @@ export class ClassHubComponent {
   myUserId: string;
   showAnswers: Map<string, boolean>;
   showChart: boolean;
+  testData: [number];
+  chartData: [LineChartData];
+  chartLabels: string[];
+  chartOptions: LineChartOptions;
+  chartXRange: number;
+  chartUpdateTime: number;
+  showPanicChart: boolean;
+  panicChartDatasets: [DonutChartData];
+  panicChartLabels: [string];
+  panicChartOptions: DonutChartOptions;
+  panicChartColors: [string];
+
+  @ViewChild('panicButton')
+  panicButton: BaseChartDirective;
+
 
   constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
     this.HTTP = http;
@@ -51,6 +67,7 @@ export class ClassHubComponent {
     this.isQuestionAsked = false;
     this.newQuestion = '';
     this.replyMode = false;
+    this.testData = [this.percentPanicked];
     this.classroom = {
       _id: '',
       courseNumber: '',
@@ -70,15 +87,49 @@ export class ClassHubComponent {
       schoolId: '',
       schoolName: ''
     };
+    this.chartData = [
+      { data: this.testData, label: 'Panics' }
+    ];
+    this.chartOptions = {
+      responsive: true,
+      scales: {
+        yAxes: [{
+            display: false,
+            ticks: {
+                suggestedMin: 0,
+                suggestedMax: 100,
+            }
+        }]
+      }
+    };
+    this.chartXRange = 30;
+    this.chartUpdateTime = 2;
+    this.showChart = false;
+    this.showPanicChart = false;
+    this.panicChartColors = [
+      'rgba(255,0,0,0)',
+      'rgba(0,0,255,0)',
+    ];
+    this.panicChartLabels = [] as [string]; // ['Panicked', 'Okay'];
+    this.panicChartDatasets = [{
+      data: [this.percentPanicked, 100 - this.percentPanicked],
+      labels: this.panicChartLabels,
+      // backgroundColor: this.panicChartColors,
+      // borderColor: this.panicChartColors,
+      // hoverBackgroundColor: this.panicChartColors,
+      // hoverBorderColor: this.panicChartColors,
+    }];
+    this.panicChartOptions = {
+      cutoutPercentage: 70
+    };
+
     this.setTopicInfo('General', true, true);
     this.setClassInfo();
     this.addNewQuestionsToViewLogic();
 
-    this.showChart = false;
-
     this.route.queryParams.subscribe(params => {
       this.currentClassroomId = params['id'];
-   });
+    });
 
     this.GetClassroomObject();
 
@@ -100,7 +151,9 @@ export class ClassHubComponent {
             console.log('panic event');
             if (event.classroom === this.currentClassroomId) {
               this.panicNumbers[event.classroom] = event.panicNumber;
+              this.studentCount = event.attendance;
               this.UpdatePanicView();
+              this.UpdatePanicDonut();
             }
           })
           .on('panic_state_change', (event) => {
@@ -152,11 +205,30 @@ export class ClassHubComponent {
             }
           });
       });
+
+      // set a continous 3 second run of chart updater
+      setInterval(() => this.ChangeData(), this.chartUpdateTime * 1000);
   }
 
   Panic() {
     this.socket.emit('panic', { classroom: this.currentClassroomId, state: !this.panicStates[this.currentClassroomId] });
     console.log('button hit');
+  }
+
+  UpdatePanicDonut(): void {
+    this.UpdatePanicView();
+    // this.panicButton.chart.datasets = [this.percentPanicked, 100 - this.percentPanicked];
+    console.log(`Current % of students panicked: ${this.percentPanicked}`);
+    this.panicChartDatasets = Object.assign(
+      {},
+      this.panicChartDatasets,
+      [{ data: [this.percentPanicked, 100 - this.percentPanicked] }]
+    );
+    console.log(`Current state of panicChartDatasets: ${this.panicChartDatasets[0].data}`);
+    // const canvas = <HTMLCanvasElement> document.getElementById('panic-button');
+    // const ctx = canvas.getContext('2d');
+    // ctx.font = '72px';
+    // ctx.fillText(`${this.percentPanicked}%`, 240, 160);
   }
 
   NewQuestion() {
@@ -175,7 +247,30 @@ export class ClassHubComponent {
   UpdatePanicView() {
     this.isPanic = this.panicStates[this.currentClassroomId];
     this.numberPanic = this.panicNumbers[this.currentClassroomId];
-    this.percentPanicked = Math.round(this.numberPanic * 100/ this.studentCount);
+    this.percentPanicked = Math.round(this.numberPanic * 100 / this.studentCount);
+  }
+
+  // Chart Stuff
+  ChangePanicData() {
+    const dataArr = [this.percentPanicked];
+    const date = new Date();
+    const time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+
+    this.panicChartDatasets.forEach((dataset, index) => {
+      this.panicChartDatasets[index] = Object.assign({}, this.panicChartDatasets[index], {
+        data: [...this.panicChartDatasets[index].data.slice(-9), dataArr[index]]
+      });
+    });
+
+    if (!this.chartLabels) {
+      this.chartLabels = [time];
+    } else if (this.chartLabels.length >= 10) {
+      this.chartLabels = [...this.chartLabels.slice(-9), time];
+    } else {
+      this.chartLabels = [...this.chartLabels, time];
+    }
+
+    console.log(time);
   }
 
   ToggleChart() {
@@ -187,8 +282,10 @@ export class ClassHubComponent {
     .subscribe((classroom) => {
         this.classroom = classroom;
         console.log('classroom', this.classroom);
-        this.classroom.studentCount = this.classroom.students.length;
-        this.studentCount = this.classroom.students.length;
+        if (!this.studentCount) {
+          this.classroom.studentCount = this.classroom.students.length;
+          this.studentCount = this.classroom.students.length;
+        }
         console.log(this.classroom.questions);
         this.setClassInfo();
         this.setTopicInfo(this.classroom.topics[this.classroom.currentTopic],
@@ -205,7 +302,7 @@ export class ClassHubComponent {
   }
 
   ReplyToQuestion(questionId: string) {
-    const url = '/api/v1/classrooms/' + this.currentClassroomId + '/questions/' + questionId + '/answers';
+    const url = `/api/v1/classrooms/${this.currentClassroomId}/questions/${questionId}/answers`;
     console.log(url);
     console.log(this.questionAnswers);
     if (this.questionAnswers[questionId] !== '') {
@@ -254,7 +351,7 @@ export class ClassHubComponent {
       return 'green';
     } else if (percentPanicked > 0.33 && percentPanicked < 0.66) {
       return 'yellow';
-    } else if (percentPanicked > 0.66) {
+    } else {
       return 'red';
     }
   }
@@ -294,21 +391,35 @@ export class ClassHubComponent {
     this.showAnswers.set(qId, viewable);
   }
 
-  chartData = [
-    { data: [330, 600, 260, 700], label: 'Account A' },
-    { data: [120, 455, 100, 340], label: 'Account B' },
-    { data: [45, 67, 800, 500], label: 'Account C' }
-  ];
+  // Chart Stuff
+  ChangeData() {
+    const dataArr = [this.percentPanicked];
+    const date = new Date();
+    const time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    const xRange = this.chartXRange;
+    const xSlice = 1 - this.chartXRange;
 
-  chartLabels = ['January', 'February', 'Mars', 'April'];
+    this.chartData.forEach((dataset, index) => {
+      this.chartData[index] = Object.assign({}, this.chartData[index], {
+        data: [...this.chartData[index].data.slice(xSlice), dataArr[index]]
+      });
+    });
+
+    if (!this.chartLabels) {
+      this.chartLabels = [time];
+    } else if (this.chartLabels.length >= xRange) {
+      this.chartLabels = [...this.chartLabels.slice(xSlice), time];
+    } else {
+      this.chartLabels = [...this.chartLabels, time];
+    }
+
+    console.log(time);
+  }
+
 
   onChartClick(event) {
     console.log(event);
   }
-
-  chartOptions = {
-    responsive: true
-  };
 
 }
 
@@ -363,3 +474,31 @@ export interface Answer {
 export interface SuccessResponse {
   success: boolean;
 }
+
+export interface LineChartData {
+  data: [number];
+  label: string;
+}
+
+export interface DonutChartData {
+  data: [number];
+  labels: [string];
+  // backgroundColor: [string];
+  // borderColor: [string];
+  // hoverBackgroundColor: [string];
+  // hoverBorderColor: [string];
+}
+
+export interface LineChartOptions {
+  responsive: boolean;
+  scales: any;
+}
+
+export interface DonutChartOptions {
+  cutoutPercentage: number;
+}
+
+export interface DonutDataType {
+  data: [number];
+}
+

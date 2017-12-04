@@ -54,7 +54,7 @@
         <div class="column1">
             <mat-card class="main-card">
                 <mat-card-content>
-                    <div style="text-align:center" *ngIf="classroom.role==='student'">
+                    <!-- <div style="text-align:center" *ngIf="classroom.role==='student'">
                         <button mat-button *ngIf="!isPanic" (click)=Panic() style="text-align:center">
                             <i class="material-icons icon-size">radio_button_unchecked</i>
                         </button>
@@ -63,32 +63,22 @@
                         </button>
                     </div>
                     <div class="green"> {{numberPanic}} Panicked</div>
-                    <div class="green"> {{percentPanicked}} Percent Panicked</div>
+                    <div class="green"> {{percentPanicked}} Percent Panicked</div> -->
+                    <div class="centered-div" >
+                        <canvas #panicButton id="panic-button"
+                            baseChart
+                            [chartType]="'doughnut'"
+                            [datasets]="panicChartDatasets"
+                            [labels]="panicChartLabels"
+                            [options]="panicChartOptions"
+                            [legend]="true"
+                            (chartClick)="Panic()">
+                        </canvas>
+                    </div>
                 </mat-card-content>
             </mat-card>
         </div>
         <div class="column2">
-            <!-- <mat-card class="qa-card">
-                <mat-card-content>
-                    <table>
-                        <tr>
-                            <td><b>Course Number</b></td><td>{{classroom.courseNumber}}</td>
-                        </tr>
-                            <tr><td><b>Course Title</b></td><td>{{classroom.courseTitle}}</td>
-                        </tr>
-                            <tr><td><b>Course Type</b></td><td>{{classroom.courseType}}</td>
-                        </tr>
-                            <tr><td><b>Section Number</b></td><td>{{classroom.sectionNumber}}</td>
-                        </tr>
-                            <tr><td><b>Role</b></td><td>{{classroom.role}}</td>
-                        </tr>
-                            <tr><td><b>Student Count</b></td><td>{{classroom.studentCount}}</td>
-                        </tr>
-                            <tr *ngIf="classroom.role==='teacher'"><td><b>Student Join Code</b></td><td>{{classroom.studentCode}}</td>
-                        </tr>
-                    </table>
-                </mat-card-content>
-            </mat-card> -->
             <div>
                 <mat-card class="qa-card" *ngIf="showChart">
                     <button class="button-style" *ngIf="showChart" mat-button mat-button-raised (click)=ToggleChart()>Hide Chart</button>
@@ -103,6 +93,7 @@
                             (chartClick)="onChartClick($event)">
                         </canvas>
                     </div>
+                    <button mat-button (click)="ChangeData()" style="text-align:center">Test Data Change</button>
                 </mat-card>
                 <mat-card class="qa-card">
                     <mat-card-header>
