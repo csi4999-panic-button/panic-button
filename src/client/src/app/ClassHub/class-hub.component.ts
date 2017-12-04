@@ -45,6 +45,7 @@ export class ClassHubComponent {
   chartOptions: LineChartOptions;
   chartXRange: number;
   chartUpdateTime: number;
+  writeTimeCounter: number;
   showPanicChart: boolean;
   panicChartDatasets: [DonutChartData];
   panicChartLabels: [string];
@@ -100,10 +101,17 @@ export class ClassHubComponent {
                 suggestedMax: 100,
             }
         }]
+      },
+      tooltips: { enabled: false },
+      hover: {mode: null},
+      animation: {
+        easing: 'linear',
+        duration: 0
       }
     };
-    this.chartXRange = 30;
-    this.chartUpdateTime = 2;
+    this.chartXRange = 60;
+    this.chartUpdateTime = 60 / this.chartXRange;
+    this.writeTimeCounter = 0;
     this.showChart = false;
     this.showPanicChart = false;
     this.panicChartColors = [
@@ -120,7 +128,9 @@ export class ClassHubComponent {
       // hoverBorderColor: this.panicChartColors,
     }];
     this.panicChartOptions = {
-      cutoutPercentage: 70
+      cutoutPercentage: 70,
+      tooltips: { enabled: false },
+      hover: {mode: null},
     };
 
     this.setTopicInfo('General', true, true);
@@ -395,7 +405,10 @@ export class ClassHubComponent {
   ChangeData() {
     const dataArr = [this.percentPanicked];
     const date = new Date();
-    const time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    let time = '';
+    if (this.writeTimeCounter++ % Math.ceil(this.chartXRange / 10) === 0) {
+       time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    }
     const xRange = this.chartXRange;
     const xSlice = 1 - this.chartXRange;
 
@@ -407,10 +420,15 @@ export class ClassHubComponent {
 
     if (!this.chartLabels) {
       this.chartLabels = [time];
-    } else if (this.chartLabels.length >= xRange) {
-      this.chartLabels = [...this.chartLabels.slice(xSlice), time];
     } else {
-      this.chartLabels = [...this.chartLabels, time];
+      if (this.chartLabels[this.chartLabels.length - 1]) {
+        time = '';
+      }
+      if (this.chartLabels.length >= xRange) {
+        this.chartLabels = [...this.chartLabels.slice(xSlice), time];
+      } else {
+        this.chartLabels = [...this.chartLabels, time];
+      }
     }
 
     console.log(time);
@@ -492,10 +510,18 @@ export interface DonutChartData {
 export interface LineChartOptions {
   responsive: boolean;
   scales: any;
+  tooltips: { enabled: boolean };
+  hover: { mode: boolean };
+  animation: {
+    easing: string,
+    duration: number
+  };
 }
 
 export interface DonutChartOptions {
   cutoutPercentage: number;
+  tooltips: { enabled: boolean };
+  hover: { mode: any };
 }
 
 export interface DonutDataType {
