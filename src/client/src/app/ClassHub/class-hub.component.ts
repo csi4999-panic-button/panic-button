@@ -43,6 +43,8 @@ export class ClassHubComponent {
   chartData: [LineChartData];
   chartLabels: string[];
   chartOptions: LineChartOptions;
+  chartXRange: number;
+  chartUpdateTime: number;
   showPanicChart: boolean;
   panicChartDatasets: [DonutChartData];
   panicChartLabels: [string];
@@ -89,8 +91,19 @@ export class ClassHubComponent {
       { data: this.testData, label: 'Panics' }
     ];
     this.chartOptions = {
-      responsive: true
+      responsive: true,
+      scales: {
+        yAxes: [{
+            display: false,
+            ticks: {
+                suggestedMin: 0,
+                suggestedMax: 100,
+            }
+        }]
+      }
     };
+    this.chartXRange = 30;
+    this.chartUpdateTime = 2;
     this.showChart = false;
     this.showPanicChart = false;
     this.panicChartColors = [
@@ -194,7 +207,7 @@ export class ClassHubComponent {
       });
 
       // set a continous 3 second run of chart updater
-      setInterval(() => this.ChangeData(), 6 * 1000);
+      setInterval(() => this.ChangeData(), this.chartUpdateTime * 1000);
   }
 
   Panic() {
@@ -383,17 +396,19 @@ export class ClassHubComponent {
     const dataArr = [this.percentPanicked];
     const date = new Date();
     const time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    const xRange = this.chartXRange;
+    const xSlice = 1 - this.chartXRange;
 
     this.chartData.forEach((dataset, index) => {
       this.chartData[index] = Object.assign({}, this.chartData[index], {
-        data: [...this.chartData[index].data.slice(-9), dataArr[index]]
+        data: [...this.chartData[index].data.slice(xSlice), dataArr[index]]
       });
     });
 
     if (!this.chartLabels) {
       this.chartLabels = [time];
-    } else if (this.chartLabels.length >= 10) {
-      this.chartLabels = [...this.chartLabels.slice(-9), time];
+    } else if (this.chartLabels.length >= xRange) {
+      this.chartLabels = [...this.chartLabels.slice(xSlice), time];
     } else {
       this.chartLabels = [...this.chartLabels, time];
     }
@@ -476,6 +491,7 @@ export interface DonutChartData {
 
 export interface LineChartOptions {
   responsive: boolean;
+  scales: any;
 }
 
 export interface DonutChartOptions {
