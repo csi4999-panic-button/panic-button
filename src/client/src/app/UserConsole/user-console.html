@@ -1,5 +1,5 @@
 <body>
-  <md-toolbar class="mat-elevation-z10" style="background-color: #303F9F; color: #FFFFFF;font-size: 36px; text-align:center">
+  <md-toolbar class="mat-elevation-z10 user-console-titlebar">
     <div id="title-container">
       <div class="title-left">
         <button mat-icon-button (click)="snav.toggle()"><i class="material-icons">menu</i></button>
@@ -10,8 +10,8 @@
     </div>
   </md-toolbar>
   <mat-sidenav-container class="sidenav-container" [style.marginTop.px]="0">
-    <mat-sidenav #snav [mode]="'side'" [fixedInViewport]="true" fixedTopGap="56" opened="true" disableClose="true">
-      <mat-nav-list>
+    <mat-sidenav #snav [mode]="'side'" [fixedInViewport]="true" fixedTopGap="0" opened="true" disableClose="true" class="user-sidenav">
+      <mat-nav-list class="sidenav-list">
           <a mat-list-item class="sidenav-list-item" routerLink='/create-class'>Create Class</a>
           <a mat-list-item class="sidenav-list-item" routerLink='/join-class'>Join Class</a>
           <a mat-list-item class="sidenav-list-item" routerLink='/create-school'>Create School</a>

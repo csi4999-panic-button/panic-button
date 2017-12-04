@@ -70,6 +70,22 @@ body {
     margin: 0 auto;
 }
 
+.user-console-titlebar {
+    background-color: #303F9F;
+    color: #FFFFFF;
+    font-size: 36px;
+    text-align:center;
+}
+
+.user-sidenav {
+    width: 20%;
+}
+
+.sidenav-list {
+    padding-top: 64px;
+
+}
+
 .sidenav-list-item {
-    padding: 5% 30% !important;
+    padding: 5px 0px;
 }
