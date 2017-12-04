@@ -208,7 +208,7 @@ The schema of an `Question` is described in the following JSON. If you would lik
 }
 ```
 
-### `POST /api/v1/classrooms/:classroomId/question/:questionId/answers`
+### `POST /api/v1/classrooms/:classroomId/questions/:questionId/answers`
 
 This route allows you to post answers to a given question in a classroom. The following table describes the route and the JSON body thereafter describes the template that should be provided in the body of the request. 
 
