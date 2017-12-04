@@ -13,6 +13,7 @@ import { MatCardModule} from '@angular/material';
 import { MatMenuModule} from '@angular/material';
 import { MatSidenavModule } from '@angular/material';
 import { MatExpansionModule } from '@angular/material';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { CdkTableModule } from '@angular/cdk/table';
@@ -60,6 +61,7 @@ const appRoutes: Routes = [
     MatMenuModule,
     MatSidenavModule,
     MatExpansionModule,
+    MatFormFieldModule,
     RouterModule.forRoot(
       appRoutes,
       // { enableTracing: true } // <-- debugging purposes only
