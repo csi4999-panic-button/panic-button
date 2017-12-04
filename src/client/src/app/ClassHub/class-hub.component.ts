@@ -38,14 +38,14 @@ export class ClassHubComponent {
   showAnswers: ShowAnswerMap;
   showChart: boolean;
   testData: [number];
-  chartData: [ChartData];
+  chartData: [LineChartData];
   chartLabels: string[];
   chartOptions: LineChartOptions;
   showPanicChart: boolean;
-  testPanicData: [number];
-  panicChartData: [ChartData];
-  panicChartLabels: string[];
+  panicChartDatasets: [DonutChartData];
+  panicChartLabels: [string];
   panicChartOptions: DonutChartOptions;
+  panicChartColors: [string];
 
 
   constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
@@ -88,15 +88,21 @@ export class ClassHubComponent {
     };
     this.showChart = false;
     this.showPanicChart = false;
-    this.testPanicData = {
-      datasets: [{
-        data: [0, 100]
-      }]
-    };
-    this.panicChartData
-    this.panicChartLabels
+    this.panicChartColors = [
+      'rgba(255,0,0,0)',
+      'rgba(0,0,255,0)',
+    ];
+    this.panicChartDatasets = [{
+      data: [this.percentPanicked, 100 - this.percentPanicked],
+      labels: this.panicChartLabels,
+      backgroundColor: this.panicChartColors,
+      borderColor: this.panicChartColors,
+      hoverBackgroundColor: this.panicChartColors,
+      hoverBorderColor: this.panicChartColors,
+    }];
+    this.panicChartLabels = [] as [string];
     this.panicChartOptions = {
-      cutoutPercentage: 80
+      cutoutPercentage: 70
     };
 
     this.setTopicInfo('General', true, true);
@@ -186,7 +192,18 @@ export class ClassHubComponent {
 
   Panic() {
     this.socket.emit('panic', { classroom: this.currentClassroomId, state: !this.panicStates[this.currentClassroomId] });
+    this.UpdatePanicDonut();
     console.log('button hit');
+  }
+
+  UpdatePanicDonut(): void {
+    this.UpdatePanicView();
+    console.log(`Current number of panicked students: ${this.percentPanicked}`);
+    this.panicChartDatasets[0]['data'] = [this.percentPanicked, 100 - this.percentPanicked];
+    const canvas = <HTMLCanvasElement> document.getElementById('panic-button');
+    const ctx = canvas.getContext('2d');
+    ctx.font = '72px';
+    ctx.fillText(`${this.percentPanicked}%`, 240, 160);
   }
 
   NewQuestion() {
@@ -337,7 +354,7 @@ export class ClassHubComponent {
   ChangeData() {
     const dataArr = [this.percentPanicked];
     const date = new Date();
-    const time = `${date.getHours().toString()}:${date.getMinutes().toString()}:${date.getSeconds().toString()}`;
+    const time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
 
     this.chartData.forEach((dataset, index) => {
       this.chartData[index] = Object.assign({}, this.chartData[index], {
@@ -415,9 +432,18 @@ export interface SuccessResponse {
   success: boolean;
 }
 
-export interface ChartData {
+export interface LineChartData {
   data: [number];
   label: string;
+}
+
+export interface DonutChartData {
+  data: [number];
+  labels: [string];
+  backgroundColor: [string];
+  borderColor: [string];
+  hoverBackgroundColor: [string];
+  hoverBorderColor: [string];
 }
 
 export interface LineChartOptions {
@@ -427,3 +453,8 @@ export interface LineChartOptions {
 export interface DonutChartOptions {
   cutoutPercentage: number;
 }
+
+export interface DonutDataType {
+  data: [number];
+}
+
