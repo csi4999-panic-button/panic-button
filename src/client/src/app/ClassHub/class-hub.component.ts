@@ -245,7 +245,7 @@ export class ClassHubComponent {
 
     this.panicChartDatasets.forEach((dataset, index) => {
       this.panicChartDatasets[index] = Object.assign({}, this.panicChartDatasets[index], {
-        data: [...this.panicChartDatasets[index].data, dataArr[index]]
+        data: [...this.panicChartDatasets[index].data.slice(-9), dataArr[index]]
       });
     });
 
@@ -386,7 +386,7 @@ export class ClassHubComponent {
 
     this.chartData.forEach((dataset, index) => {
       this.chartData[index] = Object.assign({}, this.chartData[index], {
-        data: [...this.chartData[index].data, dataArr[index]]
+        data: [...this.chartData[index].data.slice(-9), dataArr[index]]
       });
     });
 
