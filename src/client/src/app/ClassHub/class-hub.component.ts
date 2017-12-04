@@ -40,7 +40,12 @@ export class ClassHubComponent {
   testData: [number];
   chartData: [ChartData];
   chartLabels: string[];
-  chartOptions: ChartOptions;
+  chartOptions: LineChartOptions;
+  showPanicChart: boolean;
+  testPanicData: [number];
+  panicChartData: [ChartData];
+  panicChartLabels: string[];
+  panicChartOptions: DonutChartOptions;
 
 
   constructor(private http: HttpClient, private router: Router,  private route: ActivatedRoute) {
@@ -81,16 +86,26 @@ export class ClassHubComponent {
     this.chartOptions = {
       responsive: true
     };
+    this.showChart = false;
+    this.showPanicChart = false;
+    this.testPanicData = {
+      datasets: [{
+        data: [0, 100]
+      }]
+    };
+    this.panicChartData
+    this.panicChartLabels
+    this.panicChartOptions = {
+      cutoutPercentage: 80
+    };
 
     this.setTopicInfo('General', true, true);
     this.setClassInfo();
     this.addNewQuestionsToViewLogic();
 
-    this.showChart = false;
-
     this.route.queryParams.subscribe(params => {
       this.currentClassroomId = params['id'];
-   });
+    });
 
     this.GetClassroomObject();
 
@@ -405,6 +420,10 @@ export interface ChartData {
   label: string;
 }
 
-export interface ChartOptions {
+export interface LineChartOptions {
   responsive: boolean;
+}
+
+export interface DonutChartOptions {
+  cutoutPercentage: number;
 }
