@@ -43,8 +43,9 @@ export class ClassHubComponent {
   chartData: [LineChartData];
   chartLabels: string[];
   chartOptions: LineChartOptions;
-  chartXRange: number;
+  chartXIntervals: number;
   chartUpdateTime: number;
+  writeTimeCounter: number;
   showPanicChart: boolean;
   panicChartDatasets: [DonutChartData];
   panicChartLabels: [string];
@@ -100,27 +101,37 @@ export class ClassHubComponent {
                 suggestedMax: 100,
             }
         }]
+      },
+      tooltips: { enabled: false },
+      // hover: {mode: null},
+      animation: {
+        easing: 'linear',
+        duration: 0
       }
     };
-    this.chartXRange = 30;
-    this.chartUpdateTime = 2;
+    this.chartXIntervals = 20;
+    this.chartUpdateTime = 120 / this.chartXIntervals;
+    this.writeTimeCounter = 0;
     this.showChart = false;
     this.showPanicChart = false;
     this.panicChartColors = [
-      'rgba(255,0,0,0)',
-      'rgba(0,0,255,0)',
+      'rgba(255,0,0,1)',
+      'rgba(0,0,255,1)',
     ];
     this.panicChartLabels = [] as [string]; // ['Panicked', 'Okay'];
     this.panicChartDatasets = [{
       data: [this.percentPanicked, 100 - this.percentPanicked],
       labels: this.panicChartLabels,
-      // backgroundColor: this.panicChartColors,
-      // borderColor: this.panicChartColors,
-      // hoverBackgroundColor: this.panicChartColors,
-      // hoverBorderColor: this.panicChartColors,
+      backgroundColor: this.panicChartColors,
+      borderColor: this.panicChartColors,
+      hoverBackgroundColor: this.panicChartColors,
+      hoverBorderColor: this.panicChartColors,
+      borderWidth: 0,
     }];
     this.panicChartOptions = {
-      cutoutPercentage: 70
+      cutoutPercentage: 70,
+      tooltips: { enabled: false },
+      hover: {mode: null},
     };
 
     this.setTopicInfo('General', true, true);
@@ -393,23 +404,30 @@ export class ClassHubComponent {
 
   // Chart Stuff
   ChangeData() {
-    const dataArr = [this.percentPanicked];
+    const dataArr = this.percentPanicked;
     const date = new Date();
-    const time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-    const xRange = this.chartXRange;
-    const xSlice = 1 - this.chartXRange;
+    let time = '';
+    if (this.writeTimeCounter++ % Math.ceil(this.chartXIntervals / 10) === 0) {
+       time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    }
+    const xRange = this.chartXIntervals;
+    const xSlice = 1 - this.chartXIntervals;
 
     this.chartData.forEach((dataset, index) => {
       this.chartData[index] = Object.assign({}, this.chartData[index], {
-        data: [...this.chartData[index].data.slice(xSlice), dataArr[index]]
+        data: [...this.chartData[index].data.slice(xSlice), dataArr]
       });
     });
 
     if (!this.chartLabels) {
       this.chartLabels = [time];
     } else if (this.chartLabels.length >= xRange) {
+      console.log(`>= xRange`);
+      console.log(`data: ${this.chartData[0].data.length}\tlabels: ${this.chartLabels.length}`);
       this.chartLabels = [...this.chartLabels.slice(xSlice), time];
+      console.log(`data: ${this.chartData[0].data.length}\tlabels: ${this.chartLabels.length}`);
     } else {
+      console.log('else');
       this.chartLabels = [...this.chartLabels, time];
     }
 
@@ -483,19 +501,28 @@ export interface LineChartData {
 export interface DonutChartData {
   data: [number];
   labels: [string];
-  // backgroundColor: [string];
-  // borderColor: [string];
-  // hoverBackgroundColor: [string];
-  // hoverBorderColor: [string];
+  backgroundColor: [string];
+  borderColor: [string];
+  hoverBackgroundColor: [string];
+  hoverBorderColor: [string];
+  borderWidth: number;
 }
 
 export interface LineChartOptions {
   responsive: boolean;
   scales: any;
+  tooltips: { enabled: boolean };
+  // hover: { mode: boolean };
+  animation: {
+    easing: string,
+    duration: number
+  };
 }
 
 export interface DonutChartOptions {
   cutoutPercentage: number;
+  tooltips: { enabled: boolean };
+  hover: { mode: any };
 }
 
 export interface DonutDataType {
