@@ -31,6 +31,7 @@ import { ClassHubComponent } from './ClassHub/class-hub.component';
 import { CreateClassComponent } from './CreateClass/create-class.component';
 import { JoinClassComponent } from './JoinClass/join-class.component';
 import { CreateSchoolComponent } from './CreateSchool/create-school.component';
+import { SetTopicsComponent } from './SetTopics/set-topics.component';
 import { SchoolSearchService } from './School/school-search.service';
 
 
@@ -44,6 +45,7 @@ const appRoutes: Routes = [
   { path: 'create-class', component: CreateClassComponent},
   { path: 'join-class', component: JoinClassComponent},
   { path: 'create-school', component: CreateSchoolComponent },
+  { path: 'set-topics', component: SetTopicsComponent },
   { path: '',   redirectTo: '/home', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent },
 ];
@@ -84,6 +86,7 @@ const appRoutes: Routes = [
     JoinClassComponent,
     CreateSchoolComponent,
     PageNotFoundComponent,
+    SetTopicsComponent,
   ],
   providers: [ SchoolSearchService ],
   bootstrap: [ AppComponent ]
