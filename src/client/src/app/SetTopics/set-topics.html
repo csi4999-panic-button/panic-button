@@ -1,0 +1,43 @@
+<body class="background-image">
+    <md-card class="card-style scroll-card-80" >
+        <div *ngIf="isUpdated">
+            <h1>Topics Updated{{classroomTitle}}</h1>
+            <button mat-button class="button-style" mat-raised-button routerLink="/user-console" routerLinkActive="active">
+                View Classes
+            </button>
+            <button mat-button class="button-style" mat-raised-button (click)="navigateToClassHub(currentClassroomId)">
+                Back to Classroom
+            </button>
+        </div>
+        <div *ngIf="!isUpdated">
+            <md-card-title class="input-style">
+                <h2>Update Classroom Topics{{classroomTitle}}</h2>
+            </md-card-title>
+            <div>
+                <md-card-content>
+                    <div *ngFor="let topic of topicsArr; let i = index" class="flex-row">
+                        <div>
+                            <mat-form-field class="input-style">
+                                <input type="text" [(ngModel)]="topicsArr[i]" matInput placeholder="Topic.." />
+                            </mat-form-field>
+                        </div>
+                        <div>
+                            <button mat-button class="button-style" (click)="RemoveTopic(i)" mat-raised-button>
+                                <i class="material-icons">delete</i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <button mat-button mat-raised-button class="button-style" (click)="IncreaseTopicArray()">
+                            <p>Add another topic..</p>
+                        </button>
+                    </div>
+                </md-card-content>
+            </div>
+            <md-card-actions>
+                <button mat-button class="button-style" (click)="SetTopics()" mat-raised-button>Set Topics</button>
+                <button mat-button class="button-style" (click)="ClearTopicArray()" mat-raised-button>Clear Topics</button>
+            </md-card-actions>
+        </div>
+    </md-card>
+</body>
