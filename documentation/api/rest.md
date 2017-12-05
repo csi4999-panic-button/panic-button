@@ -72,6 +72,25 @@ This retreives a list of all the users in the database. An existing session must
 | -------- | ------------ | --------- | ---- | ------------ |
 | `/users` | GET          |           |      |              |
 
+### <a name="api-v1-users-me">`GET /api/v1/users/me`</a>
+
+This retreives user information for the session user in the database. An existing session must be active.
+
+| Route       | Request Type | Variables | Type | Required (*) |
+| --------    | ------------ | --------- | ---- | ------------ |
+| `/users/me` | GET          |           |      |              |
+
+The following JSON body will be returned: 
+
+```js
+{
+	"firstName": String,
+	"lastName": String,
+	"email": String,
+	"_id": String
+}
+```
+
 # <a name="api-v1-classrooms"> /api/v1/classrooms </a>
 
 ### `GET /api/v1/classrooms`
@@ -98,7 +117,7 @@ The return type is `[Classroom]`, where the Classroom model contains the followi
 		"General"
 	],
 	"currentTopic": 0,	// index of topics array
-	"questions": [Question],
+	"questions": Question[],
 	"students": [
 		"userId"
 	],
@@ -140,7 +159,7 @@ This will also return your invitation codes in the following format:
 }
 ```
 
-### `PUT /api/v1/classrooms/id/$id`
+### `PUT /api/v1/classrooms/$id`
 
 This will modify a classroom by the provided `$id` in the request route. An example would be `PUT /api/v1/classrooms/id/1234`. An existing session must be active. Pass the following variables:
 
@@ -200,8 +219,8 @@ The schema of an `Question` is described in the following JSON. If you would lik
 	"ts": 1511037292522,	// timestamp
 	"question": "How do you ask questions?",
 	"_id": "5a10996c26d846000fbed992",
-	"answers": [Answer],
-	"votes": [UserId],
+	"answers": Answer[],
+	"votes": UserId[],
 	"resolution": -1,	// top-vote / official answer
 	"mine": false,	// were you the user who submitted this question
 	"isTeacher": true	// was the user who submitted this question a teacher
@@ -231,7 +250,7 @@ The following JSON describes the schema of an `Answer`, which is drastically fam
 	"ts": 1511060730584,	// timestamp
 	"answer": "Like this you idiot",
 	"_id": "5a10f4fa28932a000f1d11a4",
-	"votes": [UserId],
+	"votes": UserId[],
 	"mine": true,	// whether you submitted this answer
 	"isTeacher": false	// where a teacher submitted this answer
 }
@@ -264,7 +283,7 @@ This route allows you to get the current list of topics for a classroom. It will
 ```js
 {
   "success": true,
-  "topics": [String],
+  "topics": String[],
   "index": 0
 }
 ```
@@ -296,6 +315,31 @@ This route is used to update the topics in a classroom. This is for teachers use
 ```js
 {
   "topics": ["Introduction", "Syllabus", "Exam Details", "Grading"]
+}
+```
+
+### `GET /api/v1/classrooms/:classroomId/users`
+
+This route is used to retrieve a list of users belonging to the classroom. This can only be done by the teacher as it is meant to be used to manage members of the classroom. The following JSON body structure will be returned:
+
+```js
+{
+    "success": true,
+    "users": [
+        {
+            "role": "teacher",
+            "info": {
+                "_id": "5a14d535a461f517547d14ad",
+                "updatedAt": "2017-11-22T01:39:01.578Z",
+                "createdAt": "2017-11-22T01:39:01.578Z",
+                "email": "tlcarrio@oakland.edu",
+                "firstName": "Tom",
+                "lastName": "Carrio",
+                "__v": 0,
+                "verified": false
+            }
+		}
+	]
 }
 ```
 
