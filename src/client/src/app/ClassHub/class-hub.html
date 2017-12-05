@@ -5,10 +5,7 @@
         <mat-card class="title-card">
             <mat-card-content class="title-card-content">
                 <div class="title-section">
-                    {{classroom.courseTitle}}<br/>
-                    {{courseInfo}}<br/>
-                    {{classroom.sectionNumber}}<br/>
-                    {{classroom.schoolName}}
+                    <button mat-icon-button (click)="snav.toggle()"><i class="material-icons">menu</i></button>
                 </div>
                 <div class="title-section">
                     <div *ngIf="classroom.role=='teacher'">
@@ -36,20 +33,38 @@
                     </div>
                 </div>
                 <div class="title-section">
+                    {{classroom.courseTitle}}<br/>
+                    {{courseInfo}}<br/>
+                    {{classroom.sectionNumber}}<br/>
+                    {{classroom.schoolName}}
+                </div>
+                <!-- <div class="title-section">
                     <div *ngIf="classroom.role=='teacher'">
                         <button class="button-style" mat-button mat-button-raised [matMenuTriggerFor]="menu">Teacher Tools</button>
                         <mat-menu #menu="matMenu">
-                            <button mat-menu-item>Invite Student</button>
-                            <button mat-menu-item>Invite TA</button>
-                            <button mat-menu-item>Invite Teacher</button>
-                            <button mat-menu-item>Manage Members</button>
-                            <button mat-menu-item>New Invite Codes</button>
+                            
                         </mat-menu>                            
                     </div>
-                </div>
+                </div> -->
             </mat-card-content>
         </mat-card>
     </div>
+
+    <mat-sidenav-container class="sidenav-container" [style.marginTop.px]="0">
+        <mat-sidenav #snav [mode]="'side'" [fixedInViewport]="true" fixedTopGap="0" opened="false" disableClose="false" class="user-sidenav">
+            <mat-nav-list class="sidenav-list">
+                <a mat-list-item class="sidenav-list-item" (click)="snav.toggle()"><i class="material-icons">menu</i></a>
+                <a mat-list-item class="sidenav-list-item" routerLink='/user-console'>View Classes</a>
+                <a *ngIf="classroom.role=='teacher'" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="studentInvite">Copy Student Invite Link</a>
+                <a *ngIf="classroom.role=='teacher'" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="taInvite">Copy TA Invite Link</a>
+                <a *ngIf="classroom.role=='teacher'" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="teacherInvite">Copy Teacher Invite Link</a>
+                <a *ngIf="classroom.role=='teacher'" mat-list-item class="sidenav-list-item">Manage Members</a>
+                <a *ngIf="classroom.role=='teacher'" mat-list-item class="sidenav-list-item" (click)="RotateCodes()">New Invite Codes</a>
+                <a mat-list-item class="sidenav-list-item" href="/logout">Logout <i class="material-icons">exit_to_app</i></a>
+            </mat-nav-list>
+        </mat-sidenav>
+    </mat-sidenav-container>
+
     <div class="row">
         <div class="column1">
             <mat-card class="main-card">

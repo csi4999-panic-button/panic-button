@@ -20,6 +20,9 @@ export class ClassHubComponent {
   token: any;
   currentClassroomId: string;
   classroom: Classroom;
+  studentInvite: string;
+  taInvite: string;
+  teacherInvite: string;
   panicStates: {[classroom: string]: boolean};
   panicNumbers: {[classroomId: string]: number};
   isPanic: boolean;
@@ -79,6 +82,7 @@ export class ClassHubComponent {
       studentCount: -1,
       studentCode: '',
       teacherCode: '',
+      taCode: '',
       questions: [] as [Question],
       students: [] as [string],
       teachers: [] as [string],
@@ -88,6 +92,9 @@ export class ClassHubComponent {
       schoolId: '',
       schoolName: ''
     };
+    this.studentInvite = '';
+    this.taInvite = '';
+    this.teacherInvite = '';
     this.chartData = [
       { data: this.testData, label: 'Panics' }
     ];
@@ -297,6 +304,10 @@ export class ClassHubComponent {
           this.classroom.studentCount = this.classroom.students.length;
           this.studentCount = this.classroom.students.length;
         }
+        const port = ['80', '443'].indexOf(location.port) > -1 ? '' : `:${location.port}`;
+        this.studentInvite = `${location.hostname}${port}/join/${this.classroom.studentCode}`;
+        this.taInvite = `${location.hostname}${port}/join/${this.classroom.taCode}`;
+        this.teacherInvite = `${location.hostname}${port}/join/${this.classroom.teacherCode}`;
         console.log(this.classroom.questions);
         this.setClassInfo();
         this.setTopicInfo(this.classroom.topics[this.classroom.currentTopic],
@@ -304,6 +315,10 @@ export class ClassHubComponent {
           this.classroom.currentTopic === (this.classroom.topics.length - 1));
         this.addNewQuestionsToViewLogic();
      });
+  }
+
+  RotateCodes() {
+    // make request to backend
   }
 
   UpdateQuestionsView(numberOfQuestions: number) {
@@ -450,6 +465,7 @@ export interface Classroom {
   sectionNumber: string;
   studentCount: number;
   studentCode: string;
+  taCode: string;
   teacherCode: string;
   questions: [Question];
   students: [string];
