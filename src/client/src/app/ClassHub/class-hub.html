@@ -8,7 +8,7 @@
                     <button mat-icon-button (click)="snav.toggle()"><i class="material-icons">menu</i></button>
                 </div>
                 <div class="title-section">
-                    <div *ngIf="classroom.role=='teacher'">
+                    <div *ngIf="IsTeacher">
                         <button class="button-style" *ngIf="!firstTopic" mat-button mat-button-raised (click)="PreviousTopic()">
                             <i class="material-icons">keyboard_arrow_left</i>
                         </button>
@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 <div class="title-section">
-                    <div *ngIf="classroom.role=='teacher'">
+                    <div *ngIf="IsTeacher">
                         <button class="button-style" *ngIf="!lastTopic" mat-button mat-button-raised (click)="NextTopic()">
                             <i class="material-icons">keyboard_arrow_right</i>
                         </button>
@@ -39,7 +39,7 @@
                     {{classroom.schoolName}}
                 </div>
                 <!-- <div class="title-section">
-                    <div *ngIf="classroom.role=='teacher'">
+                    <div *ngIf="IsTeacher">
                         <button class="button-style" mat-button mat-button-raised [matMenuTriggerFor]="menu">Teacher Tools</button>
                         <mat-menu #menu="matMenu">
                             
@@ -55,11 +55,13 @@
             <mat-nav-list class="sidenav-list">
                 <a mat-list-item class="sidenav-list-item" (click)="snav.toggle()"><i class="material-icons">menu</i></a>
                 <a mat-list-item class="sidenav-list-item" routerLink='/user-console'>View Classes</a>
-                <a *ngIf="classroom.role=='teacher'" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="studentInvite">Copy Student Invite Link</a>
-                <a *ngIf="classroom.role=='teacher'" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="taInvite">Copy TA Invite Link</a>
-                <a *ngIf="classroom.role=='teacher'" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="teacherInvite">Copy Teacher Invite Link</a>
-                <a *ngIf="classroom.role=='teacher'" mat-list-item class="sidenav-list-item">Manage Members</a>
-                <a *ngIf="classroom.role=='teacher'" mat-list-item class="sidenav-list-item" (click)="RotateCodes()">New Invite Codes</a>
+                <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item">Update Topics</a>
+                <a *ngIf="IsTeacherOrTA" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="studentInvite">Copy Student Invite Link</a>
+                <a *ngIf="IsTeacherOrTA" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="taInvite">Copy TA Invite Link</a>
+                <a *ngIf="IsTeacherOrTA" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="teacherInvite">Copy Teacher Invite Link</a>                
+                <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item" (click)="RotateCodes()">New Invite Codes</a>
+                <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item">Manage Members</a>
+                <p mat-list-item class="sidenav-list-item"></p>
                 <a mat-list-item class="sidenav-list-item" href="/logout">Logout <i class="material-icons">exit_to_app</i></a>
             </mat-nav-list>
         </mat-sidenav>
@@ -69,7 +71,7 @@
         <div class="column1">
             <mat-card class="main-card">
                 <mat-card-content>
-                    <!-- <div style="text-align:center" *ngIf="classroom.role==='student'">
+                    <!-- <div style="text-align:center" *ngIf="IsStudent">
                         <button mat-button *ngIf="!isPanic" (click)=Panic() style="text-align:center">
                             <i class="material-icons icon-size">radio_button_unchecked</i>
                         </button>
@@ -134,10 +136,10 @@
                             <div class="qa-flex-container">
                                 <div class="qa-vote-box">
                                     <!-- Vote for questions -->
-                                    <button class="round-button-style" *ngIf="classroom.role==='student' && !question.voted" mat-button (click)="VoteForQuestion(question._id,true)">
+                                    <button class="round-button-style" *ngIf="IsStudent && !question.voted" mat-button (click)="VoteForQuestion(question._id,true)">
                                         {{question.votes.length}}<i class="material-icons">keyboard_arrow_up</i>
                                     </button>
-                                    <button class="button-style" *ngIf="classroom.role==='student' && question.voted" mat-fab  (click)="VoteForQuestion(question._id,false)">
+                                    <button class="button-style" *ngIf="IsStudent && question.voted" mat-fab  (click)="VoteForQuestion(question._id,false)">
                                         {{question.votes.length}}<i class="material-icons">keyboard_arrow_down</i>
                                     </button>
                                 </div>
@@ -175,10 +177,10 @@
                                                 <i class="material-icons">check</i>
                                             </button>
                                             <!-- Vote for answers as a student -->
-                                            <button class="round-button-style" *ngIf="classroom.role==='student' && !answer.voted" mat-button (click)="VoteForAnswer(question._id,answer._id,true)">
+                                            <button class="round-button-style" *ngIf="IsStudent && !answer.voted" mat-button (click)="VoteForAnswer(question._id,answer._id,true)">
                                                 {{answer.votes.length}}<i class="material-icons">keyboard_arrow_up</i>
                                             </button>
-                                            <button class="button-style" *ngIf="classroom.role==='student' && answer.voted" mat-fab (click)="VoteForAnswer(question._id,answer._id,false)">
+                                            <button class="button-style" *ngIf="IsStudent && answer.voted" mat-fab (click)="VoteForAnswer(question._id,answer._id,false)">
                                                 {{answer.votes.length}}<i class="material-icons">keyboard_arrow_down</i>
                                             </button>
                                             <!-- Show vote count for teacher/TA -->

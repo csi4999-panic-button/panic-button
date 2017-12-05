@@ -40,6 +40,9 @@ export class ClassHubComponent {
   firstTopic: boolean;
   lastTopic: boolean;
   myUserId: string;
+  IsTeacherOrTA: boolean;
+  IsTeacher: boolean;
+  IsStudent: boolean;
   showAnswers: Map<string, boolean>;
   showChart: boolean;
   testData: [number];
@@ -140,6 +143,9 @@ export class ClassHubComponent {
       tooltips: { enabled: false },
       hover: {mode: null},
     };
+    this.IsTeacherOrTA = false;
+    this.IsTeacher = false;
+    this.IsStudent = false;
 
     this.setTopicInfo('General', true, true);
     this.setClassInfo();
@@ -308,6 +314,9 @@ export class ClassHubComponent {
         this.studentInvite = `${location.hostname}${port}/join/${this.classroom.studentCode}`;
         this.taInvite = `${location.hostname}${port}/join/${this.classroom.taCode}`;
         this.teacherInvite = `${location.hostname}${port}/join/${this.classroom.teacherCode}`;
+        this.IsTeacherOrTA = ['teacher', 'teacherAssistant'].indexOf(this.classroom.role) > -1;
+        this.IsTeacher = this.classroom.role === 'teacher';
+        this.IsStudent = this.classroom.role === 'student';
         console.log(this.classroom.questions);
         this.setClassInfo();
         this.setTopicInfo(this.classroom.topics[this.classroom.currentTopic],
