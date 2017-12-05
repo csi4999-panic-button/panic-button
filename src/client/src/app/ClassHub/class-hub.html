@@ -57,8 +57,8 @@
                 <a mat-list-item class="sidenav-list-item" routerLink='/user-console'>View Classes</a>
                 <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item">Update Topics</a>
                 <a *ngIf="IsTeacherOrTA" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="studentInvite">Copy Student Invite Link</a>
-                <a *ngIf="IsTeacherOrTA" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="taInvite">Copy TA Invite Link</a>
-                <a *ngIf="IsTeacherOrTA" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="teacherInvite">Copy Teacher Invite Link</a>                
+                <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="taInvite">Copy TA Invite Link</a>
+                <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="teacherInvite">Copy Teacher Invite Link</a>                
                 <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item" (click)="RotateCodes()">New Invite Codes</a>
                 <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item">Manage Members</a>
                 <p mat-list-item class="sidenav-list-item"></p>
