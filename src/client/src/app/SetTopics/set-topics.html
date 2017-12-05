@@ -15,23 +15,25 @@
             </md-card-title>
             <div>
                 <md-card-content>
-                    <div *ngFor="let topic of topicsArr; let i = index" class="flex-row">
-                        <div>
-                            <mat-form-field class="input-style">
-                                <input type="text" [(ngModel)]="topicsArr[i]" matInput placeholder="Topic.." />
-                            </mat-form-field>
+                    <form (submit)="SetTopics()">
+                        <div *ngFor="let topic of topicsArr; let i = index" class="flex-row">
+                            <div>
+                                <mat-form-field class="input-style">
+                                    <input type="text" [(ngModel)]="topicsArr[i]" matInput placeholder="Topic.." />
+                                </mat-form-field>
+                            </div>
+                            <div>
+                                <button mat-button class="button-style" (click)="RemoveTopic(i)" mat-raised-button>
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </div>
                         </div>
                         <div>
-                            <button mat-button class="button-style" (click)="RemoveTopic(i)" mat-raised-button>
-                                <i class="material-icons">delete</i>
+                            <button mat-button mat-raised-button class="button-style" (click)="IncreaseTopicArray()">
+                                <p>Add another topic..</p>
                             </button>
                         </div>
-                    </div>
-                    <div>
-                        <button mat-button mat-raised-button class="button-style" (click)="IncreaseTopicArray()">
-                            <p>Add another topic..</p>
-                        </button>
-                    </div>
+                    </form>
                 </md-card-content>
             </div>
             <md-card-actions>

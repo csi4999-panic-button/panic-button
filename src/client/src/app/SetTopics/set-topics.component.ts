@@ -17,7 +17,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 export class SetTopicsComponent {
 
   private currentClassroomId: string;
-  topicsArr: string[];
+  topicsArr: { topic: string}[];
   GoBackLink: string;
   isUpdated: boolean;
   classroomTitle: string;
@@ -30,7 +30,7 @@ export class SetTopicsComponent {
       // this.GoBackLink = `/class-hub?id=${this.currentClassroomId}`;
       this.http.get<Classroom>(`/api/v1/classrooms/${this.currentClassroomId}`)
         .subscribe((data) => {
-          this.topicsArr = data.topics;
+          this.topicsArr = data.topics.map((v) => { return { topic: v } });
           // const titlePredicate = (data.courseType || data.courseNumber) ? `${data.courseType} ${data.courseNumber} -` : '';
           this.classroomTitle = ` for ${data.courseTitle}`;
         });
@@ -38,11 +38,11 @@ export class SetTopicsComponent {
   }
 
   IncreaseTopicArray() {
-    this.topicsArr = [...this.topicsArr, ''];
+    this.topicsArr = [...this.topicsArr, { topic: ''} ];
   }
 
   ClearTopicArray() {
-    this.topicsArr = [];
+    this.topicsArr = [ { topic: '' } ];
   }
 
   RemoveTopic(i: number) {
@@ -51,7 +51,7 @@ export class SetTopicsComponent {
 
   SetTopics() {
     const url = `/api/v1/classrooms/${this.currentClassroomId}/topics`;
-    this.http.post(url, {topics: this.topicsArr})
+    this.http.post(url, {topics: this.topicsArr.map(v => v.topic)})
     .subscribe((data) => {
         console.log('Topics set', data);
         this.isUpdated = true;
