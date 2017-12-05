@@ -327,7 +327,17 @@ export class ClassHubComponent {
   }
 
   RotateCodes() {
-    // make request to backend
+    let rotateCounter = 0;
+    ['student', 'teacherAssistant', 'teacher'].forEach((type) => {
+      this.http.put(`/api/v1/classrooms/${this.currentClassroomId}/code/${type}`, {})
+        .subscribe((data) => {
+          console.log(`Successfully rotated code for ${type}s`);
+          rotateCounter++;
+          if (rotateCounter === 3) {
+            this.GetClassroomObject();
+          }
+        });
+    });
   }
 
   UpdateQuestionsView(numberOfQuestions: number) {
