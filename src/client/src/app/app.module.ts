@@ -18,6 +18,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { CdkTableModule } from '@angular/cdk/table';
 import { ChartsModule } from 'ng2-charts';
+import { ClipboardModule } from 'ngx-clipboard';
 
 import { AppComponent } from './app.component';
 import { HomePageComponent } from './home-page.component';
@@ -69,6 +70,7 @@ const appRoutes: Routes = [
     HttpClientModule,
     CdkTableModule,
     ChartsModule,
+    ClipboardModule,
   ],
   declarations: [
     AppComponent,

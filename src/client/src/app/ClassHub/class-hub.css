@@ -183,3 +183,16 @@ body {
 .vote-flex-container {
     flex: column;
 }
+
+.user-sidenav {
+    width: 20%;
+}
+
+.sidenav-list {
+    padding-top: 64px;
+
+}
+
+.sidenav-list-item {
+    padding: 5px 0px;
+}
