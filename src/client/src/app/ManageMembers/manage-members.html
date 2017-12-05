@@ -2,7 +2,7 @@
     <md-card class="card-style scroll-card-80" >
         <md-card-content class="card-fill-width">
             <h2>Manage Members{{classroomTitle}}</h2>
-            <mat-grid-list cols="6" rowHeight="64px">
+            <mat-grid-list cols="7" rowHeight="64px">
                 <div>
                     <mat-grid-tile [colspan]="1" [rowspan]="1">
                         First Name
@@ -12,6 +12,9 @@
                     </mat-grid-tile>
                     <mat-grid-tile [colspan]="3" [rowspan]="1">
                         Email
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="1" [rowspan]="1">
+                        Role
                     </mat-grid-tile>
                     <mat-grid-tile [colspan]="1" [rowspan]="1">
                         Delete
@@ -26,6 +29,9 @@
                     </mat-grid-tile>
                     <mat-grid-tile [colspan]="3" [rowspan]="1">
                         {{user.info.email}}
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="1" [rowspan]="1">
+                        {{user.role}}
                     </mat-grid-tile>
                     <mat-grid-tile [colspan]="1" [rowspan]="1">
                         <button mat-button class="button-style" (click)="RemoveUser(i)" mat-raised-button>
