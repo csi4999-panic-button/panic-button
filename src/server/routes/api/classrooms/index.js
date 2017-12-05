@@ -3,6 +3,7 @@
 const router = require("express").Router();
 const InviteCodes = require("../../../models/invite-codes");
 const Classrooms = require("../../../models/classrooms");
+const Users = require("../../../models/users");
 const util = require("../../../util");
 
 // returns a list of classrooms this user belongs to
@@ -201,7 +202,11 @@ router.delete("/:classroomId/:type(student|teacherAssistant|teacher)/:userId", a
     if(!classroom){
       throw new Error("Could not perform that request")
     }
-    return res.json({ success: true, message: "User is not a " + req.params.type + " of the classroom" });
+    return res.json({ 
+      success: true, 
+      message: "User is no longer a " + req.params.type + " of the classroom",
+      userId: req.params.userId,
+    });
   }).catch( (err) => res.json({ success: false, message: err.message }));
 });
 
@@ -401,6 +406,40 @@ router.post("/:classroomId/topics", async (req, res) => {
     return res.status(400).json({ success: false, message: err.message });
   }
 });
+
+router.get("/:classroomId/users", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send();
+  }
+
+  const searchedClassroom = await Classrooms.findOne({ _id: req.params.classroomId, teachers: req.user.id });
+  if (!searchedClassroom) {
+    return res.status(400).json({ success: false, message: "Could not confirm you as a teacher of that course" });
+  }
+
+  let allUsers = [];
+  searchedClassroom.teachers.forEach((u) => {
+    allUsers.push({
+      role: 'teacher',
+      info: u,
+    })
+  });
+  searchedClassroom.teacherAssistants.forEach((u) => {
+    allUsers.push({
+      role: 'teacherAssistant',
+      info: u,
+    })
+  });
+  searchedClassroom.students.forEach((u) => {
+    allUsers.push({
+      role: 'student',
+      info: u,
+    })
+  });
+
+  const popUsers = await Users.populate(allUsers, { path: 'info'});
+  return res.status(200).json({ success: true, users: popUsers });
+})
 
 module.exports = router;
 
