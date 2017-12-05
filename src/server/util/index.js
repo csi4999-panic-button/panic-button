@@ -61,14 +61,27 @@ module.exports.joinClassroomByInviteCode = async (code, userId) => {
     console.log("UserId",userId);
     const classroom = await Classrooms.findOne({
       $or: [
-      { teacherCode: code },
-      { taCode: code },
-      { studentCode: code },
+      { teacherCode: code,
+        $nor: [
+          { students: userId, },
+          { teacherAssistants: userId, },
+        ]},
+      { taCode: code,
+        $nor: [
+          { students: userId, },
+          { teachers: userId, },
+        ]
+      },
+      { studentCode: code,
+        $nor: [
+          { teachers: userId, },
+          { teacherAssistants: userId, },
+        ]},
       ],
     });
 
     if (!code || !classroom) {
-      throw new Error("Classroom not found");
+      throw new Error("Failed to join classroom");
     }
 
 
