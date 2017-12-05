@@ -14,6 +14,7 @@ import { MatMenuModule} from '@angular/material';
 import { MatSidenavModule } from '@angular/material';
 import { MatExpansionModule } from '@angular/material';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatGridListModule } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { CdkTableModule } from '@angular/cdk/table';
@@ -32,6 +33,7 @@ import { CreateClassComponent } from './CreateClass/create-class.component';
 import { JoinClassComponent } from './JoinClass/join-class.component';
 import { CreateSchoolComponent } from './CreateSchool/create-school.component';
 import { SetTopicsComponent } from './SetTopics/set-topics.component';
+import { ManageMembersComponent } from './ManageMembers/manage-members.component';
 import { SchoolSearchService } from './School/school-search.service';
 
 
@@ -46,6 +48,7 @@ const appRoutes: Routes = [
   { path: 'join-class', component: JoinClassComponent},
   { path: 'create-school', component: CreateSchoolComponent },
   { path: 'set-topics', component: SetTopicsComponent },
+  { path: 'manage-members', component: ManageMembersComponent },
   { path: '',   redirectTo: '/home', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent },
 ];
@@ -65,6 +68,7 @@ const appRoutes: Routes = [
     MatSidenavModule,
     MatExpansionModule,
     MatFormFieldModule,
+    MatGridListModule,
     RouterModule.forRoot(
       appRoutes,
       // { enableTracing: true } // <-- debugging purposes only
@@ -87,6 +91,7 @@ const appRoutes: Routes = [
     CreateSchoolComponent,
     PageNotFoundComponent,
     SetTopicsComponent,
+    ManageMembersComponent,
   ],
   providers: [ SchoolSearchService ],
   bootstrap: [ AppComponent ]
