@@ -64,7 +64,8 @@ router.get("/join/:inviteCode([0-9A-Za-z+/=]+)",
     },
     login.ensureLoggedIn("/login"), async (req, res) => {
   const ret = await util.joinClassroomByInviteCode(req.params.inviteCode,req.user._id);
-  return (ret.success) ? res.redirect("/") : res.status(400).json(ret);
+  //return (ret.success) ? res.redirect("/") : res.status(400).json(ret);
+  return res.redirect("/");
 });
 
 router.use("/api/v1", require("./api"));
