@@ -463,6 +463,10 @@ export class ClassHubComponent {
     console.log(event);
   }
 
+  navigateTo(ROUTE: string, ID: string) {
+    this.router.navigate([ROUTE], {queryParams: {id: ID}});
+  }
+
 }
 
 export interface Classroom {

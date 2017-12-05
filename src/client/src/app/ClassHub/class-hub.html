@@ -55,12 +55,12 @@
             <mat-nav-list class="sidenav-list">
                 <a mat-list-item class="sidenav-list-item" (click)="snav.toggle()"><i class="material-icons">menu</i></a>
                 <a mat-list-item class="sidenav-list-item" routerLink='/user-console'>View Classes</a>
-                <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item">Update Topics</a>
+                <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item" (click)="navigateTo('set-topics',currentClassroomId)">Update Topics</a>
                 <a *ngIf="IsTeacherOrTA" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="studentInvite">Copy Student Invite Link</a>
                 <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="taInvite">Copy TA Invite Link</a>
                 <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item" ngxClipboard [cbContent]="teacherInvite">Copy Teacher Invite Link</a>                
                 <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item" (click)="RotateCodes()">New Invite Codes</a>
-                <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item">Manage Members</a>
+                <a *ngIf="IsTeacher" mat-list-item class="sidenav-list-item" (click)="navigateTo('manage-members', currentClassroomId)">Manage Members</a>
                 <p mat-list-item class="sidenav-list-item"></p>
                 <a mat-list-item class="sidenav-list-item" href="/logout">Logout <i class="material-icons">exit_to_app</i></a>
             </mat-nav-list>

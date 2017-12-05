@@ -17,7 +17,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 export class SetTopicsComponent {
 
   private currentClassroomId: string;
-  topicsArr: { topic: string}[];
+  topicsArr: Topic[];
   GoBackLink: string;
   isUpdated: boolean;
   classroomTitle: string;
@@ -30,7 +30,7 @@ export class SetTopicsComponent {
       // this.GoBackLink = `/class-hub?id=${this.currentClassroomId}`;
       this.http.get<Classroom>(`/api/v1/classrooms/${this.currentClassroomId}`)
         .subscribe((data) => {
-          this.topicsArr = data.topics.map((v) => { return { topic: v } });
+          this.topicsArr = data.topics.map((v) => new Object({ topic: v })) as Topic[];
           // const titlePredicate = (data.courseType || data.courseNumber) ? `${data.courseType} ${data.courseNumber} -` : '';
           this.classroomTitle = ` for ${data.courseTitle}`;
         });
@@ -73,4 +73,8 @@ export interface Classroom {
   sectionNumber: string;
   topics: string[];
   currentTopic: number;
+}
+
+export interface Topic {
+  topic: string;
 }
