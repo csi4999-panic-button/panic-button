@@ -42,7 +42,7 @@ export class SetTopicsComponent {
   }
 
   ClearTopicArray() {
-    this.topicsArr = [ { topic: '' } ];
+    this.topicsArr = [];
   }
 
   RemoveTopic(i: number) {

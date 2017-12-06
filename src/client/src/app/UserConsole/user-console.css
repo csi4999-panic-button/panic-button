@@ -1,3 +1,7 @@
+html, body {
+    overflow-y: auto;
+}
+
 .column {
     float: right;
     padding: 15px;

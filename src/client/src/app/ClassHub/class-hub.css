@@ -1,3 +1,7 @@
+html, body {
+    overflow-y: auto;
+}
+
 .white-color{
     color: white;
 }
@@ -251,6 +255,11 @@ body {
         margin-bottom: 15px;
         /* height: 300px; /* Should be removed. Only for demonstration */
         max-width: 100%;
+        min-height: 40vh;
+    }
+
+    .history-chart {
+        min-height: 50vh;
     }
     
     .column2 {

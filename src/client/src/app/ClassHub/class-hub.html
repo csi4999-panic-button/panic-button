@@ -87,7 +87,7 @@
                             [datasets]="panicChartDatasets"
                             [labels]="panicChartLabels"
                             [options]="panicChartOptions"
-                            [legend]="true"
+                            [legend]="false"
                             (chartClick)="Panic()">
                         </canvas>
                     </div>
@@ -96,7 +96,7 @@
         </div>
         <div class="column2">
             <div>
-                <mat-card class="qa-card" *ngIf="showChart">
+                <mat-card class="qa-card history-chart" *ngIf="showChart">
                     <button class="button-style" *ngIf="showChart" mat-button mat-button-raised (click)=ToggleChart()>Hide Chart</button>
                     <div>
                         <canvas
@@ -105,11 +105,11 @@
                             [datasets]="chartData"
                             [labels]="chartLabels"
                             [options]="chartOptions"
-                            [legend]="true"
+                            [legend]="false"
                             (chartClick)="onChartClick($event)">
                         </canvas>
                     </div>
-                    <button mat-button (click)="ChangeData()" style="text-align:center">Test Data Change</button>
+                    <!-- <button mat-button (click)="ChangeData()" style="text-align:center">Test Data Change</button> -->
                 </mat-card>
                 <mat-card class="qa-card">
                     <mat-card-header>
