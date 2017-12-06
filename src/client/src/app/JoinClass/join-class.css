@@ -60,3 +60,20 @@
     background-image: url("https://images.pexels.com/photos/247839/pexels-photo-247839.jpeg?w=1260&h=750&auto=compress&cs=tinysrgb");
     background-size: 100%;
 }
+
+@media only screen and (max-width: 650px) {
+    .card-style
+    {
+        width: auto;
+        margin: auto;
+        padding: 20px;
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        top: auto;
+        top: 20px;
+        bottom: 20px;
+        min-height: 50%;
+    }
+}
+

@@ -58,6 +58,19 @@ export class ManageMembersComponent {
       });
   }
 
+  getRoleOf(role: string) {
+    switch (role) {
+      case('teacher'):
+        return 'T';
+      case('teacherAssistant'):
+        return 'TA';
+      case('student'):
+        return 'S';
+      default:
+        return 'N/A';
+    }
+  }
+
   navigateToClassHub(ID: string) {
     this.router.navigate(['/class-hub'], {queryParams: {id: ID}});
   }
