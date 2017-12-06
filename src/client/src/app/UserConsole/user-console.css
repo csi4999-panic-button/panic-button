@@ -1,7 +1,7 @@
 .column {
-    float: left;
+    float: right;
     padding: 15px;
-
+    width: 75%; 
 }
 
 .cards {
@@ -13,7 +13,8 @@
     background: #607D8B;
     color: #FFFFFF;
     font-size: 50px;
-    text-align:center
+    text-align:center;
+    z-index: 0;
 }
 
 .button-style
@@ -88,4 +89,104 @@ body {
 
 .sidenav-list-item {
     padding: 5px 0px;
+}
+
+@media only screen and (max-width: 650px) {
+    .column {
+        float: right;
+        padding: 0px;
+        width: 100%;
+    }
+    
+    .cards {
+        max-height: 80vh;
+    }
+    
+    .secondary-toolbar
+    {
+        background: #607D8B;
+        color: #FFFFFF;
+        font-size: 24px;
+        text-align:center;
+        z-index: 0;
+    }
+
+    .mat-cell {
+        font-size: 12px;
+    }
+    
+    .button-style
+    {
+        background: #303F9F;
+        color: #FFFFFF;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .example-container {
+        display: flex;
+        flex-direction: column;
+        min-width: 300px;
+        width: auto;
+    }
+    
+    .mat-table {
+        overflow: auto;
+    }
+    
+    .red-icons {
+        color: rgba(210, 21, 21, 0.54); 
+    }
+    
+    .blue-icons {
+        color: rgba(21, 21, 210, 0.54); 
+    }
+    
+    .mat-row:hover
+    {
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    body {
+        background-color: #282b2d;
+    }
+    
+    #title-container {
+        width: 100%;
+        vertical-align: middle;
+    }
+    
+    #title-container.div {
+        vertical-align: inherit;
+    }
+    
+    .title-left {
+        float: left;
+        width: 100px;
+    }
+    
+    .title-center {
+        margin: 0 auto;
+    }
+    
+    .user-console-titlebar {
+        background-color: #303F9F;
+        color: #FFFFFF;
+        font-size: 24px;
+        text-align:center;
+    }
+    
+    .user-sidenav {
+        width: 80%;
+    }
+    
+    .sidenav-list {
+        padding-top: 64px;
+    
+    }
+    
+    .sidenav-list-item {
+        padding: 5px 0px;
+    }
 }

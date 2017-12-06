@@ -1,23 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgIf } from '@angular/common';
 import { DataSource } from '@angular/cdk/collections';
 import { Observable } from 'rxjs/Observable';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import 'rxjs/add/observable/of';
+import { MatSidenav } from '@angular/material';
 
 @Component({
   selector: 'user-console',
   templateUrl: './user-console.html',
   styleUrls: ['./user-console.css'],
 })
-export class UserConsoleComponent {
+export class UserConsoleComponent implements AfterViewInit {
 
   private HTTP: HttpClient;
-  displayedColumns = ['courseTitle', 'courseNumber', 'sectionNumber', 'role', 'schoolName'];
+  displayedColumns: string[];
   data: Classroom[];
   dataSource: ClassroomDataSource;
   whoAmI: string;
+
+  @ViewChild('snav') snav: MatSidenav;
 
   constructor(private http: HttpClient, private router: Router) {
     console.log('Entered constructor');
@@ -31,6 +34,15 @@ export class UserConsoleComponent {
         .subscribe((data) => {
           this.whoAmI = `${data['firstName']} ${data['lastName']}`;
         });
+    this.displayedColumns = ['courseTitle', 'courseNumber', 'sectionNumber', 'role', 'schoolName'];
+  }
+
+  ngAfterViewInit() {
+    if (window.innerWidth > 650) {
+      this.snav.toggle();
+    } else {
+      this.displayedColumns = ['courseTitle', 'role', 'schoolName'];
+    }
   }
 
   navigateTo(ID: string) {
@@ -48,8 +60,6 @@ export class UserConsoleComponent {
     });
   }
 }
-
-
 
 export interface Classroom {
   _id: string;
