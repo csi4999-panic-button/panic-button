@@ -310,7 +310,7 @@ export class ClassHubComponent {
           this.classroom.studentCount = this.classroom.students.length;
           this.studentCount = this.classroom.students.length;
         }
-        const port = ['80', '443'].indexOf(location.port) > -1 ? '' : `:${location.port}`;
+        const port = location.port ? `:${location.port}` : '';
         this.studentInvite = `${location.hostname}${port}/join/${this.classroom.studentCode}`;
         this.taInvite = `${location.hostname}${port}/join/${this.classroom.taCode}`;
         this.teacherInvite = `${location.hostname}${port}/join/${this.classroom.teacherCode}`;
