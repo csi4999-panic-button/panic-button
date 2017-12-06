@@ -104,7 +104,6 @@ classroomSchema.methods.sanitize = async function (user) {
     // is not teacher
     delete out.teacherCode;
     delete out.taCode;
-    delete out.studentCode;
 
     out.questions = out.questions.map((question) => {
       delete question.user;
@@ -114,6 +113,10 @@ classroomSchema.methods.sanitize = async function (user) {
       });
       return question;
     });
+  }
+
+  if (this.isStudent(user)) {
+    delete out.studentCode;
   }
 
   out.role = (this.isTeacher(user)) ? "teacher" :
