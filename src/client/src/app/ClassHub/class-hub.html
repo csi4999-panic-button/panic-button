@@ -66,7 +66,7 @@
         </mat-card>
     </div>
 
-    <div class="row">
+    <div class="row class-flex-container">
         <div class="column1">
             <mat-card class="main-card">
                 <mat-card-content>
@@ -169,7 +169,7 @@
                         <div *ngFor="let answer of question.answers">
                             <mat-card class="qa-card answer-card">
                                 <mat-card-content>
-                                    <div class="qa-flex-container">
+                                    <div class="a-flex-container">
                                         <div class="qa-vote-box">
                                             <!-- Marked as resolution tag -->
                                             <button class="resolution-style" *ngIf="answer.isResolution" mat-fab>

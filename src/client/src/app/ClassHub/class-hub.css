@@ -23,16 +23,23 @@
     color: red;
 }
 
+.class-flex-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .column1 {
-    float: left;
-    width: 28%;
+    /* float: left; */
+    flex-grow: 1;
     margin: 1%;
-    height: 300px; /* Should be removed. Only for demonstration */
+    /* height: 300px; /* Should be removed. Only for demonstration */
+    max-width: 30%;
 }
 
 .column2 {
-    float: left;
-    width: 68%;
+    /* float: left; */
+    flex-grow: 3;
     background-color: #282b2d;
     overflow-y: auto;
     margin: 1%;
@@ -56,15 +63,15 @@
 }
 
 .question-card {
-    margin-left: 20px;
+    margin-left: 0px;
 }
 
 .answer-card {
-    margin-left: 40px;
+    margin-left: 20px;
 }
 
 .main-card {
-    height: 40vh;
+    min-height: 40vh;
 }
 
 .title-card {
@@ -159,6 +166,15 @@ body {
     align-content: flex-start;
 }
 
+.a-flex-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: flex-start;
+}
+
 .qa-flex-box {
     flex-grow: 1;
     padding: 0 10px;
@@ -195,4 +211,197 @@ body {
 
 .sidenav-list-item {
     padding: 5px 0px;
+}
+
+@media only screen and (max-width: 650px) {
+    .white-color{
+        color: white;
+    }
+    
+    .icon-size{
+        margin:auto;
+        font-size: 200px;
+        text-align: center;
+    }
+    
+    .font-size{
+        font-size: 30px;
+    }
+    
+    .green{
+        color: green;
+        font-size: 30px;
+        text-align: center;
+    }
+    
+    .red-color
+    {
+        color: red;
+    }
+    
+    .class-flex-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .column1 {
+        /* float: left; */
+        flex-grow: 1;
+        margin-bottom: 15px;
+        /* height: 300px; /* Should be removed. Only for demonstration */
+        max-width: 100%;
+    }
+    
+    .column2 {
+        /* float: left; */
+        flex-grow: 3;
+        background-color: #282b2d;
+        overflow-y: auto;
+        margin: 1%;
+    }
+    
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+    
+    .input-style
+    {
+        display: flex;
+        align-items: center;
+        background-color: #FFFFFF;
+    }
+    
+    .qa-card {
+        margin-bottom: 10px;
+    }
+    
+    .question-card {
+        margin-left: 0px;
+    }
+    
+    .answer-card {
+        margin-left: 20px;
+    }
+    
+    .main-card {
+        min-height: 40vh;
+    }
+    
+    .title-card {
+        margin-left: 1%;
+        margin-right: 1%;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        position: relative;
+    }
+    
+    .title-card-content {
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    .title-section {
+        display: block;
+        float: left;
+        /* width: 20vw; */
+    }
+    
+    #topic-section {
+        width: 40%;
+        text-align: center;
+    }
+    
+    .inline-list.li {
+        float: left;
+    }
+
+    body {
+        background-color: #282b2d;
+        height: auto;
+        margin: 0;
+        padding: 15px;
+    }
+    .button-style{
+        color: white;
+        background-color:#303F9F;
+        min-width: 0px;
+        text-align: center;
+        padding: 8px;
+    }
+    
+    .resolution-style{
+        color: white;
+        background-color: rgb(109, 226, 143);
+        vertical-align: top;
+    }
+    .vote-count-style{
+        color: white;
+        background-color: rgb(170, 170, 170);
+        vertical-align: top;
+    }
+    
+    .inactive-button-style {
+        color: white;
+        background-color:rgb(201, 201, 201);
+        min-width: 0px;
+        text-align: center;
+        padding: 8px;
+    }
+    
+    .a-flex-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: center;
+        align-content: flex-start;
+    }
+
+    .a-flex-container div {
+        margin-top: 5px;
+    }
+    
+    .qa-flex-box {
+        flex-grow: 1;
+        padding: 0 10px;
+    }
+    
+    .qa-vote-box { 
+        vertical-align: middle;
+    }
+    
+    .round-button-style {
+        border-radius: 50%;
+        padding: 0px;
+        min-width: 56px;
+        height: 56px;
+        vertical-align: middle;
+    }
+    
+    .useful-text-input {
+        width: 100%;
+    }
+    
+    .vote-flex-container {
+        flex: column;
+    }
+    
+    .user-sidenav {
+        width: 80%;
+    }
+    
+    .sidenav-list {
+        padding-top: 64px;
+    
+    }
+    
+    .sidenav-list-item {
+        padding: 5px 0px;
+    }
 }

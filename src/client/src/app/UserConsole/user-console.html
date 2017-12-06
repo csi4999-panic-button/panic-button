@@ -10,7 +10,7 @@
     </div>
   </md-toolbar>
   <mat-sidenav-container class="sidenav-container" [style.marginTop.px]="0">
-    <mat-sidenav #snav [mode]="'side'" [fixedInViewport]="true" fixedTopGap="0" opened="true" disableClose="true" class="user-sidenav">
+    <mat-sidenav #snav [mode]="'side'" [fixedInViewport]="true" fixedTopGap="0" opened="false" disableClose="true" class="user-sidenav">
       <mat-nav-list class="sidenav-list">
           <a mat-list-item class="sidenav-list-item" routerLink='/create-class'>Create Class</a>
           <a mat-list-item class="sidenav-list-item" routerLink='/join-class'>Join Class</a>
@@ -21,7 +21,7 @@
     </mat-sidenav>
   </mat-sidenav-container>
 
-  <div class="column" style="width: 75%; float: right;">
+  <div class="column">
     <md-card class="cards mat-elevation-z10">
       <md-toolbar class="mat-elevation-z10 secondary-toolbar">
         Class Information
