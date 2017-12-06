@@ -381,7 +381,7 @@ router.post("/:classroomId/topics", async (req, res) => {
     if(req.body.topics === null || req.body.topics === undefined) req.body.topics = [];
     // any other data types will end processing
     if (!Array.isArray(req.body.topics)) throw new Error("The data type of topics was not acceptable");
-    const newTopics = req.body.topics.concat(["General"]);
+    const newTopics = req.body.topics || ["General"];
     const classroom = await Classrooms.findOneAndUpdate({
       teachers: req.user.id,
       _id: req.params.classroomId,
