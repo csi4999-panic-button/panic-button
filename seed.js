@@ -15,10 +15,23 @@ const panichost = process.env.PANIC_HOST || "localhost";
 const panicport = process.env.PANIC_PORT || "3000";
 
 const baseUrl = "http://"+panichost+":"+panicport;
-const mongoURI = require("./src/server/util").getMongoURI();
+const mongoURI = process.argv[2] || require("./src/server/util").getMongoURI();
+console.log(`Using Mongo URI: ${mongoURI}`)
 
 let mongoose = require("mongoose");
-mongoose.connect(mongoURI,()=>{mongoose.connection.db.dropDatabase()});
+mongoose.connect(
+    mongoURI, 
+    { useMongoClient: true },
+    () => mongoose.connection.on('open', function(){
+        mongoose.connection.db.dropDatabase();
+        generateUsers()
+        .then(_=>generateSchools())
+        .then(_=>generateClassrooms())
+        .then(_=>joinOthersToClassrooms())
+        .then(_=>process.exit(0));
+    })
+);
+
 
 const fullUsers = users.map(u => Object.assign({},u,{jar: request.jar()}));
 let fullSchools;
@@ -51,6 +64,7 @@ const generateUsers = function(){
                 email: user.email,
                 password: user.password,
             },
+            simple: false,
         }
         const loginOpts = {
             method: "POST",
@@ -61,6 +75,7 @@ const generateUsers = function(){
                 email: user.email,
                 password: user.password,
             },
+            simple: false,
         }
         return request(registerOpts)
         .then( (newUser) => {
@@ -81,6 +96,7 @@ const generateSchools = async function() {
             json: true,
             jar: thisUser.jar,
             body: school,
+            simple: false,
         }
         return request(schoolOpts)
         .then( (newSchool) => Object.assign({},newSchool,school))
@@ -102,6 +118,7 @@ const generateClassrooms = async function() {
                 json: true,
                 jar: theTeacher.jar,
                 body: c,
+                simple: false,
             }
             return request(classOpts);
         }));
@@ -124,14 +141,9 @@ const joinOthersToClassrooms = async function() {
                     body: { inviteCode: randomCodeFrom(classroom) },
                     json: true,
                     jar: student.jar,
+                    simple: false,
                 })
             ))
         ))
     ));
 }
-
-generateUsers()
-.then(_=>generateSchools())
-.then(_=>generateClassrooms())
-.then(_=>joinOthersToClassrooms())
-.then(_=>process.exit(0));
